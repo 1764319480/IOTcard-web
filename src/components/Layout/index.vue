@@ -10,7 +10,7 @@
             <el-container direction="vertical">
                 <div class="breadcrumb">
                     <el-breadcrumb separator=">">
-                        <el-breadcrumb-item v-for="item in state.breadList" :to="{ path: item.path }">
+                        <el-breadcrumb-item v-for="item in state.breadList" :to="{ path: item.path }" :key="item.path">
                             {{ item.label }}
                         </el-breadcrumb-item>
                     </el-breadcrumb>
@@ -25,9 +25,13 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import Header from './Header.vue';
+// @ts-ignore
 import Aside from './Aside.vue';
+// @ts-ignore
 import menus from '@/variables/menus';
+// @ts-ignore
 import { useUserStore } from '@/stores/user';
 import { useRoute } from 'vue-router';
 import { reactive, watch, onMounted } from 'vue';

@@ -35,3 +35,21 @@ export function getUserInfo(params: any = {}) {
         params
     });
 }
+
+/** 修改用户信息 */
+export function updateUserInfo(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/update",
+        method: "post",
+        data: params
+    });
+}
+
+/** 修改密码 */
+export function updatePassword(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/update_pwd",
+        method: "post",
+        data: params
+    });
+}

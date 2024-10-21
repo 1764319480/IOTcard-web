@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { setCookie } from '@/utils/cookieHandler';
-import { refreshToken, getUserInfo } from '@/services/user';
+import crypto from 'crypto-js';
+import { refreshToken, getUserInfo, updateUserInfo, updatePassword } from '@/services/user';
 
 interface IRoleProps {
     id: number;
@@ -9,7 +10,7 @@ interface IRoleProps {
 }
 
 interface IUserInfoProps {
-    id: number;
+    id: string;
     status: number;
     account: string;
     userName: string;
@@ -19,7 +20,7 @@ interface IUserInfoProps {
 export const useUserStore = defineStore('user', () => {
     // 当前登录用户信息
     const userInfo = reactive<IUserInfoProps>({
-        id: 0,
+        id: '',
         status: 0,
         account: '',
         userName: '',
@@ -60,10 +61,39 @@ export const useUserStore = defineStore('user', () => {
         setTimeout(func, delay);
     }
 
+    // 修改用户信息
+    const updateUserInfoAsync = async (userId: string, userName?: string, status?: number, roleIds?: number[]) => {
+        const res = await updateUserInfo({
+            userId,
+            userName,
+            status,
+            roleIds
+        })
+        if (res.data.code === 200) {
+            getUserInfoAsync();
+            return true;
+        }
+        return false;
+    }
+
+    // 修改密码
+    const updatePasswordAsync = async (oldPassword: string, newPassword: string) => {
+        const res = await updatePassword({
+            oldPassword: crypto.MD5(oldPassword).toString(),
+            newPassword: crypto.MD5(newPassword).toString(),
+        })
+        if (res.data.code === 200) {
+            return true;
+        }
+        return false;
+    }
+
     return {
         userInfo,
         logoutAsync,
         getUserInfoAsync,
-        refreshTokenAsync
+        refreshTokenAsync,
+        updateUserInfoAsync,
+        updatePasswordAsync
     }
 }, { persist: true });

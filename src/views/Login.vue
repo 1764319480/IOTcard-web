@@ -48,6 +48,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
+// @ts-ignore
 import { useLoginStore } from '@/stores/login'
 
 interface FormValueProps {
@@ -89,7 +90,7 @@ onMounted(async () => {
 
 const handleLogin = async (formEl?: FormInstance) => {
     if (!formEl) return
-    await formEl.validate(async (valid, fields) => {
+    await formEl.validate(async (valid) => {
         if (valid) {
             const isSuccess = await loginStore.loginAsync(formValue.account, formValue.password, formValue.verifyCode)
 
