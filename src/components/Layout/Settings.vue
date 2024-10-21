@@ -28,13 +28,13 @@
                             <el-form ref="ruleFormRef" style="max-width: 600px" :model="ruleForm" hide-required-asterisk="false"
                                 :rules="rules" label-width="auto" class="demo-ruleForm">
                                 <el-form-item label="原密码" prop="oldPassword">
-                                    <el-input v-model="ruleForm.oldPassword" type="password" style="width: 200px;" autocomplete="off" show-password/>
+                                    <el-input v-model="ruleForm.oldPassword" type="password" style="width: 200px;" autocomplete="off" show-password placeholder="请输入原密码"/>
                                 </el-form-item>
                                 <el-form-item label="新密码" prop="newPassword">
-                                    <el-input v-model="ruleForm.newPassword" type="password" style="width: 200px;" autocomplete="off" show-password/>
+                                    <el-input v-model="ruleForm.newPassword" type="password" style="width: 200px;" autocomplete="off" show-password placeholder="请输入新密码"/>
                                 </el-form-item>
                                 <el-form-item label="确认密码" prop="checkPassword">
-                                    <el-input v-model="ruleForm.checkPassword" type="password" style="width: 200px;" autocomplete="off" show-password/>
+                                    <el-input v-model="ruleForm.checkPassword" type="password" style="width: 200px;" autocomplete="off" show-password placeholder="请再次输入新密码"/>
                                 </el-form-item>
                             </el-form>
                         </div>
@@ -167,11 +167,12 @@ const updatePassword = async (formEl: FormInstance | undefined) => {
 }
 // 监听外部的 open 变化
 watch(() => props.open, (open) => {
+    ruleFormRef.value?.resetFields();
+    tab.value = 1;
     isVisible.value = open;
 });
 
 const handleClose = () => {
-    ruleForm.userName = userStore.userInfo.userName;
     // 关闭弹窗时，通知外部更新 open 状态
     emit('update:open', false);
 }
