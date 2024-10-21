@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import { reactive } from 'vue';
-import { setCookie } from '@/utils/cookieHandler';
+import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
-import { refreshToken, getUserInfo, updateUserInfo, updatePassword } from '@/services/user';
+import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout } from '@/services/user';
+import { useRouter } from 'vue-router';
 
 interface IRoleProps {
     id: number;
@@ -28,11 +29,12 @@ export const useUserStore = defineStore('user', () => {
     })
 
     // 退出登录
-    const logoutAsync = async () => {
-        // 调取退出接口
-        // 清除cookie
-        // 跳转到登录页
-        // 清空用户信息
+    const logoutAsync = () => {
+        const router = useRouter();
+        logout();
+        clearCookie();
+        sessionStorage.clear();
+        router.push('/login');
     }
 
     // 获取用户信息

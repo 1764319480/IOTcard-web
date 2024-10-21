@@ -53,3 +53,12 @@ export function updatePassword(params: any = {}) {
         data: params
     });
 }
+
+/** 退出登录 */
+export function logout(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/logout",
+        method: "get",
+        data: params
+    });
+}
