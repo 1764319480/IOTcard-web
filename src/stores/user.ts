@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
-import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList } from '@/services/user';
+import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser } from '@/services/user';
 import { useRouter } from 'vue-router';
 
 interface IRoleProps {
@@ -99,6 +99,18 @@ export const useUserStore = defineStore('user', () => {
         return false;
     }
 
+    // 添加用户
+    const addUserAsync = async (userName:string, account: string, roleId: number) => {
+        const res = await addUser({
+            userName,
+            account,
+            roleId
+        })
+        if (res.data.code === 200) {
+            return res.data.value;
+        }
+        return false;
+    }
     return {
         userInfo,
         logoutAsync,
@@ -106,6 +118,7 @@ export const useUserStore = defineStore('user', () => {
         refreshTokenAsync,
         updateUserInfoAsync,
         updatePasswordAsync,
-        getUserListAsync
+        getUserListAsync,
+        addUserAsync
     }
 }, { persist: true });

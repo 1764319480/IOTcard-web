@@ -17,7 +17,7 @@
                             <div class="input-wrapper">
                                 <img alt="" src="@/assets/icons/icon-lock-fill.svg" />
                                 <el-input prefix-icon="" v-model="formValue.password" placeholder="请输入密码"
-                                    @keyup.enter="handleLogin(formRef)" type="password">
+                                    @keyup.enter="handleLogin(formRef)" type="password" show-password>
                                 </el-input>
                             </div>
                         </el-form-item>

@@ -71,3 +71,12 @@ export function getUserList(params: any = {}) {
         data: params
     });
 }
+
+/** 添加用户 */
+export function addUser(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/add",
+        method: "post",
+        data: params
+    });
+}
