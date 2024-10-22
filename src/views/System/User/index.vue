@@ -115,13 +115,13 @@
                             :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(item.roles)"
                             inactive-value="0" v-model="item.status" />
                     </div>
-                    <div>{{ item.createTime.toString().slice(0, 19).replace('T', ' ') }}</div>
+                    <div>{{ dateParse(item.createTime) }}</div>
                     <div>
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(item.roles)">
                             <p>编辑</p>
                             &nbsp;
-                            <el-popconfirm width="220" :icon="WarningFilled" icon-color="red"
-                                title="确定删除该条记录吗?" @confirm="deleteUser(item.id)">
+                            <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
+                                @confirm="deleteUser(item.id)">
                                 <template #reference>
                                     <p>删除</p>
                                 </template>
@@ -129,7 +129,7 @@
                                     <div style="margin-top: 15px;">
                                         <el-button size="small" @click="cancel">取消</el-button>
                                         <el-button type="danger" size="small" @click="confirm">确定</el-button>
-                                    </div> 
+                                    </div>
                                 </template>
                             </el-popconfirm>
                         </div>
@@ -176,6 +176,17 @@ type userItem = {
 // 从数组中取出角色名称
 const getRoleName = (roleArray: IRoleProps[]) => {
     return roleArray.map((e: any) => e.roleName).join(',')
+}
+// 时间格式转化
+const dateParse = (date: string) => {
+    const utcDate = new Date(date);
+    const utcPlus8Date = new Date(utcDate.getTime());
+    return utcPlus8Date.getFullYear() + "-" +
+        (utcPlus8Date.getMonth() + 1).toString().padStart(2, "0") + "-" +
+        utcPlus8Date.getDate().toString().padStart(2, "0") + " " +
+        utcPlus8Date.getHours().toString().padStart(2, "0") + ":" +
+        utcPlus8Date.getMinutes().toString().padStart(2, "0") + ":" +
+        utcPlus8Date.getSeconds().toString().padStart(2, "0");
 }
 // 获取用户的最高权限id
 const getMaxPermission = (roleArray: IRoleProps[]) => {
@@ -271,10 +282,10 @@ const saveAddUser = async () => {
     })
 }
 // 删除用户
-const deleteUser = async (userId:string[] | number[] | string | number) => {
+const deleteUser = async (userId: string[] | number[] | string | number) => {
     let userIds = Array.isArray(userId) ? userId : [userId]
     let data = await userStore.deleteUserAsync(userIds);
-    if(data) {
+    if (data) {
         ElMessage({
             message: '删除成功',
             type: 'success'
