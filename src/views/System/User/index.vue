@@ -35,7 +35,28 @@
                 <div>
                     <el-button type="primary" :icon="Plus">添加</el-button>
                     &nbsp;
-                    <el-button type="danger" :icon="Delete" plain="true">删除</el-button>
+                    <el-button type="danger" :icon="Delete" plain="true" @click="dialogVisible = true">删除</el-button>
+                    <el-dialog v-model="dialogVisible" width="250" :show-close="false">
+                        <div class="delete_class">  
+                            <div class="delete_title">确认删除?</div>
+                            
+                            <div class="delete_data">
+                                <el-icon color="red" size="20">
+                                    <WarningFilled />
+                                </el-icon>
+                                &nbsp;
+                                <p>将删除10条记录，请谨慎操作！</p>
+                            </div>
+                        </div>
+                        <template #footer>
+                            <div class="dialog-footer">
+                                <el-button @click="dialogVisible = false">取消</el-button>
+                                <el-button type="danger" @click="dialogVisible = false">
+                                    确认
+                                </el-button>
+                            </div>
+                        </template>
+                    </el-dialog>
                 </div>
             </div>
         </div>
@@ -63,23 +84,22 @@
                     <div>
                         <p>编辑</p>
                         &nbsp;
-                        <el-popover placement="top" :width="200" trigger="click">
+                        <el-popover placement="top" :width="200" :visible="delete_item">
                             <div
                                 style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
                                 <div style="display: flex;align-items: center;justify-content: space-around">
                                     <el-icon color="red">
-                                        <Warning />
+                                        <WarningFilled />
                                     </el-icon>
                                     <p>确定删除该记录吗？</p>
                                 </div>
-
                                 <div style="display: flex;justify-content: flex-end;">
-                                    <el-button>取消</el-button>
+                                    <el-button @click="delete_item = false">取消</el-button>
                                     <el-button type="danger">确定</el-button>
                                 </div>
                             </div>
                             <template #reference>
-                                <p>删除</p>
+                                <p @click="delete_item = true">删除</p>
                             </template>
                         </el-popover>
                     </div>
@@ -87,18 +107,19 @@
             </template>
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { Plus, Delete, Search, Refresh } from '@element-plus/icons-vue';
+import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icons-vue';
 import { ElMessage, type FormInstance } from 'element-plus';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
+const delete_item = ref(false);
 const userStore = useUserStore();
 const ruleFormRef = ref<FormInstance>();
 const stopClick = ref(false);
+const dialogVisible = ref(false);
 // 筛选的表单选项
 const formInline = reactive({
     keyword: '',
@@ -180,6 +201,27 @@ const resetForm = () => {
             display: flex;
             flex-direction: column;
             align-items: center;
+            .delete_class {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                .delete_title {
+                    align-self: flex-start;
+                    height: 23px;
+                    font-size: 16px;
+                    color: #3D3D3D;
+                }
+
+                .delete_data {
+                    display: flex;
+                    align-items: center;
+                    margin-top: 10px;
+                    // width:200px;
+                    height: 17px;
+                    font-size: 12px;
+                    color: #909AAA;
+                }
+            }
         }     
     }
 
