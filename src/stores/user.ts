@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { reactive } from 'vue';
 import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
-import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout } from '@/services/user';
+import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList } from '@/services/user';
 import { useRouter } from 'vue-router';
 
 interface IRoleProps {
@@ -90,12 +90,22 @@ export const useUserStore = defineStore('user', () => {
         return false;
     }
 
+    // 获取用户列表
+    const getUserListAsync = async (condition: object) => {
+        const res = await getUserList(condition);
+        if (res.data.code === 200) {
+            return res.data.value;
+        }
+        return false;
+    }
+
     return {
         userInfo,
         logoutAsync,
         getUserInfoAsync,
         refreshTokenAsync,
         updateUserInfoAsync,
-        updatePasswordAsync
+        updatePasswordAsync,
+        getUserListAsync
     }
 }, { persist: true });

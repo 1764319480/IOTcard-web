@@ -62,3 +62,12 @@ export function logout(params: any = {}) {
         data: params
     });
 }
+
+/** 获取用户列表 */
+export function getUserList(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/list",
+        method: "post",
+        data: params
+    });
+}
