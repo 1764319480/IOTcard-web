@@ -80,3 +80,12 @@ export function addUser(params: any = {}) {
         data: params
     });
 }
+
+/** 删除用户 */
+export function deleteUser(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/delete",
+        method: "post",
+        data: params
+    });
+}

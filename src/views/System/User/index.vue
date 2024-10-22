@@ -120,26 +120,19 @@
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(item.roles)">
                             <p>编辑</p>
                             &nbsp;
-                            <el-popover placement="top" :width="200" :visible="deleteUserVisible">
-                                <div
-                                    style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
-                                    <div style="display: flex;align-items: center;justify-content: space-around">
-                                        <el-icon color="red">
-                                            <WarningFilled />
-                                        </el-icon>
-                                        <p>确定删除该记录吗？</p>
-                                    </div>
-                                    <div style="display: flex;justify-content: flex-end;">
-                                        <el-button @click="deleteUserVisible = false">取消</el-button>
-                                        <el-button type="danger">确定</el-button>
-                                    </div>
-                                </div>
+                            <el-popconfirm width="220" :icon="WarningFilled" icon-color="red"
+                                title="确定删除该条记录吗?" @confirm="deleteUser(item.id)">
                                 <template #reference>
-                                    <p @click="deleteUserVisible = true">删除</p>
+                                    <p>删除</p>
                                 </template>
-                            </el-popover>
+                                <template #actions="{ confirm, cancel }">
+                                    <div style="margin-top: 15px;">
+                                        <el-button size="small" @click="cancel">取消</el-button>
+                                        <el-button type="danger" size="small" @click="confirm">确定</el-button>
+                                    </div> 
+                                </template>
+                            </el-popconfirm>
                         </div>
-
                     </div>
                 </div>
             </template>
@@ -154,7 +147,6 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
 const addUserVisible = ref(false);
-const deleteUserVisible = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
 const ruleFormRef = ref<FormInstance>();
@@ -188,8 +180,8 @@ const getRoleName = (roleArray: IRoleProps[]) => {
 // 获取用户的最高权限id
 const getMaxPermission = (roleArray: IRoleProps[]) => {
     let max = Number(roleArray[0].id);
-    for(let k of roleArray) {
-        if(Number(k.id) < max) max = Number(k.id);
+    for (let k of roleArray) {
+        if (Number(k.id) < max) max = Number(k.id);
     }
     return max;
 }
@@ -278,7 +270,17 @@ const saveAddUser = async () => {
         }
     })
 }
-
+// 删除用户
+const deleteUser = async (userId:string[] | number[] | string | number) => {
+    let userIds = Array.isArray(userId) ? userId : [userId]
+    let data = await userStore.deleteUserAsync(userIds);
+    if(data) {
+        ElMessage({
+            message: '删除成功',
+            type: 'success'
+        })
+    }
+}
 </script>
 
 <style scoped lang="scss">
