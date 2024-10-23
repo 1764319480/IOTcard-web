@@ -71,8 +71,8 @@
                         </div>
                     </el-dialog>
                     &nbsp;
-                    <el-button type="danger" :icon="Delete" plain="true"
-                        @click="deleteUsers">删除</el-button>
+                    <el-button type="danger" :icon="Delete" plain="true" :disabled="!selectIds"
+                        @click="deleteUsersVisible = true;">删除</el-button>
                     <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
                         <div class="delete_class">
                             <div class="delete_title">确认删除?</div>
@@ -356,17 +356,6 @@ const handleSelectionChange = (items: userItem[]) => {
     selectIds.value = items.map(item => item.id);
 }
 // 批量删除
-const deleteUsers = () => {
-    if(selectIds.value) {
-        deleteUsersVisible.value = true;
-    }else {
-        ElMessage({
-            message: '未选择任何数据',
-            type: 'warning'
-        });
-        return;
-    }
-}
 const confirmDeleteUsers = () => {
     deleteUser(selectIds.value);
     deleteUsersVisible.value = false;
