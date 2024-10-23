@@ -288,7 +288,7 @@ const saveAddUser = async () => {
                 data = await userStore.updateUserInfoAsync(
                     ruleForm.password,
                     ruleForm.userName,
-                    1,
+                    undefined,
                     ruleForm.roleId as []
                 )
             } else {
