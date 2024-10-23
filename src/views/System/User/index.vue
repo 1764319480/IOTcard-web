@@ -290,6 +290,7 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
     let userIds = Array.isArray(userId) ? userId : [userId]
     let data = await userStore.deleteUserAsync(userIds);
     if (data) {
+        userList.value = userList.value?.filter(item => !userIds.includes(item.id))
         ElMessage({
             message: '删除成功',
             type: 'success'
