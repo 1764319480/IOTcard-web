@@ -1,7 +1,7 @@
 export const RoleTypeList = [
-    { value: 1, label: '系统管理员' },
-    { value: 2, label: '管理员' },
-    { value: 3, label: '普通用户' }
+    { value: 1000, label: '系统管理员' },
+    { value: 1001, label: '管理员' },
+    { value: 1002, label: '普通用户' }
 ];
 
 export const RoleTypeMap = {

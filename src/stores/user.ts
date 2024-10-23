@@ -3,8 +3,7 @@ import { reactive } from 'vue';
 import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
 import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser, deleteUser } from '@/services/user';
-import { useRouter } from 'vue-router';
-
+import router from '@/router';
 interface IRoleProps {
     id: number;
     roleName: string;
@@ -29,9 +28,8 @@ export const useUserStore = defineStore('user', () => {
     })
 
     // 退出登录
-    const logoutAsync = () => {
-        const router = useRouter();
-        logout();
+    const logoutAsync = async () => {
+        await logout();
         clearCookie();
         sessionStorage.clear();
         router.push('/login');

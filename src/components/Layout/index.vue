@@ -34,7 +34,7 @@ import menus from '@/variables/menus';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
 import { useRoute } from 'vue-router';
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onBeforeMount } from 'vue';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -67,8 +67,7 @@ watch(
     },
     { immediate: true, deep: true }
 );
-
-onMounted(() => {
+onBeforeMount(() => {
     // 登录成功后，进入系统页面，获取用户信息
     userStore.getUserInfoAsync();
     // 登录成功后，进入系统页面，定时刷新token

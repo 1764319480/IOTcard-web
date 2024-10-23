@@ -8,17 +8,14 @@
                     </el-form-item>
                     <el-form-item label="角色">
                         <el-select v-model="formInline.roleId">
-                            <el-option label="全部" value="1003" />
-                            <el-option label="系统管理员" value="1000" />
-                            <el-option label="管理员" value="1001" />
-                            <el-option label="普通用户" value="1002" />
+                            <el-option label="全部" value="9999" />
+                            <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="状态">
                         <el-select v-model="formInline.status">
-                            <el-option label="全部" value="2" />
-                            <el-option label="启用" value="1" />
-                            <el-option label="禁用" value="0" />
+                            <el-option label="全部" value="99" />
+                            <el-option v-for="item of UserStatusList" :label="item.label" :value="item.value" :key="item.value" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="创建时间">
@@ -51,6 +48,8 @@
                                 <el-form-item label="角色:" prop="roleId">
                                     <el-select v-model="ruleForm.roleId" style="width: 200px" :multiple="addOrModifyTitle === '编辑用户'" 
                                     collapse-tags collapse-tags-tooltip placeholder="请选择角色">
+                                        <!-- <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value"
+                                        /> -->
                                         <el-option label="普通用户" value="1002" />
                                         <el-option label="管理员" value="1001" 
                                             v-if="addOrModifyTitle === '添加用户' || getMaxPermission(userStore.userInfo.roles) === 1000"/>
@@ -146,11 +145,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onBeforeMount } from 'vue';
 import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icons-vue';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 // @ts-ignore
+import { dateParse } from '@/utils/dateHandler';
+// @ts-ignore
+import { getMaxPermission } from '@/utils/otherHandler';
+// @ts-ignore
 import { useUserStore } from '@/stores/user';
+// @ts-ignore
+import { RoleTypeList, UserStatusList } from '@/variables/common'
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
@@ -162,8 +167,8 @@ const addOrModifyTitle = ref('添加用户');
 // 筛选的表单选项
 const formInline = reactive({
     keyword: '',
-    roleId: '1003',
-    status: '2',
+    roleId: '9999',
+    status: '99',
     timeList: []
 })
 interface IRoleProps {
@@ -183,25 +188,6 @@ type userItem = {
 const getRoleName = (roleArray: IRoleProps[]) => {
     return roleArray.map((e: any) => e.roleName).join(',')
 }
-// 时间格式转化
-const dateParse = (date: string) => {
-    const utcDate = new Date(date);
-    const utcPlus8Date = new Date(utcDate.getTime());
-    return utcPlus8Date.getFullYear() + "-" +
-        (utcPlus8Date.getMonth() + 1).toString().padStart(2, "0") + "-" +
-        utcPlus8Date.getDate().toString().padStart(2, "0") + " " +
-        utcPlus8Date.getHours().toString().padStart(2, "0") + ":" +
-        utcPlus8Date.getMinutes().toString().padStart(2, "0") + ":" +
-        utcPlus8Date.getSeconds().toString().padStart(2, "0");
-}
-// 获取用户的最高权限id
-const getMaxPermission = (roleArray: IRoleProps[]) => {
-    let max = Number(roleArray[0].id);
-    for (let k of roleArray) {
-        if (Number(k.id) < max) max = Number(k.id);
-    }
-    return max;
-}
 // 选中条件：有权限
 const selectable = (row :userItem) => getMaxPermission(userStore.userInfo.roles) < getMaxPermission(row.roles);
 // 用户列表
@@ -211,8 +197,8 @@ const getUserList = async () => {
     stopClick.value = true;
     const data = await userStore.getUserListAsync({
         keyword: formInline.keyword,
-        roleId: formInline.roleId == '1003' ? undefined : formInline.roleId,
-        status: formInline.status == '2' ? undefined : formInline.status,
+        roleId: formInline.roleId == '9999' ? undefined : formInline.roleId,
+        status: formInline.status == '99' ? undefined : formInline.status,
         startTime: formInline.timeList[0],
         endTime: formInline.timeList[1],
         pageNum: 1,
@@ -224,10 +210,6 @@ const getUserList = async () => {
             item.status = item.status.toString();
             return item;
         });
-        ElMessage({
-            message: '查询成功',
-            type: 'success'
-        })
     } else {
         stopClick.value = false;
     }
@@ -381,6 +363,9 @@ const changeStatus = async (userId: string, status: number) => {
         })
     }
 }
+onBeforeMount(() => {
+    getUserList();
+})
 </script>
 
 <style scoped lang="scss">
