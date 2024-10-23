@@ -69,7 +69,7 @@
                     </el-dialog>
                     &nbsp;
                     <el-button type="danger" :icon="Delete" plain="true"
-                        @click="deleteUsersVisible = true">删除</el-button>
+                        @click="deleteUsers">删除</el-button>
                     <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
                         <div class="delete_class">
                             <div class="delete_title">确认删除?</div>
@@ -78,13 +78,13 @@
                                     <WarningFilled />
                                 </el-icon>
                                 &nbsp;
-                                <p>将删除10条记录，请谨慎操作！</p>
+                                <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
                             </div>
                         </div>
                         <template #footer>
                             <div class="dialog-footer">
                                 <el-button @click="deleteUsersVisible = false">取消</el-button>
-                                <el-button type="danger" @click="deleteUsersVisible = false">
+                                <el-button type="danger" @click="confirmDeleteUsers">
                                     确认
                                 </el-button>
                             </div>
@@ -94,8 +94,8 @@
             </div>
         </div>
         <div class="lists">
-            <el-table :data="userList" style="width: 100%">
-                <el-table-column type="selection" width="40" />
+            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="40" :selectable="selectable"/>
                 <el-table-column property="id" label="id" width="70" />
                 <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip />
                 <el-table-column property="account" label="账号" width="160" show-overflow-tooltip />
@@ -198,6 +198,8 @@ const getMaxPermission = (roleArray: IRoleProps[]) => {
     }
     return max;
 }
+// 选中条件：有权限
+const selectable = (row :userItem) => getMaxPermission(userStore.userInfo.roles) < getMaxPermission(row.roles);
 // 用户列表
 const userList = ref<userItem[]>();
 // 获取用户列表
@@ -293,6 +295,31 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
             type: 'success'
         })
     }
+}
+// 选中时存入选项
+const selectIds = ref();
+const handleSelectionChange = (items: userItem[]) => {
+    if(items?.length === 0) {
+        selectIds.value = '';
+        return;
+    }
+    selectIds.value = items.map(item => item.id);
+}
+// 批量删除
+const deleteUsers = () => {
+    if(selectIds.value) {
+        deleteUsersVisible.value = true;
+    }else {
+        ElMessage({
+            message: '未选择任何数据',
+            type: 'warning'
+        });
+        return;
+    }
+}
+const confirmDeleteUsers = () => {
+    deleteUser(selectIds.value);
+    deleteUsersVisible.value = false;
 }
 </script>
 
