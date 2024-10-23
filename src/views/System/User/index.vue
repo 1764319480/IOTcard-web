@@ -211,8 +211,8 @@ const getUserList = async () => {
     stopClick.value = true;
     const data = await userStore.getUserListAsync({
         keyword: formInline.keyword,
-        roleId: formInline.roleId == '1003' ? '' : formInline.roleId,
-        status: formInline.status == '2' ? '' : formInline.status,
+        roleId: formInline.roleId == '1003' ? undefined : formInline.roleId,
+        status: formInline.status == '2' ? undefined : formInline.status,
         startTime: formInline.timeList[0],
         endTime: formInline.timeList[1],
         pageNum: 1,
