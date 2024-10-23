@@ -97,24 +97,24 @@
             </div>
         </div>
         <div class="lists">
-            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange">
+            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" :default-sort="{prop: 'id', order: 'ascending'}">
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column property="id" label="id" width="70" />
-                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip />
-                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip />
+                <el-table-column property="id" label="id" width="70" :sortable="true"/>
+                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip :sortable="true"/>
+                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip :sortable="true"/>
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ getRoleName(scope.row.roles) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="80">
+                <el-table-column label="状态" width="80" :sortable="true">
                     <template #default="scope">
                         <el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1" inactive-value="0"
                             :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(scope.row.roles)"
                             v-model="scope.row.status" @change="changeStatus(scope.row.id, scope.row.status)"/>
                     </template>
                 </el-table-column>
-                <el-table-column property="address" label="创建时间" width="200">
+                <el-table-column property="address" label="创建时间" width="200" :sortable="true">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
