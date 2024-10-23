@@ -64,7 +64,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     // 修改用户信息
-    const updateUserInfoAsync = async (userId: string, userName?: string, status?: number, roleIds?: number[]) => {
+    const updateUserInfoAsync = async (userId: string, userName?: string, status?: number, roleIds?: number[] | string[]) => {
         const res = await updateUserInfo({
             userId,
             userName,

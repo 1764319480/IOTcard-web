@@ -33,31 +33,34 @@
                 </el-form>
             </div>
             <div class="filter_right">
-                <div v-if="userStore.userInfo.roles.some(item => item.id == 1000 || item.id == 1001)">
-                    <el-button type="primary" :icon="Plus" @click="addUserVisible = true">添加</el-button>
-                    <el-dialog v-model="addUserVisible" width="400" title="添加用户" :show-close="false">
+                <div v-if="getMaxPermission(userStore.userInfo.roles) !== 1002">
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyUser('添加用户')">添加</el-button>
+                    <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
+                    :close-on-click-modal="false" :close-on-press-escape="false">
                         <div class="form-items">
                             <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
                                 label-width="auto" class="demo-ruleForm">
                                 <el-form-item label="账号:" prop="account">
                                     <el-input v-model="ruleForm.account" style="width: 200px;" autocomplete="off"
-                                        placeholder="请输入账号" />
+                                        placeholder="请输入账号" :disabled="addOrModifyTitle === '编辑用户'"/>
                                 </el-form-item>
                                 <el-form-item label="用户名:" prop="userName">
                                     <el-input v-model="ruleForm.userName" style="width: 200px;" autocomplete="off"
                                         placeholder="请输入用户名" />
                                 </el-form-item>
-                                <el-form-item label="角色:" prop="roleId" required>
-                                    <el-select v-model="ruleForm.roleId" style="width: 200px">
+                                <el-form-item label="角色:" prop="roleId">
+                                    <el-select v-model="ruleForm.roleId" style="width: 200px" :multiple="addOrModifyTitle === '编辑用户'" 
+                                    collapse-tags collapse-tags-tooltip placeholder="请选择角色">
                                         <el-option label="普通用户" value="1002" />
-                                        <el-option label="管理员" value="1001" />
+                                        <el-option label="管理员" value="1001" 
+                                            v-if="addOrModifyTitle === '添加用户' || getMaxPermission(userStore.userInfo.roles) === 1000"/>
                                         <el-option label="系统管理员" value="1000"
-                                            v-if="userStore.userInfo.roles.some(item => item.id == 1000)" />
+                                            v-if="getMaxPermission(userStore.userInfo.roles) === 1000 && addOrModifyTitle === '添加用户'" />
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="密码:" prop="password" required>
+                                <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
                                     <el-input v-model="ruleForm.password" style="width: 200px;" autocomplete="off"
-                                        disabled placeholder="请再次输入新密码" />
+                                        disabled />
                                 </el-form-item>
                                 <div style="display: flex; justify-content: end;">
                                     <el-button @click="cancelAddUser" style="width:80px">取消</el-button>
@@ -119,7 +122,7 @@
                 <el-table-column label="操作" width="140">
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(scope.row.roles)">
-                            <el-button link type="primary" size="small">编辑</el-button>
+                            <el-button link type="primary" size="small" @click="addOrModifyUser('编辑用户',scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteUser(scope.row.id)">
@@ -148,13 +151,14 @@ import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icon
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
-const addUserVisible = ref(false);
+const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick = ref(false);
 const stopClick2 = ref(false);
+const addOrModifyTitle = ref('添加用户');
 // 筛选的表单选项
 const formInline = reactive({
     keyword: '',
@@ -163,7 +167,7 @@ const formInline = reactive({
     timeList: []
 })
 interface IRoleProps {
-    id: number;
+    id: number | number;
     roleName: string;
 }
 // 用户数据结构
@@ -235,14 +239,25 @@ const resetForm = () => {
     formInline.status = '2';
     formInline.timeList = [];
 }
-// 新增用户的表单
+// 新增或编辑用户的表单
 const ruleForm = reactive({
     account: '',
     userName: '',
-    roleId: '1002',
+    roleId: [] as string[] | string,
     password: '12345678'
 })
-// 新增用户表单的格式验证规则
+// 打开新增或编辑用户表单
+const addOrModifyUser = (title: string, item?:userItem) => {
+    addOrModifyVisiable.value = true;
+    addOrModifyTitle.value = title;
+    if (item) {
+        ruleForm.account = item.account;
+        ruleForm.userName = item.userName;
+        ruleForm.roleId = item.roles.map(k => k.id.toString());
+        ruleForm.password = item.id.toString();//用密码暂存用户Id
+    } 
+}
+// 新增或编辑用户表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({
     account: [
         { required: true, message: '请输入账号', trigger: 'blur' },
@@ -252,27 +267,61 @@ const rules = reactive<FormRules<typeof ruleForm>>({
     userName: [
         { required: true, message: '请输入用户名', trigger: 'blur' },
         { min: 1, max: 16, message: '用户名长度最多 16 个字符', trigger: 'blur' }
+    ],
+    roleId: [
+        { required: true, message: '请至少选择一个角色', trigger: 'blur' },
     ]
 })
-// 新增用户表单的取消按钮
+// 新增或编辑用户表单的取消按钮
 const cancelAddUser = () => {
     ruleFormRef2.value?.resetFields();
-    addUserVisible.value = false;
+    addOrModifyVisiable.value = false;
 }
-// 新增用户表单的保存按钮
+// 新增或编辑用户表单的保存按钮
 const saveAddUser = async () => {
     if (!ruleFormRef2.value) return
     await ruleFormRef2.value.validate(async (valid) => {
         if (valid) {
             stopClick2.value = true;
-            const data = await userStore.addUserAsync(
-                ruleForm.userName,
-                ruleForm.account,
-                Number(ruleForm.roleId)
-            );
+            let data:any;
+            if (addOrModifyTitle.value === '编辑用户') {
+                data = await userStore.updateUserInfoAsync(
+                    ruleForm.password,
+                    ruleForm.userName,
+                    1,
+                    ruleForm.roleId as []
+                )
+            } else {
+                data = await userStore.addUserAsync(
+                    ruleForm.userName,
+                    ruleForm.account,
+                    Number(ruleForm.roleId)
+                );
+            }
             if (data) {
+                if(addOrModifyTitle.value === '编辑用户') {
+                    userList.value?.map(k => {
+                        if(k.id == ruleForm.password) {
+                            k.userName = ruleForm.userName;
+                            k.roles = (ruleForm.roleId as []).map(k => {
+                                let roleNamek:string = '';
+                                switch(k) {
+                                    case '1000': roleNamek = '系统管理员';break;
+                                    case '1001': roleNamek = '管理员';break;
+                                    case '1002': roleNamek = '普通用户';break;
+                                }
+                                return {
+                                    id: k,
+                                    roleName: roleNamek
+                                }
+                            });
+                            return k;
+                        }
+                        return k;
+                    })
+                }
                 ElMessage({
-                    message: '添加成功',
+                    message: addOrModifyTitle.value === '编辑用户' ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
                 stopClick2.value = false;
