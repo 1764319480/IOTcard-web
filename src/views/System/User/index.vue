@@ -111,7 +111,7 @@
                     <template #default="scope">
                         <el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1" inactive-value="0"
                             :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(scope.row.roles)"
-                            v-model="scope.row.status" />
+                            v-model="scope.row.status" @change="changeStatus(scope.row.id, scope.row.status)"/>
                     </template>
                 </el-table-column>
                 <el-table-column property="address" label="创建时间" width="200">
@@ -220,8 +220,8 @@ const getUserList = async () => {
     });
     if (data) {
         stopClick.value = false;
-        userList.value = data.list.map((item: any) => {
-            item.status = item.status + '';
+        userList.value = data.list.map((item: userItem) => {
+            item.status = item.status.toString();
             return item;
         });
         ElMessage({
@@ -370,6 +370,27 @@ const deleteUsers = () => {
 const confirmDeleteUsers = () => {
     deleteUser(selectIds.value);
     deleteUsersVisible.value = false;
+}
+// 改变用户状态
+const changeStatus = async (userId: string, status: number) => {
+    const data = await userStore.updateUserInfoAsync(userId, undefined, status);
+    if (data) {
+        ElMessage({
+            message: '切换成功',
+            type: 'success'
+        })
+    } else {
+        ElMessage({
+            message: '切换失败',
+            type: 'error'
+        })
+        userList.value = userList.value?.map(k => {
+            if (k.id === userId) {
+                k.status = status == 0 ? 1 : 0
+            }
+            return k;
+        })
+    }
 }
 </script>
 

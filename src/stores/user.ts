@@ -71,11 +71,7 @@ export const useUserStore = defineStore('user', () => {
             status,
             roleIds
         })
-        if (res.data.code === 200) {
-            getUserInfoAsync();
-            return true;
-        }
-        return false;
+        return res.data.code === 200;
     }
 
     // 修改密码
@@ -84,10 +80,7 @@ export const useUserStore = defineStore('user', () => {
             oldPassword: crypto.MD5(oldPassword).toString(),
             newPassword: crypto.MD5(newPassword).toString(),
         })
-        if (res.data.code === 200) {
-            return true;
-        }
-        return false;
+        return res.data.code === 200;
     }
 
     // 获取用户列表
@@ -115,10 +108,7 @@ export const useUserStore = defineStore('user', () => {
     // 删除用户
     const deleteUserAsync = async (userIds:(string | number)[]) => {
         const res = await deleteUser({userIds});
-        if (res.data.code === 200) {
-            return true;
-        }
-        return false;
+        return res.data.code === 200;
     }
 
     return {

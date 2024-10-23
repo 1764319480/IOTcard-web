@@ -128,6 +128,7 @@ const updateUserName = async (formEl: FormInstance | undefined) => {
             stopClick.value = true;
             const data = await userStore.updateUserInfoAsync(userStore.userInfo.id, ruleForm.userName);
             if(data) {
+                userStore.getUserInfoAsync();
                 ElMessage({
                     message: '修改成功',
                     type: 'success'
