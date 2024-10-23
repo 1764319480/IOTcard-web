@@ -94,48 +94,50 @@
             </div>
         </div>
         <div class="lists">
-            <div class="listName">
-                <div><el-checkbox></el-checkbox></div>
-                <div>id</div>
-                <div>用户名</div>
-                <div>账号</div>
-                <div>用户角色</div>
-                <div>状态</div>
-                <div>创建时间</div>
-                <div>操作</div>
-            </div>
-            <template v-for="(item) in userList" :key="item.id">
-                <div>
-                    <div><el-checkbox></el-checkbox></div>
-                    <div>{{ item.id }}</div>
-                    <div>{{ item.userName }}</div>
-                    <div>{{ item.account }}</div>
-                    <div>{{ getRoleName(item.roles) }}</div>
-                    <div><el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1"
-                            :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(item.roles)"
-                            inactive-value="0" v-model="item.status" />
-                    </div>
-                    <div>{{ dateParse(item.createTime) }}</div>
-                    <div>
-                        <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(item.roles)">
-                            <p>编辑</p>
-                            &nbsp;
-                            <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
-                                @confirm="deleteUser(item.id)">
-                                <template #reference>
-                                    <p>删除</p>
-                                </template>
-                                <template #actions="{ confirm, cancel }">
-                                    <div style="margin-top: 15px;">
-                                        <el-button size="small" @click="cancel">取消</el-button>
-                                        <el-button type="danger" size="small" @click="confirm">确定</el-button>
-                                    </div>
-                                </template>
-                            </el-popconfirm>
+            <el-table :data="userList" style="width: 100%">
+                <el-table-column type="selection" width="40" />
+                <el-table-column property="id" label="id" width="70" />
+                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip />
+                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip />
+                <el-table-column label="用户角色" width="160" show-overflow-tooltip>
+                    <template #default="scope">
+                        <p>{{ getRoleName(scope.row.roles) }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="状态" width="80">
+                    <template #default="scope">
+                        <el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1" inactive-value="0"
+                            :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(scope.row.roles)"
+                            v-model="scope.row.status" />
+                    </template>
+                </el-table-column>
+                <el-table-column property="address" label="创建时间" width="200">
+                    <template #default="scope">
+                        <p>{{ dateParse(scope.row.createTime) }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="140">
+                    <template #default="scope">
+                        <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(scope.row.roles)">
+                            <el-button link type="primary" size="small">编辑</el-button>
+                            <el-button link type="danger" size="small">
+                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
+                                    @confirm="deleteUser(scope.row.id)">
+                                    <template #reference>
+                                        <p>删除</p>
+                                    </template>
+                                    <template #actions="{ confirm, cancel }">
+                                        <div style="margin-top: 15px;">
+                                            <el-button size="small" @click="cancel">取消</el-button>
+                                            <el-button type="danger" size="small" @click="confirm">确定</el-button>
+                                        </div>
+                                    </template>
+                                </el-popconfirm>
+                            </el-button>
                         </div>
-                    </div>
-                </div>
-            </template>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
     </div>
 </template>
@@ -341,79 +343,6 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
                     font-size: 12px;
                     color: #909AAA;
                 }
-            }
-        }
-    }
-
-    .lists {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 58vh;
-
-        >div {
-            width: 100%;
-            height: 39px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgb(207, 202, 202);
-
-            >div {
-                width: 120px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            >div:nth-child(1) {
-                margin-left: 10px;
-                width: 20px;
-            }
-
-            >div:nth-child(2) {
-                width: 50px;
-            }
-
-            >div:nth-child(6) {
-                width: 50px;
-            }
-
-            >div:nth-child(7) {
-                width: 200px;
-            }
-
-            >div:nth-child(8) {
-                >div {
-                    display: flex;
-
-                    >p:nth-child(1) {
-                        color: #5995FD
-                    }
-
-                    >p:nth-child(2) {
-                        color: #F33A15
-                    }
-
-                    >p:hover {
-                        cursor: default;
-                    }
-                }
-            }
-        }
-
-        .listName {
-            background: #EEEEEE;
-            z-index: 0;
-
-            >p {
-                font-family: 思源黑体;
-                font-size: 16px;
-                font-weight: normal;
-                line-height: normal;
-                letter-spacing: 0px;
-                color: #1A1A1A;
-                z-index: 1;
             }
         }
     }
