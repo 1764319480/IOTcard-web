@@ -21,8 +21,8 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="创建时间">
-                        <el-date-picker v-model="formInline.timeList" type="datetimerange" start-placeholder="开始时间"
-                            end-placeholder="结束时间" value-format="YYYY/MM/DD HH:mm:ss" />
+                        <el-date-picker v-model="formInline.timeList" type="daterange" start-placeholder="开始时间" :default-time="defaultTime"
+                            end-placeholder="结束时间" style="width: 220px;" value-format="YYYY-MM-DD HH:mm:ss"/>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" :icon="Search" @click="getUserList()">搜索</el-button>
@@ -95,11 +95,11 @@
         </div>
         <div class="lists">
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
-                @sort-change="handleSortChange" v-loading="tableLoading">
+                @sort-change="handleSortChange" v-loading="tableLoading" height="330">
                 <el-table-column type="selection" width="40" :selectable="selectable" />
-                <el-table-column property="id" label="ID" width="70" />
-                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip sortable="custom" />
+                <el-table-column property="id" label="ID" width="70" fixed/>
+                <el-table-column property="userName" label="用户名" show-overflow-tooltip sortable="custom" />
+                <el-table-column property="account" label="账号"  show-overflow-tooltip sortable="custom" />
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ getRoleName(scope.row.roles) }}</p>
@@ -117,7 +117,7 @@
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140">
+                <el-table-column label="操作" width="140" fixed="right">
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(scope.row.roles)">
                             <el-button link type="primary" size="small"
@@ -141,10 +141,10 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <p>数据：{{total}}条</p>
+                <p>共&nbsp;{{ total }}&nbsp;条</p>
                 &nbsp;
                 <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage"
-                background :default-page-size="6" />
+                background :default-page-size="10" />
             </div>
         </div>
     </div>
@@ -164,6 +164,10 @@ import { useUserStore } from '@/stores/user';
 import { UserStatusList } from '@/variables/common';
 // @ts-ignore
 import { useRoleStore } from '@/stores/role';
+const defaultTime = ref<[Date, Date]>([
+  new Date(2000, 1, 1, 0, 0, 0),
+  new Date(2000, 2, 1, 23, 59, 59),
+])
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
@@ -205,9 +209,9 @@ const selectable = (row: userItem) => getMaxPermission(userStore.userInfo.roles)
 // 用户列表
 const userList = ref<userItem[]>();
 // 后台用户数据总量
-const total = ref(6);
+const total = ref(0);
 // 获取用户列表
-const getUserList = async (pageNum: number = 1, pageSize: number = 6) => {
+const getUserList = async (pageNum: number = 1, pageSize: number = 10) => {
     tableLoading.value = true;
     const data = await userStore.getUserListAsync({
         keyword: formInline.keyword,

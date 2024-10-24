@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', () => {
     // 刷新 token
     const refreshTokenAsync = async () => {
         // 每 20 分钟刷新一次 token
-        const delay = 20 * 60 * 1000;
+        const delay = 10 * 60 * 1000;
 
         const func = async () => {
             const res = await refreshToken();
@@ -59,7 +59,7 @@ export const useUserStore = defineStore('user', () => {
             setTimeout(func, delay);
         }
 
-        setTimeout(func, delay);
+        func();
     }
 
     // 修改用户信息
