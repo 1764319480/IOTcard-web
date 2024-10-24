@@ -21,8 +21,9 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="创建时间">
-                        <el-date-picker v-model="formInline.timeList" type="daterange" start-placeholder="开始时间" :default-time="defaultTime"
-                            end-placeholder="结束时间" style="width: 220px;" value-format="YYYY-MM-DD HH:mm:ss"/>
+                        <el-date-picker v-model="formInline.timeList" type="daterange" start-placeholder="开始时间"
+                            :default-time="defaultTime" end-placeholder="结束时间" style="width: 220px;"
+                            value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" :icon="Search" @click="getUserList()">搜索</el-button>
@@ -97,9 +98,9 @@
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
                 @sort-change="handleSortChange" v-loading="tableLoading" height="330">
                 <el-table-column type="selection" width="40" :selectable="selectable" />
-                <el-table-column property="id" label="ID" width="70" fixed/>
+                <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="userName" label="用户名" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="account" label="账号"  show-overflow-tooltip sortable="custom" />
+                <el-table-column property="account" label="账号" show-overflow-tooltip sortable="custom" />
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ getRoleName(scope.row.roles) }}</p>
@@ -143,8 +144,8 @@
             <div class="pagination">
                 <p>共&nbsp;{{ total }}&nbsp;条</p>
                 &nbsp;
-                <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage"
-                background :default-page-size="10" />
+                <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage" background
+                    :default-page-size="10" />
             </div>
         </div>
     </div>
@@ -165,8 +166,8 @@ import { UserStatusList } from '@/variables/common';
 // @ts-ignore
 import { useRoleStore } from '@/stores/role';
 const defaultTime = ref<[Date, Date]>([
-  new Date(2000, 1, 1, 0, 0, 0),
-  new Date(2000, 2, 1, 23, 59, 59),
+    new Date(2000, 1, 1, 0, 0, 0),
+    new Date(2000, 2, 1, 23, 59, 59),
 ])
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
@@ -245,7 +246,7 @@ const resetForm = async () => {
         await getUserList(1)
     } else {
         currentpage.value = 1;
-    }   
+    }
 }
 // 分页功能 切换到某一页
 const currentpage = ref(1);
@@ -334,7 +335,11 @@ const saveAddUser = async () => {
                 if (addOrModifyTitle.value === '编辑用户') {
                     await getUserList(currentpage.value);
                 } else {
-                    currentpage.value = 1;
+                    if (currentpage.value === 1) {
+                        await getUserList(1)
+                    } else {
+                        currentpage.value = 1;
+                    }
                 }
                 ElMessage({
                     message: addOrModifyTitle.value === '编辑用户' ? '编辑成功' : '添加成功',
@@ -355,7 +360,11 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
     let userIds = Array.isArray(userId) ? userId : [userId]
     let data = await userStore.deleteUserAsync(userIds);
     if (data) {
-        currentpage.value = 1;
+        if (currentpage.value === 1) {
+            await getUserList(1)
+        } else {
+            currentpage.value = 1;
+        }
         ElMessage({
             message: '删除成功',
             type: 'success'
