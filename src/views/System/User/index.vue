@@ -23,9 +23,8 @@
                             end-placeholder="结束时间" value-format="YYYY/MM/DD HH:mm:ss" />
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" :icon="Search" @click="getUserList()"
-                            :loading="stopClick">搜索</el-button>
-                        <el-button :icon="Refresh" type="primary" plain="true" @click="resetForm">重置</el-button>
+                        <el-button type="primary" :icon="Search" @click="getUserList()">搜索</el-button>
+                        <el-button :icon="Refresh" type="primary" :plain=true @click="resetForm">重置</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -66,7 +65,7 @@
                         </div>
                     </el-dialog>
                     &nbsp;
-                    <el-button type="danger" :icon="Delete" plain="true" :disabled="!selectIds"
+                    <el-button type="danger" :icon="Delete" :plain=true :disabled="!selectIds"
                         @click="deleteUsersVisible = true;">删除</el-button>
                     <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
                         <div class="delete_class">
@@ -92,24 +91,25 @@
             </div>
         </div>
         <div class="lists">
-            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" :default-sort="{prop: 'id', order: 'ascending'}">
+            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" 
+            @sort-change="handleSortChange" >
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column property="id" label="id" width="70" :sortable="true"/>
-                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip :sortable="true"/>
-                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip :sortable="true"/>
+                <el-table-column property="id" label="id" width="70"/>
+                <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom"/>
+                <el-table-column property="account" label="账号" width="160" show-overflow-tooltip sortable="custom"/>
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ getRoleName(scope.row.roles) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="80" :sortable="true">
+                <el-table-column label="状态" width="80" sortable="custom">
                     <template #default="scope">
                         <el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1" inactive-value="0"
                             :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(scope.row.roles)"
                             v-model="scope.row.status" @change="changeStatus(scope.row.id, scope.row.status)"/>
                     </template>
                 </el-table-column>
-                <el-table-column property="address" label="创建时间" width="200" :sortable="true">
+                <el-table-column property="address" label="创建时间" width="200" sortable="custom">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
@@ -157,7 +157,6 @@ const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
-const stopClick = ref(false);
 const stopClick2 = ref(false);
 const addOrModifyTitle = ref('添加用户');
 // 筛选的表单选项
@@ -189,26 +188,30 @@ const selectable = (row :userItem) => getMaxPermission(userStore.userInfo.roles)
 // 用户列表
 const userList = ref<userItem[]>();
 // 获取用户列表
-const getUserList = async () => {
-    stopClick.value = true;
-    const data = await userStore.getUserListAsync({
-        keyword: formInline.keyword,
-        roleId: formInline.roleId == '9999' ? undefined : formInline.roleId,
-        status: formInline.status == '99' ? undefined : formInline.status,
-        startTime: formInline.timeList[0],
-        endTime: formInline.timeList[1],
-        pageNum: 1,
-        pageSize: 10
-    });
-    if (data) {
-        stopClick.value = false;
-        userList.value = data.list.map((item: userItem) => {
-            item.status = item.status.toString();
-            return item;
-        });
-    } else {
-        stopClick.value = false;
+let time:any;// 防抖处理
+const getUserList = async (pageNum: number = 1, pageSize: number = 10, orderBy?: string, orderType?: string) => {
+    if (time) {
+        clearTimeout(time);
     }
+    time = setTimeout(async () => {
+        const data = await userStore.getUserListAsync({
+            keyword: formInline.keyword,
+            roleId: formInline.roleId == '9999' ? undefined : formInline.roleId,
+            status: formInline.status == '99' ? undefined : formInline.status,
+            startTime: formInline.timeList[0],
+            endTime: formInline.timeList[1],
+            pageNum,
+            pageSize,
+            orderBy,
+            orderType
+        });
+        if (data) {
+            userList.value = data.list.map((item: userItem) => {
+                item.status = item.status.toString();
+                return item;
+            });
+        }
+    }, 1000)
 }
 // 重置筛选的表单内容
 const resetForm = () => {
@@ -216,6 +219,17 @@ const resetForm = () => {
     formInline.roleId = '1003';
     formInline.status = '2';
     formInline.timeList = [];
+}
+// 表单排序
+interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}
+const handleSortChange = async (data: ISortProps) => {
+    let { prop, order } = data;
+    if(!order) order = 'descending';
+    await getUserList(1, 10, prop, order.replace('ending', ''));
 }
 // 新增或编辑用户的表单
 const ruleForm = reactive({
