@@ -7,3 +7,12 @@ export function getAllRole() {
         method: "get"
     });
 }
+
+/** 获取角色列表 */
+export function getRoleList(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/role/list",
+        method: "post",
+        data: params
+    });
+}
