@@ -10,12 +10,16 @@ interface IRoleProps {
     roleName: string
 }
 export const getMaxPermission = (roleArray: IRoleProps[]) => {
-    let max = Number(roleArray[0].roleType);
+  let max = 99;
+  try {
     for (let k of roleArray) {
-        if (Number(k.roleType) < max) max = Number(k.roleType);
+      if (Number(k.roleType) < max) max = Number(k.roleType);
     }
-    return max;
-}
+  } catch (error) {
+    console.log(error);
+  }
+  return max;
+};
 /**
  * 提取角色类型名称
  * @param value 
