@@ -31,7 +31,7 @@
                 </el-form>
             </div>
             <div class="filter_right">
-                <div v-if="getMaxPermission(userStore.userInfo.roles) !== 1002">
+                <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
                     <el-button type="primary" :icon="Plus" @click="addOrModifyUser('添加用户')">添加</el-button>
                     <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
                         :close-on-click-modal="false" :close-on-press-escape="false">
