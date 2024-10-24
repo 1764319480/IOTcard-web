@@ -109,7 +109,7 @@
                             v-model="scope.row.status" @change="changeStatus(scope.row.id, scope.row.status)"/>
                     </template>
                 </el-table-column>
-                <el-table-column property="address" label="创建时间" width="200" sortable="custom">
+                <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
