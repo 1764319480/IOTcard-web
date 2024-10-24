@@ -94,7 +94,7 @@
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" 
             @sort-change="handleSortChange" >
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column label="id" width="70"/>
+                <el-table-column property="id" label="id" width="70"/>
                 <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom"/>
                 <el-table-column property="account" label="账号" width="160" show-overflow-tooltip sortable="custom"/>
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
@@ -400,6 +400,7 @@ onBeforeMount(() => {
         justify-content: space-between;
 
         .form {
+            width: 80%;
             margin: 10px 0;
 
             .demo-form-inline .el-input {
@@ -413,11 +414,10 @@ onBeforeMount(() => {
         }
 
         .filter_right {
-            width: 350px;
-            margin-top: 20px;
+            width: 250px;
+            margin: 10px 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: end;
 
             .delete_class {
                 display: flex;
