@@ -136,12 +136,15 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <div class="pagination">
+                <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage" :default-page-size="6"/>
+            </div>    
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount } from 'vue';
+import { ref, reactive, onBeforeMount, watch } from 'vue';
 import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icons-vue';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 // @ts-ignore
@@ -164,7 +167,9 @@ const formInline = reactive({
     keyword: '',
     roleId: '9999',
     status: '99',
-    timeList: []
+    timeList: [],
+    orderBy: 'createTime',
+    orderType: 'desc'
 })
 interface IRoleProps {
     id: number | number;
@@ -187,9 +192,11 @@ const getRoleName = (roleArray: IRoleProps[]) => {
 const selectable = (row :userItem) => getMaxPermission(userStore.userInfo.roles) < getMaxPermission(row.roles);
 // 用户列表
 const userList = ref<userItem[]>();
+// 后台用户数据总量
+const total = ref(6);
 // 获取用户列表
 let time:any;// 防抖处理
-const getUserList = async (pageNum: number = 1, pageSize: number = 10, orderBy?: string, orderType?: string) => {
+const getUserList = async (pageNum: number = 1, pageSize: number = 6) => {
     if (time) {
         clearTimeout(time);
     }
@@ -202,10 +209,11 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 10, orderBy?:
             endTime: formInline.timeList[1],
             pageNum,
             pageSize,
-            orderBy,
-            orderType
+            orderBy : formInline.orderBy,
+            orderType: formInline.orderType
         });
         if (data) {
+            total.value = data.total;
             userList.value = data.list.map((item: userItem) => {
                 item.status = item.status.toString();
                 return item;
@@ -216,10 +224,15 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 10, orderBy?:
 // 重置筛选的表单内容
 const resetForm = () => {
     formInline.keyword = '';
-    formInline.roleId = '1003';
-    formInline.status = '2';
+    formInline.roleId = '9999';
+    formInline.status = '99';
     formInline.timeList = [];
 }
+// 分页功能 切换到某一页
+const currentpage = ref(1);
+watch(currentpage, async (value: number) => {
+    await getUserList(value);
+})
 // 表单排序
 interface ISortProps {
     column: object,
@@ -229,7 +242,9 @@ interface ISortProps {
 const handleSortChange = async (data: ISortProps) => {
     let { prop, order } = data;
     if(!order) order = 'descending';
-    await getUserList(1, 10, prop, order.replace('ending', ''));
+    formInline.orderBy = prop;
+    formInline.orderType = order.replace('ending', '');
+    await getUserList(currentpage.value);
 }
 // 新增或编辑用户的表单
 const ruleForm = reactive({
@@ -372,6 +387,7 @@ const changeStatus = async (userId: string, status: number) => {
         })
     }
 }
+// 页面刷新前获取数据
 onBeforeMount(() => {
     getUserList();
 })
@@ -425,6 +441,13 @@ onBeforeMount(() => {
                     color: #909AAA;
                 }
             }
+        }
+    }
+    .lists {
+        .pagination {
+            position: absolute;
+            bottom: 0;
+            right: 0;
         }
     }
 }
