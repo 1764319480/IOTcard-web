@@ -94,7 +94,7 @@
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" 
             @sort-change="handleSortChange" >
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column property="id" label="id" width="70"/>
+                <el-table-column label="id" width="70"/>
                 <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom"/>
                 <el-table-column property="account" label="账号" width="160" show-overflow-tooltip sortable="custom"/>
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
@@ -102,7 +102,7 @@
                         <p>{{ getRoleName(scope.row.roles) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="80" sortable="custom">
+                <el-table-column label="状态" width="80" property="status" sortable="custom">
                     <template #default="scope">
                         <el-switch inline-prompt active-text="启用" inactive-text="禁用" active-value="1" inactive-value="0"
                             :disabled="getMaxPermission(userStore.userInfo.roles) >= getMaxPermission(scope.row.roles)"
