@@ -5,9 +5,9 @@ export const RoleTypeList = [
 ];
 
 export const RoleTypeMap = {
-    1: '系统管理员',
-    2: '管理员',
-    3: '普通用户'
+    1000: '系统管理员',
+    1001: '管理员',
+    1002: '普通用户'
 };
 
 export const UserStatusList = [

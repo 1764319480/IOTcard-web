@@ -48,13 +48,9 @@
                                 <el-form-item label="角色:" prop="roleId">
                                     <el-select v-model="ruleForm.roleId" style="width: 200px" :multiple="addOrModifyTitle === '编辑用户'" 
                                     collapse-tags collapse-tags-tooltip placeholder="请选择角色">
-                                        <!-- <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value"
-                                        /> -->
-                                        <el-option label="普通用户" value="1002" />
-                                        <el-option label="管理员" value="1001" 
-                                            v-if="addOrModifyTitle === '添加用户' || getMaxPermission(userStore.userInfo.roles) === 1000"/>
-                                        <el-option label="系统管理员" value="1000"
-                                            v-if="getMaxPermission(userStore.userInfo.roles) === 1000 && addOrModifyTitle === '添加用户'" />
+                                        <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value"
+                                        v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.value)
+                                        || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.value)" />
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
@@ -155,7 +151,7 @@ import { getMaxPermission } from '@/utils/otherHandler';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
 // @ts-ignore
-import { RoleTypeList, UserStatusList } from '@/variables/common'
+import { RoleTypeList, RoleTypeMap, UserStatusList } from '@/variables/common'
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
@@ -225,7 +221,7 @@ const resetForm = () => {
 const ruleForm = reactive({
     account: '',
     userName: '',
-    roleId: [] as string[] | string,
+    roleId: [] as number[] | number,
     password: '12345678'
 })
 // 打开新增或编辑用户表单
@@ -235,9 +231,15 @@ const addOrModifyUser = (title: string, item?:userItem) => {
     if (item) {
         ruleForm.account = item.account;
         ruleForm.userName = item.userName;
-        ruleForm.roleId = item.roles.map(k => k.id.toString());
+        ruleForm.roleId = item.roles.map(k => k.id);
         ruleForm.password = item.id.toString();//用密码暂存用户Id
-    } 
+    } else {
+        ruleForm.account = '';
+        ruleForm.userName = '';
+        ruleForm.roleId = [];
+        ruleForm.password = '12345678';
+    }
+    
 }
 // 新增或编辑用户表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({
@@ -286,18 +288,11 @@ const saveAddUser = async () => {
                         if(k.id == ruleForm.password) {
                             k.userName = ruleForm.userName;
                             k.roles = (ruleForm.roleId as []).map(k => {
-                                let roleNamek:string = '';
-                                switch(k) {
-                                    case '1000': roleNamek = '系统管理员';break;
-                                    case '1001': roleNamek = '管理员';break;
-                                    case '1002': roleNamek = '普通用户';break;
-                                }
                                 return {
                                     id: k,
-                                    roleName: roleNamek
+                                    roleName: RoleTypeMap[k]
                                 }
                             });
-                            return k;
                         }
                         return k;
                     })
@@ -307,7 +302,7 @@ const saveAddUser = async () => {
                     type: 'success'
                 })
                 stopClick2.value = false;
-                cancelAddUser();
+                addOrModifyVisiable.value = false;
             } else {
                 stopClick2.value = false;
             }
