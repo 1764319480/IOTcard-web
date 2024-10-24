@@ -5,12 +5,13 @@
  */
 interface IRoleProps {
     id: number,
+    roleType: number
     roleName: string
 }
 export const getMaxPermission = (roleArray: IRoleProps[]) => {
-    let max = Number(roleArray[0].id);
+    let max = Number(roleArray[0].roleType);
     for (let k of roleArray) {
-        if (Number(k.id) < max) max = Number(k.id);
+        if (Number(k.roleType) < max) max = Number(k.roleType);
     }
     return max;
 }

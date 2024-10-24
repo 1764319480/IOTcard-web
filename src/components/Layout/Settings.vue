@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="form-footer">
-                    <el-button @click="handleClose" style="width: 80px;">取消</el-button>
+                    <el-button @click="handleClose" style="width: 80px;">关闭</el-button>
                     <el-button type="primary" @click="handleSave(ruleFormRef)" :loading="stopClick" style="width: 80px;">保存</el-button>
                 </div>
             </div>

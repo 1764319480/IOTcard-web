@@ -35,10 +35,12 @@ import menus from '@/variables/menus';
 import { useUserStore } from '@/stores/user';
 import { useRoute } from 'vue-router';
 import { reactive, watch, onBeforeMount } from 'vue';
+// @ts-ignore
+import { useRoleStore } from '@/stores/role';
 
 const route = useRoute();
 const userStore = useUserStore();
-
+const roleStore = useRoleStore();
 interface IBreadItem {
     path?: string;
     label: string;
@@ -68,8 +70,9 @@ watch(
     { immediate: true, deep: true }
 );
 onBeforeMount(() => {
-    // 登录成功后，进入系统页面，获取用户信息
+    // 登录成功后，进入系统页面，获取用户信息和角色信息
     userStore.getUserInfoAsync();
+    roleStore.getAllRoleAsync();
     // 登录成功后，进入系统页面，定时刷新token
     userStore.refreshTokenAsync();
 })

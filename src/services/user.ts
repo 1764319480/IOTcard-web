@@ -55,11 +55,10 @@ export function updatePassword(params: any = {}) {
 }
 
 /** 退出登录 */
-export function logout(params: any = {}) {
+export function logout() {
     return request<any, IAxiosResponse>({
         url: "/user/logout",
-        method: "get",
-        data: params
+        method: "get"
     });
 }
 

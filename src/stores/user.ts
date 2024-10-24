@@ -5,8 +5,9 @@ import crypto from 'crypto-js';
 import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser, deleteUser } from '@/services/user';
 import router from '@/router';
 interface IRoleProps {
-    id: number;
-    roleName: string;
+    id: number,
+    roleType: number,
+    roleName: string
 }
 
 interface IUserInfoProps {

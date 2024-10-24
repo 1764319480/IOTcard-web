@@ -9,7 +9,7 @@
                     <el-form-item label="角色">
                         <el-select v-model="formInline.roleId">
                             <el-option label="全部" value="9999" />
-                            <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value" />
+                            <el-option v-for="item of roleStore.roleList" :label="item.roleName" :value="item.id" :key="item.id" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="状态">
@@ -47,9 +47,9 @@
                                 <el-form-item label="角色:" prop="roleId">
                                     <el-select v-model="ruleForm.roleId" style="width: 200px" :multiple="addOrModifyTitle === '编辑用户'" 
                                     collapse-tags collapse-tags-tooltip placeholder="请选择角色">
-                                        <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value" :key="item.value"
-                                        v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.value)
-                                        || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.value)" />
+                                        <el-option v-for="item of roleStore.roleList" :label="item.roleName" :value="item.id" :key="item.id"
+                                        v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.roleType)
+                                        || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.roleType)" />
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
@@ -65,8 +65,7 @@
                         </div>
                     </el-dialog>
                     &nbsp;
-                    <el-button type="danger" :icon="Delete" :plain=true :disabled="!selectIds"
-                        @click="deleteUsersVisible = true;">删除</el-button>
+                    <el-button type="danger" :icon="Delete" :plain=true @click="deleteUsers">删除</el-button>
                     <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
                         <div class="delete_class">
                             <div class="delete_title">确认删除?</div>
@@ -92,7 +91,7 @@
         </div>
         <div class="lists">
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange" 
-            @sort-change="handleSortChange" >
+            @sort-change="handleSortChange" v-loading="tableLoading">
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
                 <el-table-column property="id" label="id" width="70"/>
                 <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom"/>
@@ -154,13 +153,17 @@ import { getMaxPermission } from '@/utils/otherHandler';
 // @ts-ignore
 import { useUserStore } from '@/stores/user';
 // @ts-ignore
-import { RoleTypeList, RoleTypeMap, UserStatusList } from '@/variables/common'
+import { RoleTypeMap, UserStatusList } from '@/variables/common';
+// @ts-ignore
+import { useRoleStore } from '@/stores/role';
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
+const roleStore = useRoleStore();
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
+const tableLoading = ref(false);
 const addOrModifyTitle = ref('添加用户');
 // 筛选的表单选项
 const formInline = reactive({
@@ -172,8 +175,9 @@ const formInline = reactive({
     orderType: 'desc'
 })
 interface IRoleProps {
-    id: number | number;
-    roleName: string;
+    id: number,
+    roleType: number,
+    roleName: string
 }
 // 用户数据结构
 type userItem = {
@@ -197,6 +201,7 @@ const total = ref(6);
 // 获取用户列表
 let time:any;// 防抖处理
 const getUserList = async (pageNum: number = 1, pageSize: number = 6) => {
+    tableLoading.value = true;
     if (time) {
         clearTimeout(time);
     }
@@ -218,7 +223,9 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 6) => {
                 item.status = item.status.toString();
                 return item;
             });
-        }
+            tableLoading.value = false;
+        };
+        tableLoading.value = false;
     }, 1000)
 }
 // 重置筛选的表单内容
@@ -313,18 +320,9 @@ const saveAddUser = async () => {
             }
             if (data) {
                 if(addOrModifyTitle.value === '编辑用户') {
-                    userList.value?.map(k => {
-                        if(k.id == ruleForm.password) {
-                            k.userName = ruleForm.userName;
-                            k.roles = (ruleForm.roleId as []).map(k => {
-                                return {
-                                    id: k,
-                                    roleName: RoleTypeMap[k]
-                                }
-                            });
-                        }
-                        return k;
-                    })
+                    await getUserList(currentpage.value);
+                } else {
+                    currentpage.value = 1;
                 }
                 ElMessage({
                     message: addOrModifyTitle.value === '编辑用户' ? '编辑成功' : '添加成功',
@@ -345,7 +343,7 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
     let userIds = Array.isArray(userId) ? userId : [userId]
     let data = await userStore.deleteUserAsync(userIds);
     if (data) {
-        userList.value = userList.value?.filter(item => !userIds.includes(item.id))
+        currentpage.value = 1;
         ElMessage({
             message: '删除成功',
             type: 'success'
@@ -362,6 +360,16 @@ const handleSelectionChange = (items: userItem[]) => {
     selectIds.value = items.map(item => item.id);
 }
 // 批量删除
+const deleteUsers = () => {
+    if(!selectIds.value) {
+        ElMessage({
+            message: '未选择任何数据',
+            type: 'warning'
+        });
+        return;
+    }
+    deleteUsersVisible.value = true;
+}
 const confirmDeleteUsers = () => {
     deleteUser(selectIds.value);
     deleteUsersVisible.value = false;
@@ -445,9 +453,9 @@ onBeforeMount(() => {
     }
     .lists {
         .pagination {
-            position: absolute;
-            bottom: 0;
-            right: 0;
+            width: 100%;
+            display: flex;
+            justify-content: end;
         }
     }
 }
