@@ -97,7 +97,7 @@
             <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
                 @sort-change="handleSortChange" v-loading="tableLoading">
                 <el-table-column type="selection" width="40" :selectable="selectable" />
-                <el-table-column property="id" label="id" width="70" />
+                <el-table-column property="id" label="ID" width="70" />
                 <el-table-column property="userName" label="用户名" width="160" show-overflow-tooltip sortable="custom" />
                 <el-table-column property="account" label="账号" width="160" show-overflow-tooltip sortable="custom" />
                 <el-table-column label="用户角色" width="160" show-overflow-tooltip>
@@ -141,8 +141,10 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
+                <p>数据：{{total}}条</p>
+                &nbsp;
                 <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage"
-                    :default-page-size="6" />
+                background :default-page-size="6" />
             </div>
         </div>
     </div>
@@ -230,11 +232,16 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 6) => {
 
 }
 // 重置筛选的表单内容
-const resetForm = () => {
+const resetForm = async () => {
     formInline.keyword = '';
     formInline.roleId = '9999';
     formInline.status = '99';
     formInline.timeList = [];
+    if (currentpage.value === 1) {
+        await getUserList(1)
+    } else {
+        currentpage.value = 1;
+    }   
 }
 // 分页功能 切换到某一页
 const currentpage = ref(1);
@@ -455,9 +462,11 @@ onBeforeMount(() => {
 
     .lists {
         .pagination {
+            margin-top: 10px;
             width: 100%;
             display: flex;
             justify-content: end;
+            align-items: center;
         }
     }
 }

@@ -53,7 +53,9 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage" :default-page-size="6"/>
+                <p>数据：{{total}}条</p>
+                &nbsp;
+                <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="6"/>
             </div>    
         </div>
     </div>
@@ -83,8 +85,14 @@ const formInline = reactive({
     orderType: 'desc'
 })
 // 重置筛选角色的表单
-const resetForm = () => {
-
+const resetForm = async () => {
+    formInline.keyword = '';
+    formInline.roleType = '9999';
+    if (currentpage.value === 1) {
+        await getRoleList(1)
+    } else {
+        currentpage.value = 1;
+    } 
 }
 // 角色数据结构
 type roleItem = {
@@ -140,7 +148,7 @@ const handleSelectionChange = (items: roleItem[]) => {
     selectIds.value = items.map(item => item.id);
 }
 // 后台角色数据总量
-const total = ref(6);
+const total = ref(0);
 // 分页功能 切换到某一页
 const currentpage = ref(1);
 watch(currentpage, async () => {
@@ -201,9 +209,11 @@ watch(currentpage, async () => {
 
     .lists {
         .pagination {
-            position: absolute;
-            bottom: 0;
-            right: 0;
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: end;
+            align-items: center;
         }
     }
 }
