@@ -95,8 +95,8 @@
             </div>
         </div>
         <div class="lists">
-            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
-                @sort-change="handleSortChange" v-loading="tableLoading" height="340">
+            <el-table class="table" :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
+                @sort-change="handleSortChange" v-loading="tableLoading" >
                 <el-table-column type="selection" width="40" :selectable="selectable" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="userName" label="用户名" show-overflow-tooltip sortable="custom" />
@@ -480,6 +480,9 @@ onBeforeMount(() => {
             display: flex;
             justify-content: end;
             align-items: center;
+        }
+        .table {
+            height: calc(100vh - 265px);
         }
     }
 }
