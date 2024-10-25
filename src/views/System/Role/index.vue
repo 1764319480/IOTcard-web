@@ -79,7 +79,7 @@
             <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange" 
             @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 210px)">
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column property="id" label="id" width="70"/>
+                <el-table-column property="id" label="ID" width="70"/>
                 <el-table-column property="roleName" label="名称"  show-overflow-tooltip sortable="custom"/>
                 <el-table-column property="roleType" label="类型"  show-overflow-tooltip sortable="custom">
                     <template #default="scope">
