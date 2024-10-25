@@ -8,23 +8,18 @@
             </el-tabs>
         </div>
         <div class="lists">
-            <el-table class="table" :data="logList" style="width: 100%"  v-loading="tableLoading">
+            <el-table :data="logList" style="width: 100%"  v-loading="tableLoading" max-height="calc(100vh - 205px)">
                 <el-table-column property="id" label="ID" width="60"/>
-                <el-table-column property="logInfo" :label="activeName === '3' ? '错误信息': '日志内容' " show-overflow-tooltip>
-                    <template #default="scope">
-                        {{ activeName === '3' ? scope.row.logInfo : scope.row.userName + scope.row.logInfo }}
-                    </template>
-                </el-table-column>
+                <el-table-column property="logInfo" :label="activeName === '3' ? '错误信息': '日志内容' " show-overflow-tooltip/>
                 <el-table-column property="logSource" label="错误来源" width="220" v-if="activeName === '3'" show-overflow-tooltip/>
-                <el-table-column property="userName" :label="activeName === '3' ? '用户' : '操作人' " width="150" 
-                show-overflow-tooltip v-if="activeName !== '1' "/>
+                <el-table-column property="userName" :label="activeName === '3' ? '用户' : '操作人' " width="150" show-overflow-tooltip/>
                 <el-table-column property="createTime" label="创建时间" width="200"/>
             </el-table>
         </div>
         <div class="pagination">
             <p>共&nbsp;{{total}}&nbsp;条</p>
             &nbsp;
-            <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="10"/>
+            <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="20"/>
         </div> 
     </div>
 </template>
@@ -85,9 +80,6 @@ onBeforeMount(async () => {
             display: flex;
             justify-content: end;
             align-items: center;
-        }
-        .table {
-            height: calc(100vh - 200px);
         }
     }
 </style>

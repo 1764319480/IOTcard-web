@@ -95,8 +95,8 @@
             </div>
         </div>
         <div class="lists">
-            <el-table class="table" :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
-                @sort-change="handleSortChange" v-loading="tableLoading" >
+            <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange"
+                @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 270px)">
                 <el-table-column type="selection" width="40" :selectable="selectable" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="userName" label="用户名" show-overflow-tooltip sortable="custom" />
@@ -145,7 +145,7 @@
                 <p>共&nbsp;{{ total }}&nbsp;条</p>
                 &nbsp;
                 <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage" background
-                    :default-page-size="10" />
+                    :default-page-size="20" />
             </div>
         </div>
     </div>
@@ -212,7 +212,7 @@ const userList = ref<userItem[]>();
 // 后台用户数据总量
 const total = ref(0);
 // 获取用户列表
-const getUserList = async (pageNum: number = 1, pageSize: number = 10) => {
+const getUserList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
     const data = await userStore.getUserListAsync({
         keyword: formInline.keyword,
@@ -243,7 +243,7 @@ const resetForm = async () => {
     formInline.status = '99';
     formInline.timeList = [];
     if (currentpage.value === 1) {
-        await getUserList(1)
+        await getUserList()
     } else {
         currentpage.value = 1;
     }
@@ -336,7 +336,7 @@ const saveAddUser = async () => {
                     await getUserList(currentpage.value);
                 } else {
                     if (currentpage.value === 1) {
-                        await getUserList(1)
+                        await getUserList()
                     } else {
                         currentpage.value = 1;
                     }
@@ -361,7 +361,7 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
     let data = await userStore.deleteUserAsync(userIds);
     if (data) {
         if (currentpage.value === 1) {
-            await getUserList(1)
+            await getUserList()
         } else {
             currentpage.value = 1;
         }
@@ -480,9 +480,6 @@ onBeforeMount(() => {
             display: flex;
             justify-content: end;
             align-items: center;
-        }
-        .table {
-            height: calc(100vh - 265px);
         }
     }
 }

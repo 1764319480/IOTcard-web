@@ -76,17 +76,17 @@
             </div>
         </div>
         <div class="lists">
-            <el-table class="table" :data="roleList" style="width: 100%" @selection-change="handleSelectionChange" 
-            @sort-change="handleSortChange" v-loading="tableLoading">
+            <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange" 
+            @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 210px)">
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
                 <el-table-column property="id" label="id" width="70"/>
-                <el-table-column property="roleName" label="名称" width="160" show-overflow-tooltip sortable="custom"/>
-                <el-table-column property="roleType" label="类型" width="160" show-overflow-tooltip sortable="custom">
+                <el-table-column property="roleName" label="名称"  show-overflow-tooltip sortable="custom"/>
+                <el-table-column property="roleType" label="类型"  show-overflow-tooltip sortable="custom">
                     <template #default="scope">
                         <p>{{ getRoleTypeFont(scope.row.roleType) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="remark" label="描述" width="160" show-overflow-tooltip>
+                <el-table-column property="remark" label="描述"  show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ scope.row.remark || '-' }}</p>
                     </template>
@@ -126,7 +126,7 @@
             <div class="pagination">
                 <p>共&nbsp;{{total}}&nbsp;条</p>
                 &nbsp;
-                <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="10"/>
+                <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="20"/>
             </div>    
         </div>
     </div>
@@ -303,7 +303,7 @@ const selectable = (row :roleItem) => getMaxPermission(userStore.userInfo.roles)
 // 角色列表
 const roleList = ref<roleItem>();
 // 获取角色列表
-const getRoleList = async (pageNum: number = 1, pageSize: number = 10) => {
+const getRoleList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
     const data = await roleStore.getRoleListAsync({
         keyword: formInline.keyword,
@@ -414,9 +414,6 @@ onBeforeMount(() => {
             display: flex;
             justify-content: end;
             align-items: center;
-        }
-        .table {
-            height: calc(100vh - 200px);
         }
     }
 }
