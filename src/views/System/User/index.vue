@@ -418,6 +418,7 @@ const changeStatus = async (userId: string, status: number) => {
 }
 // 页面刷新前获取数据
 onBeforeMount(() => {
+    roleStore.getAllRoleAsync();
     getUserList();
 })
 </script>

@@ -70,9 +70,8 @@ watch(
     { immediate: true, deep: true }
 );
 onBeforeMount(() => {
-    // 登录成功后，进入系统页面，获取用户信息和角色信息
+    // 登录成功后，进入系统页面，获取用户信息
     userStore.getUserInfoAsync();
-    roleStore.getAllRoleAsync();
     // 登录成功后，进入系统页面，定时刷新token
     userStore.refreshTokenAsync();
 })
