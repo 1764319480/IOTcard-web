@@ -1,4 +1,4 @@
-import { getAllRole, getRoleList } from '@/services/role';
+import { addRole, deleteRole, getAllRole, getRoleList, updateRole } from '@/services/role';
 import { defineStore } from 'pinia';
 import {  ref } from 'vue';
 
@@ -32,9 +32,42 @@ export const useRoleStore = defineStore('role', () => {
         return false;
     }
 
+    // 添加角色
+    const addRoleAsync = async (roleType: number, roleName: string, remark: string) => {
+        const res = await addRole({
+            roleType,
+            roleName,
+            remark
+        })
+        if (res.data.code === 200) {
+            return res.data.value;
+        }
+        return false;
+    }
+
+    // 修改角色
+    const updateRoleAsync = async (roleId: number, roleType: number, roleName?: string, remark?: string) => {
+        const res = await updateRole({
+            roleId,
+            roleType,
+            roleName,
+            remark
+        })
+        return res.data.code === 200;
+    }
+
+    // 删除角色
+    const deleteRoleAsync = async (roleIds: number[]) => {
+        const res = await deleteRole({roleIds})
+        return res.data.code === 200;
+    }
+    
     return {
         roleInfo,
         getAllRoleAsync,
-        getRoleListAsync
+        getRoleListAsync,
+        addRoleAsync,
+        updateRoleAsync,
+        deleteRoleAsync
     }
 },{persist: true})

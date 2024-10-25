@@ -73,7 +73,7 @@ const handleLogout = () => {
     &-left {
         font-size: 20px;
         font-weight: bold;
-        color: #000;
+        color: #5d64e7;
     }
 
     &-right {
