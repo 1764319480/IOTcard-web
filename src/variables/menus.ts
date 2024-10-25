@@ -17,8 +17,10 @@ const menus: MenuItemProps[] = [
     children: [
       { path: '/system/user', label: '用户管理' },
       { path: '/system/role', label: '角色管理' },
+      { path: '/system/log', label: '系统日志' },
     ],
   },
+  
 ];
 
 export default menus;
