@@ -45,7 +45,7 @@ type logItem = {
     userName: string,
 }
 const logList = ref<logItem>();
-const getLogList = async (pageNum: number) => {
+const getLogList = async (pageNum: number = 1) => {
     tableLoading.value = true;
     const data = await logStore.getLogListAsync(Number(activeName.value), pageNum);
     if (data) {
@@ -56,8 +56,11 @@ const getLogList = async (pageNum: number) => {
         tableLoading.value = false;
     } 
 }
-watch([activeName, currentpage], async () => {
+watch(currentpage, async () => {
     await getLogList(currentpage.value);
+})
+watch(activeName, async () => { // 切换选项时页码回到1
+    currentpage.value = 1;
 })
 
 // 刷新页面时获取一次数据

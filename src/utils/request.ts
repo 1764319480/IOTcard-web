@@ -27,21 +27,21 @@ const debounce = (fn: Function, delay: number = 500) => {
 
 // 创建 Axios 实例
 const axiosInstance = axios.create({
-    baseURL: '/api', // API 基础路径
+    // http://192.168.43.22:3001 后端端口 3001 作为测试环境
+    // http://192.168.43.22:3002 后端端口 3002 作为生产环境
+    baseURL: '/api', // API 基础路径 (本地开发已代理，无需指定服务地址) 
     timeout: 30 * 1000,  // 请求超时时间
 });
 
 // 请求拦截器
 axiosInstance.interceptors.request.use((config) => {
-    // 在发送请求之前做些什么
-    // 例如：在请求头中携带 token
+    // 在请求头中携带 token
     const token = getCookie('access_token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 }, (error) => {
-    // 对请求错误做些什么
     return Promise.reject(error);
 });
 

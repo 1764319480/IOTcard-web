@@ -20,7 +20,7 @@ export default defineConfig({
     // 本地代理跨域，axios baseUrl 需要改为当前域名+端口号，如：http://localhost:5173，不用真实的接口地址（仅本地开发环境）
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://192.168.43.22:3000',
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, '')
       }

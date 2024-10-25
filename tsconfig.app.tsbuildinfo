@@ -1,0 +1,33 @@
+{
+  "root": [
+    "./src/main.ts",
+    "./src/vite-env.d.ts",
+    "./src/router/index.ts",
+    "./src/router/routes.ts",
+    "./src/services/log.ts",
+    "./src/services/role.ts",
+    "./src/services/user.ts",
+    "./src/stores/log.ts",
+    "./src/stores/login.ts",
+    "./src/stores/role.ts",
+    "./src/stores/user.ts",
+    "./src/utils/cookiehandler.ts",
+    "./src/utils/datehandler.ts",
+    "./src/utils/otherhandler.ts",
+    "./src/utils/request.ts",
+    "./src/variables/common.ts",
+    "./src/variables/menus.ts",
+    "./src/app.vue",
+    "./src/components/layout/aside.vue",
+    "./src/components/layout/header.vue",
+    "./src/components/layout/settings.vue",
+    "./src/components/layout/index.vue",
+    "./src/views/login.vue",
+    "./src/views/home/index.vue",
+    "./src/views/system/log/index.vue",
+    "./src/views/system/role/index.vue",
+    "./src/views/system/user/index.vue"
+  ],
+  "errors": true,
+  "version": "5.6.3"
+}
