@@ -4,6 +4,16 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    minify: 'terser', // 必须启用：terserOptions配置才会有效
+    terserOptions: {
+      compress: {
+        // 生产环境时移除console.log调试代码
+        drop_console:true,
+        drop_debugger: true,
+      }
+    }
+  },
   plugins: [vue()],
   resolve: {
     alias: {

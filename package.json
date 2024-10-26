@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:test": "vite build --mode test",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,10 +20,11 @@
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
-    "@types/node": "^22.7.7",
     "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.7.7",
     "@vitejs/plugin-vue": "^5.1.4",
     "sass": "^1.80.3",
+    "terser": "^5.36.0",
     "typescript": "^5.5.3",
     "vite": "^5.4.8",
     "vue-tsc": "^2.1.6"

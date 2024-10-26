@@ -29,7 +29,7 @@ const debounce = (fn: Function, delay: number = 500) => {
 const axiosInstance = axios.create({
     // http://192.168.43.22:3001 后端端口 3001 作为测试环境
     // http://192.168.43.22:3002 后端端口 3002 作为生产环境
-    baseURL: '/api', // API 基础路径 (本地开发已代理，无需指定服务地址) 
+    baseURL: import.meta.env.VITE_APP_SERVER_API, // API 基础路径 (本地开发已代理，无需指定服务地址) 
     timeout: 30 * 1000,  // 请求超时时间
 });
 

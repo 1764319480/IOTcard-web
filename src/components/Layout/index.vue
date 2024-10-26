@@ -40,7 +40,6 @@ import { useRoleStore } from '@/stores/role';
 
 const route = useRoute();
 const userStore = useUserStore();
-const roleStore = useRoleStore();
 interface IBreadItem {
     path?: string;
     label: string;
