@@ -16,6 +16,7 @@ const routes: RouteRecordRaw[] = [
       { path: '/system/user', component: () => import('@/views/System/User/index.vue') },
       { path: '/system/role', component: () => import('@/views/System/Role/index.vue') },
       { path: '/system/log', component: () => import('@/views/System/Log/index.vue') },
+      { path: '/client/info', component: () => import('@/views/Client/Info/index.vue') },
     ],
   },
 ];

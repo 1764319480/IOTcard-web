@@ -77,7 +77,7 @@
         </div>
         <div class="lists">
             <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange" 
-            @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 210px)">
+            @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 220px)">
                 <el-table-column type="selection" width="40" :selectable="selectable"/>
                 <el-table-column property="id" label="ID" width="70"/>
                 <el-table-column property="roleName" label="名称"  show-overflow-tooltip sortable="custom"/>
@@ -356,65 +356,5 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scoped lang="scss">
-.home {
-    .filter {
-        display: flex;
-        justify-content: space-between;
-
-        .form {
-            width: 80%;
-            margin-top: 10px;
-
-            .demo-form-inline .el-input {
-                --el-input-width: 160px;
-            }
-
-            .demo-form-inline .el-select {
-                --el-select-width: 150px;
-            }
-
-        }
-
-        .filter_right {
-            width: 250px;
-            margin-top: 10px;
-            display: flex;
-            justify-content: end;
-
-            .delete_class {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-
-                .delete_title {
-                    align-self: flex-start;
-                    height: 23px;
-                    font-size: 16px;
-                    color: #3D3D3D;
-                }
-
-                .delete_data {
-                    display: flex;
-                    align-items: center;
-                    margin-top: 10px;
-                    // width:200px;
-                    height: 17px;
-                    font-size: 12px;
-                    color: #909AAA;
-                }
-            }
-        }
-    }
-
-    .lists {
-        .pagination {
-            margin-top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: end;
-            align-items: center;
-        }
-    }
-}
+<style scoped lang="scss" src="@/assets/css/manage.scss">
 </style>

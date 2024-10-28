@@ -1,5 +1,5 @@
 
-import { Setting, HomeFilled } from '@element-plus/icons-vue';
+import { Setting, HomeFilled, User } from '@element-plus/icons-vue';
 
 interface MenuItemProps {
   path: string;
@@ -18,6 +18,14 @@ const menus: MenuItemProps[] = [
       { path: '/system/user', label: '用户管理' },
       { path: '/system/role', label: '角色管理' },
       { path: '/system/log', label: '系统日志' },
+    ],
+  },
+  {
+    path: '/',
+    label: '客户管理',
+    icon: User,
+    children: [
+      { path: '/client/info', label: '客户管理' },
     ],
   },
   

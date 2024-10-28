@@ -231,7 +231,6 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 20) => {
             item.status = item.status.toString();
             return item;
         });
-        tableLoading.value = false;
     };
     tableLoading.value = false;
 
@@ -423,65 +422,5 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scoped lang="scss">
-.home {
-    .filter {
-        display: flex;
-        justify-content: space-between;
-
-        .form {
-            width: 80%;
-            margin: 10px 0;
-
-            .demo-form-inline .el-input {
-                --el-input-width: 160px;
-            }
-
-            .demo-form-inline .el-select {
-                --el-select-width: 150px;
-            }
-
-        }
-
-        .filter_right {
-            width: 250px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: end;
-
-            .delete_class {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-
-                .delete_title {
-                    align-self: flex-start;
-                    height: 23px;
-                    font-size: 16px;
-                    color: #3D3D3D;
-                }
-
-                .delete_data {
-                    display: flex;
-                    align-items: center;
-                    margin-top: 10px;
-                    // width:200px;
-                    height: 17px;
-                    font-size: 12px;
-                    color: #909AAA;
-                }
-            }
-        }
-    }
-
-    .lists {
-        .pagination {
-            margin-top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: end;
-            align-items: center;
-        }
-    }
-}
+<style scoped lang="scss" src="@/assets/css/manage.scss">
 </style>

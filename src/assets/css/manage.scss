@@ -1,0 +1,60 @@
+.home {
+    .filter {
+        display: flex;
+        justify-content: space-between;
+
+        .form {
+            width: 80%;
+            margin-top: 10px;
+
+            .demo-form-inline .el-input {
+                --el-input-width: 140px;
+            }
+
+            .demo-form-inline .el-select {
+                --el-select-width: 120px;
+            }
+
+        }
+
+        .filter_right {
+            width: 250px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: end;
+
+            .delete_class {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                .delete_title {
+                    align-self: flex-start;
+                    height: 23px;
+                    font-size: 16px;
+                    color: #3D3D3D;
+                }
+
+                .delete_data {
+                    display: flex;
+                    align-items: center;
+                    margin-top: 10px;
+                    // width:200px;
+                    height: 17px;
+                    font-size: 12px;
+                    color: #909AAA;
+                }
+            }
+        }
+    }
+
+    .lists {
+        .pagination {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+    }
+}
