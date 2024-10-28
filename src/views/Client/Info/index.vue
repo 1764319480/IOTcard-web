@@ -58,7 +58,7 @@
                                         :key="item.id" />
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="联系地址:" prop="contactProvince">
+                                <el-form-item label="联系地址:">
                                     <el-select v-model="ruleForm.contactProvince" placeholder="请选择省份" style="width: 115px;"
                                     no-data-text="获取省份失败">
                                         <el-option v-for="item of provinces" :label="item.name" :value="item.id"
@@ -263,7 +263,6 @@ const getClientList = async (pageNum: number = 1, pageSize: number = 20) => {
     } 
     tableLoading.value = false;
 }
-// 重置搜索条件
 // 重置筛选的表单内容
 const resetForm = async () => {
     formInline.clientName = '';
@@ -301,7 +300,7 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { min: 1, max: 128, message: '名称长度最多 128 个字符', trigger: 'blur' },
     ],
     clientType: [
-        { required: true, message: '请选择客户类型', trigger: 'blur' },
+        { required: true, message: '请选择客户类型', trigger: 'change' },
     ],
     contact: [
         { required: true, message: '请输入联系人', trigger: 'blur' },
@@ -313,7 +312,7 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { pattern: /^[0-9]+$/, message: '手机号只能包含数字', trigger: 'blur' },
     ],
     salesman: [
-        { required: true, message: '请选择业务员', trigger: 'blur' },
+        { required: true, message: '请选择业务员', trigger: 'change' },
     ]
 })
 // 新增或编辑客户的表单
@@ -373,11 +372,6 @@ const cancelAddUser = () => {
     cities.value = [];
     areas.value = [];
     streets.value = [];
-    ruleForm.contactProvince = '';
-    ruleForm.contactCity = '';
-    ruleForm.contactArea = '';
-    ruleForm.contactStreet = '';
-    ruleForm.contactAddress = '';
     addOrModifyVisiable.value = false;
 }
 // 打开新增或编辑客户表单
