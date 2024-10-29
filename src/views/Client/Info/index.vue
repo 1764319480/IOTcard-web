@@ -126,7 +126,7 @@
                 <el-table-column property="clientName" label="客户名称" width="220" show-overflow-tooltip sortable="custom" />
                 <el-table-column label="客户类型" width="120" sortable="custom">
                     <template #default="scope">
-                        <p>{{ scope.row.clientType === 1 ? '普通客户' : '企业用户' }}</p>
+                        <p>{{ scope.row.clientType === 1 ? '个人客户' : '企业用户' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column property="contact" label="联系人" sortable="custom" width="120" show-overflow-tooltip/>
@@ -459,7 +459,7 @@ const saveAddClient = async () => {
                     type: 'success'
                 })
                 stopClick2.value = false;
-                addOrModifyVisiable.value = false;
+                cancelAddUser();
             } else {
                 stopClick2.value = false;
             }
