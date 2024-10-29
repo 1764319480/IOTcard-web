@@ -1,9 +1,9 @@
 import { addCombo, copyCombo, deleteCombo, getAllCombo, getCombo, getComboList, updateCombo } from '@/services/combo';
 import { defineStore } from 'pinia';
 
-export const useCompoStore = defineStore('compo', () => {
+export const useComboStore = defineStore('combo', () => {
     // 获取已上架套餐
-    const getAllCompoAsync = async (keyword?: string) => {
+    const getAllComboAsync = async (keyword?: string) => {
         const res = await getAllCombo({
             keyword
         })
@@ -63,7 +63,7 @@ export const useCompoStore = defineStore('compo', () => {
         return false;
     }
     return {
-        getAllCompoAsync,
+        getAllComboAsync,
         addComboAsync,
         updateComboAsync,
         updateComboStatusAsync,

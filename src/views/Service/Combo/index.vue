@@ -50,37 +50,44 @@
             <div class="filter_right">
                 <div>
                     <el-button type="primary" :icon="Plus" @click="addOrModifyCombo('添加套餐')">添加</el-button>
-                    <!-- &nbsp; -->
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteCombos">删除</el-button>
                     <el-button type="primary" :icon="Top" :plain=true>上架</el-button>
                     <el-button type="primary" :icon="Bottom" :plain=true>下架</el-button>
                 </div>
-                <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle" :show-close="false"
+                <el-dialog v-model="addOrModifyVisiable" width="680" :title="addOrModifyTitle" :show-close="false"
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules"
                             label-position="left" label-width="auto" class="demo-ruleForm">
                             <el-form-item label="套餐名称:" prop="comboName">
-                                <el-input v-model="ruleForm.comboName" style="width: 180px;" autocomplete="off"
+                                <el-input v-model="ruleForm.comboName" style="width: 210px;" autocomplete="off"
                                     placeholder="请输入套餐名称" />
                             </el-form-item>
                             <el-form-item label="套餐类型:" prop="comboType">
-                                <el-select v-model="ruleForm.comboType" style="width: 180px" collapse-tags
+                                <el-select v-model="ruleForm.comboType" style="width: 210px" collapse-tags
                                     collapse-tags-tooltip placeholder="请选择套餐类型">
                                     <el-option label="短信包" value="1" />
-                                    <el-option label="短信包" value="2" />
+                                    <el-option label="流量包" value="2" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="标准资费:" prop="standardTariff">
                                 <el-input-number v-model="ruleForm.standardTariff" class="mx-4" :min="0" :max="10"
-                                    style="width: 160px;" placeholder="请输入标准资费" />
+                                    style="width: 210px;" placeholder="请输入标准资费">
+                                    <template #prefix>
+                                        <span>￥</span>
+                                    </template>
+                                </el-input-number>
                             </el-form-item>
                             <el-form-item label="销售价格:" prop="salesPrice">
                                 <el-input-number v-model="ruleForm.salesPrice" class="mx-4" :min="0" :max="10"
-                                    style="width: 160px;" placeholder="请输入销售价格" />
+                                    style="width: 210px;" placeholder="请输入销售价格">
+                                    <template #prefix>
+                                        <span>￥</span>
+                                    </template>
+                                </el-input-number>
                             </el-form-item>
                             <el-form-item label="有效期:" prop="comboPeriod">
-                                <el-select v-model="ruleForm.comboPeriod" style="width: 180px" collapse-tags
+                                <el-select v-model="ruleForm.comboPeriod" style="width: 210px" collapse-tags
                                     collapse-tags-tooltip placeholder="请选择有效期">
                                     <el-option label="短信包" value="1" />
                                     <el-option label="短信包" value="2" />
@@ -88,11 +95,15 @@
                             </el-form-item>
                             <el-form-item label="套餐容量:" prop="comboCapacity">
                                 <el-input-number v-model="ruleForm.comboCapacity" class="mx-4" :min="0" :max="10"
-                                    style="width: 160px;" placeholder="请输入套餐容量" />
+                                    style="width: 210px;" placeholder="请输入套餐容量">
+                                    <template #suffix>
+                                        <span>M</span>
+                                    </template>
+                                </el-input-number>
                             </el-form-item>
-                            <el-form-item label="套餐说明">
-                                <el-input v-model="ruleForm.remark" type="textarea" :rows="3"
-                                    placeholder="请输入套餐说明"></el-input>
+                            <el-form-item label="套餐说明:">
+                                <el-input v-model="ruleForm.remark" type="textarea" :rows="3" placeholder="请输入套餐说明"
+                                    style="width: 550px"></el-input>
                             </el-form-item>
                             <div style="display: flex; justify-content: end;">
                                 <el-button @click="cancelAddCombo" style="width:80px">取消</el-button>
@@ -110,8 +121,7 @@
                 <el-table-column type="selection" width="40" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="comboNo" label="套餐编号" width="150" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="comboName" label="套餐名称" width="220" show-overflow-tooltip
-                    sortable="custom" />
+                <el-table-column property="comboName" label="套餐名称" width="220" show-overflow-tooltip sortable="custom" />
                 <el-table-column label="有效期" width="120" sortable="custom">
                     <template #default="scope">
                         <p>{{ scope.row.comboPeriod }}</p>
@@ -126,8 +136,8 @@
                     show-overflow-tooltip />
                 <el-table-column property="standardTariff" label="标准资费" sortable="custom" width="120" />
                 <el-table-column property="salesPrice" label="销售资费" sortable="custom" width="120" />
-                <el-table-column property="remark" label="套餐说明" sortable="custom" width="200" show-overflow-tooltip />
-                <el-table-column label="状态" width="120">
+                <el-table-column property="remark" label="套餐说明" width="200" show-overflow-tooltip />
+                <el-table-column label="状态" width="120" sortable="custom">
                     <template #default="scope">
                         <p>{{ scope.row.status }}</p>
                     </template>
@@ -177,12 +187,12 @@
 import { ArrowDownBold, ArrowUpBold, Bottom, Delete, Plus, Refresh, Search, Top, WarningFilled } from '@element-plus/icons-vue';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
 // @ts-ignore
-import { useCompoStore } from '@/stores/combo';
+import { useComboStore } from '@/stores/combo';
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 const showMoreItems = ref(false);
-// const compoStore = useCompoStore();
+const comboStore = useComboStore();
 const tableLoading = ref(false);
 const addOrModifyTitle = ref('添加套餐');
 const addOrModifyVisiable = ref(false);
@@ -257,8 +267,24 @@ type comboItem = {
 // 套餐列表
 const comboList = ref<comboItem[]>();
 // 搜索套餐
-const getComboList = async (pageNum: number = 1) => {
-    pageNum
+const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
+    tableLoading.value = true;
+    const data = await comboStore.getComboListAsync({
+        comboName: formInline.comboName,
+        comboType: formInline.comboType,
+        status: formInline.status,
+        salesPriceRange: formInline.salesPriceRange,
+        standardTariffRange: formInline.standardTariffRange,
+        pageNum,
+        pageSize,
+        orderBy: formInline.orderBy,
+        orderType: formInline.orderType
+    })
+    if (data) {
+        total.value = data.total;
+        comboList.value = data.list;
+    }
+    tableLoading.value = false;
 }
 // 重置筛选表单
 const resetForm = () => {
@@ -269,10 +295,10 @@ const ruleForm = reactive({
     id: '',
     comboName: '',
     comboType: '',
-    standardTariff: '',
-    salesPrice: '',
+    standardTariff: undefined,
+    salesPrice: undefined,
     comboPeriod: '',
-    comboCapacity: '',
+    comboCapacity: undefined,
     remark: ''
 })
 // 打开新增或编辑套餐表单
@@ -290,7 +316,7 @@ const saveAddcombo = async () => {
 }
 // 新增或编辑套餐表单的取消按钮
 const cancelAddCombo = () => {
-
+    addOrModifyVisiable.value = false;
 }
 // 删除套餐
 const deleteCombo = async (comboIds: string[] | number[] | string | number) => {
