@@ -134,7 +134,7 @@
                 <el-table-column label="联系地址" width="250" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ scope.row.contactProvinceName + scope.row.contactCityName + scope.row.contactAreaName + 
-                            scope.row.contactAddress}}</p>
+                            scope.row.contactStreetName + scope.row.contactAddress || '-' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom" show-overflow-tooltip=""/>
@@ -373,6 +373,16 @@ const cancelAddUser = () => {
     areas.value = [];
     streets.value = [];
     addOrModifyVisiable.value = false;
+    ruleForm.clientName = '';
+    ruleForm.clientType = '';
+    ruleForm.contact = '';
+    ruleForm.contactPhone = '';
+    ruleForm.salesman = '';
+    ruleForm.contactProvince = '';
+    ruleForm.contactCity = '';
+    ruleForm.contactArea = '';
+    ruleForm.contactStreet = '';
+    ruleForm.contactAddress = '';
 }
 // 打开新增或编辑客户表单
 const addOrModifyClient = async (title: string, item?: clientItem) => {
@@ -385,26 +395,17 @@ const addOrModifyClient = async (title: string, item?: clientItem) => {
         ruleForm.contactPhone = item.contactPhone;
         ruleForm.salesman = item.salesman;
         ruleForm.contactProvince = item.contactProvince;
-        await commonStore.getCitiesAsync(item.contactProvince);
+        cities.value = await commonStore.getCitiesAsync(item.contactProvince);
         ruleForm.contactCity = item.contactCity;
-        await commonStore.getAreasAsync(item.contactCity);
+        areas.value = await commonStore.getAreasAsync(item.contactCity);
         ruleForm.contactArea = item.contactArea;
-        await commonStore.getStreetsAsync(item.contactArea);
+        streets.value = await commonStore.getStreetsAsync(item.contactArea);
         ruleForm.contactStreet = item.contactStreet;
         ruleForm.contactAddress = item.contactAddress;
         addOrModifyVisiable.value = true;
     } else {
-        ruleForm.clientName = '';
-        ruleForm.clientType = '';
-        ruleForm.contact = '';
-        ruleForm.contactPhone = '';
-        ruleForm.salesman = '';
-        ruleForm.contactProvince = '';
-        ruleForm.contactCity = '';
-        ruleForm.contactArea = '';
-        ruleForm.contactStreet = '';
-        ruleForm.contactAddress = '';
         addOrModifyVisiable.value = true;
+        ruleFormRef2.value?.resetFields();
     }
 }
 // 新增或编辑客户表单的保存按钮
@@ -425,7 +426,7 @@ const saveAddClient = async () => {
                     contactCity: ruleForm.contactCity,
                     contactArea: ruleForm.contactArea,
                     contactStreet: ruleForm.contactStreet,
-                    contactAddress: ruleForm.contactAddress,
+                    contactAddress: ruleForm.contactAddress || undefined,
                     salesman: ruleForm.salesman
                 })
             } else {

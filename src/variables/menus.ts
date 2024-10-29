@@ -25,7 +25,7 @@ const menus: MenuItemProps[] = [
     label: '客户管理',
     icon: User,
     children: [
-      { path: '/client/info', label: '客户管理' },
+      { path: '/client/info', label: '客户信息' },
     ],
   },
   
