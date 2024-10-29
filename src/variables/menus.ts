@@ -28,6 +28,14 @@ const menus: MenuItemProps[] = [
       { path: '/client/info', label: '客户信息' },
     ],
   },
+  {
+    path: '/',
+    label: '增值服务',
+    icon: User,
+    children: [
+      { path: '/service/combo', label: '增值套餐' },
+    ],
+  },
   
 ];
 
