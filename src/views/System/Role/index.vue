@@ -188,7 +188,7 @@ type roleItem = {
 const ruleForm = reactive({
     roleId: 0,
     roleName: '',
-    roleType: 3,
+    roleType: '' as string | number,
     remark: ''
 })
 // 打开新增或编辑角色表单
@@ -202,7 +202,7 @@ const addOrModifyRole = (title: string, item?: roleItem) => {
         ruleForm.remark = item.remark;
     } else {
         ruleForm.roleName = '';
-        ruleForm.roleType = 3;
+        ruleForm.roleType = '';
         ruleForm.remark = '';
     }
 
@@ -235,13 +235,13 @@ const saveAddRole = async () => {
             if (addOrModifyTitle.value === '编辑角色') {
                 data = await roleStore.updateRoleAsync(
                     ruleForm.roleId,
-                    ruleForm.roleType,
+                    Number(ruleForm.roleType),
                     ruleForm.roleName,
                     ruleForm.remark
                 )
             } else {
                 data = await roleStore.addRoleAsync(
-                    ruleForm.roleType,
+                    Number(ruleForm.roleType),
                     ruleForm.roleName,
                     ruleForm.remark
                 );
