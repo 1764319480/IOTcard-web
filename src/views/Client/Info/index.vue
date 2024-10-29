@@ -422,10 +422,10 @@ const saveAddClient = async () => {
                     clientType: ruleForm.clientType,
                     contact: ruleForm.contact,
                     contactPhone: ruleForm.contactPhone,
-                    contactProvince: ruleForm.contactProvince,
-                    contactCity: ruleForm.contactCity,
-                    contactArea: ruleForm.contactArea,
-                    contactStreet: ruleForm.contactStreet,
+                    contactProvince: ruleForm.contactProvince || undefined,
+                    contactCity: ruleForm.contactCity || undefined,
+                    contactArea: ruleForm.contactArea || undefined,
+                    contactStreet: ruleForm.contactStreet || undefined,
                     contactAddress: ruleForm.contactAddress || undefined,
                     salesman: ruleForm.salesman
                 })
@@ -435,11 +435,11 @@ const saveAddClient = async () => {
                     clientType: ruleForm.clientType,
                     contact: ruleForm.contact,
                     contactPhone: ruleForm.contactPhone,
-                    contactProvince: ruleForm.contactProvince,
-                    contactCity: ruleForm.contactCity,
-                    contactArea: ruleForm.contactArea,
-                    contactStreet: ruleForm.contactStreet,
-                    contactAddress: ruleForm.contactAddress,
+                    contactProvince: ruleForm.contactProvince || undefined,
+                    contactCity: ruleForm.contactCity || undefined,
+                    contactArea: ruleForm.contactArea || undefined,
+                    contactStreet: ruleForm.contactStreet || undefined,
+                    contactAddress: ruleForm.contactAddress || undefined,
                     salesman: ruleForm.salesman
                 }     
                 );
