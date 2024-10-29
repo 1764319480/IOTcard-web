@@ -121,10 +121,10 @@
                 <el-table-column type="selection" width="40" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="comboNo" label="套餐编号" width="150" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="comboName" label="套餐名称" width="220" show-overflow-tooltip sortable="custom" />
-                <el-table-column label="有效期" width="120" sortable="custom">
+                <el-table-column property="comboName" label="套餐名称" width="150" show-overflow-tooltip sortable="custom" />
+                <el-table-column label="有效期" width="100" sortable="custom">
                     <template #default="scope">
-                        <p>{{ scope.row.comboPeriod }}</p>
+                        <p>{{ periodParse(scope.row.comboPeriod) }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column label="套餐类型" width="120" sortable="custom">
@@ -132,14 +132,32 @@
                         <p>{{ scope.row.comboType === 1 ? '流量包' : '短信包' }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="comboCapacity" label="套餐容量" sortable="custom" width="120"
-                    show-overflow-tooltip />
-                <el-table-column property="standardTariff" label="标准资费" sortable="custom" width="120" />
-                <el-table-column property="salesPrice" label="销售资费" sortable="custom" width="120" />
-                <el-table-column property="remark" label="套餐说明" width="200" show-overflow-tooltip />
-                <el-table-column label="状态" width="120" sortable="custom">
+                <el-table-column label="套餐容量" sortable="custom" width="140"
+                    show-overflow-tooltip>
                     <template #default="scope">
-                        <p>{{ scope.row.status }}</p>
+                        <p>{{ scope.row.comboCapacity >= 1024 ? (scope.row.comboCapacity / 1024).toFixed(2) + 'G' : scope.row.comboCapacity + 'M' }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="标准资费" sortable="custom" width="120">
+                    <template #default="scope">
+                        <p>{{ '￥' + scope.row.standardTariff }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="销售资费" sortable="custom" width="120">
+                    <template #default="scope">
+                        <p>{{ '￥' + scope.row.salesPrice }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="套餐说明" width="200" show-overflow-tooltip>
+                    <template #default="scope">
+                        <p>{{ scope.row.remark || '-' }}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column label="状态" width="80" sortable="custom">
+                    <template #default="scope">
+                        <el-tag v-if="scope.row.status === 0" type="info">待定</el-tag>
+                        <el-tag  v-else-if="scope.row.status === 1" type="success">上架</el-tag>
+                        <el-tag v-else type="danger">下架</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
@@ -147,14 +165,16 @@
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column label="操作" width="180" fixed="right">
                     <template #default="scope">
                         <div>
-                            <el-button link type="primary" size="small"
+                            <el-button link type="primary" size="small" v-if="scope.row.status === 0"
                                 @click="addOrModifyCombo('编辑套餐', scope.row)">编辑</el-button>
-                            <el-button link type="success" size="small">上架</el-button>
-                            <el-button link type="danger" size="small">下架</el-button>
-                            <el-button link type="danger" size="small">
+                            <el-button link type="success" size="small" v-if="scope.row.status !== 1"
+                            >上架</el-button>
+                            <el-button link type="danger" size="small" v-if="scope.row.status === 1"
+                            >下架</el-button>
+                            <el-button link type="danger" size="small" v-if="scope.row.status !== 1">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteCombo(scope.row.id)">
                                     <template #reference>
@@ -239,6 +259,17 @@ const handleSortChange = async (data: ISortProps) => {
     formInline.orderBy = prop;
     formInline.orderType = order.replace('ending', '');
     await getComboList(currentpage.value);
+}
+// 有效期格式转化
+const periodParse = (period: number) => {
+    switch (period) {
+        case 7: return '7天';
+        case 30: return '1个月';
+        case 90: return '3个月';
+        case 180: return '6个月';
+        case 360: return '1年';
+        default: return '未知'
+    }
 }
 // 新增或编辑客户表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({
