@@ -34,64 +34,63 @@
             <div class="filter_right">
                 <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
                     <el-button type="primary" :icon="Plus" @click="addOrModifyUser('添加用户')">添加</el-button>
-                    <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
-                        :close-on-click-modal="false" :close-on-press-escape="false">
-                        <div class="form-items">
-                            <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
-                                label-width="auto" class="demo-ruleForm">
-                                <el-form-item label="账号:" prop="account">
-                                    <el-input v-model="ruleForm.account" style="width: 200px;" autocomplete="off"
-                                        placeholder="请输入账号" :disabled="addOrModifyTitle === '编辑用户'" />
-                                </el-form-item>
-                                <el-form-item label="用户名:" prop="userName">
-                                    <el-input v-model="ruleForm.userName" style="width: 200px;" autocomplete="off"
-                                        placeholder="请输入用户名" />
-                                </el-form-item>
-                                <el-form-item label="角色:" prop="roleId">
-                                    <el-select v-model="ruleForm.roleId" style="width: 200px"
-                                        :multiple="addOrModifyTitle === '编辑用户'" collapse-tags collapse-tags-tooltip
-                                        placeholder="请选择角色">
-                                        <el-option v-for="item of roleStore.roleInfo" :label="item.roleName"
-                                            :value="item.id" :key="item.id"
-                                            v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.roleType)
-                                                || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.roleType)" />
-                                    </el-select>
-                                </el-form-item>
-                                <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
-                                    <el-input v-model="ruleForm.password" style="width: 200px;" autocomplete="off"
-                                        disabled />
-                                </el-form-item>
-                                <div style="display: flex; justify-content: end;">
-                                    <el-button @click="cancelAddUser" style="width:80px">取消</el-button>
-                                    <el-button type="primary" @click="saveAddUser" :loading="stopClick2"
-                                        style="width: 80px;">保存</el-button>
-                                </div>
-                            </el-form>
-                        </div>
-                    </el-dialog>
-                    &nbsp;
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteUsers">删除</el-button>
-                    <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
-                        <div class="delete_class">
-                            <div class="delete_title">确认删除?</div>
-                            <div class="delete_data">
-                                <el-icon color="red" size="20">
-                                    <WarningFilled />
-                                </el-icon>
-                                &nbsp;
-                                <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
-                            </div>
-                        </div>
-                        <template #footer>
-                            <div class="dialog-footer">
-                                <el-button @click="deleteUsersVisible = false">取消</el-button>
-                                <el-button type="danger" @click="confirmDeleteUsers">
-                                    确认
-                                </el-button>
-                            </div>
-                        </template>
-                    </el-dialog>
                 </div>
+                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
+                    :close-on-click-modal="false" :close-on-press-escape="false">
+                    <div class="form-items">
+                        <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
+                            label-width="auto" class="demo-ruleForm">
+                            <el-form-item label="账号:" prop="account">
+                                <el-input v-model="ruleForm.account" style="width: 200px;" autocomplete="off"
+                                    placeholder="请输入账号" :disabled="addOrModifyTitle === '编辑用户'" />
+                            </el-form-item>
+                            <el-form-item label="用户名:" prop="userName">
+                                <el-input v-model="ruleForm.userName" style="width: 200px;" autocomplete="off"
+                                    placeholder="请输入用户名" />
+                            </el-form-item>
+                            <el-form-item label="角色:" prop="roleId">
+                                <el-select v-model="ruleForm.roleId" style="width: 200px"
+                                    :multiple="addOrModifyTitle === '编辑用户'" collapse-tags collapse-tags-tooltip
+                                    placeholder="请选择角色">
+                                    <el-option v-for="item of roleStore.roleInfo" :label="item.roleName"
+                                        :value="item.id" :key="item.id"
+                                        v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.roleType)
+                                            || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.roleType)" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
+                                <el-input v-model="ruleForm.password" style="width: 200px;" autocomplete="off"
+                                    disabled />
+                            </el-form-item>
+                            <div style="display: flex; justify-content: end;">
+                                <el-button @click="cancelAddUser" style="width:80px">取消</el-button>
+                                <el-button type="primary" @click="saveAddUser" :loading="stopClick2"
+                                    style="width: 80px;">保存</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                </el-dialog>
+                <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
+                    <div class="delete_class">
+                        <div class="delete_title">确认删除?</div>
+                        <div class="delete_data">
+                            <el-icon color="red" size="20">
+                                <WarningFilled />
+                            </el-icon>
+                            &nbsp;
+                            <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
+                        </div>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="deleteUsersVisible = false">取消</el-button>
+                            <el-button type="danger" @click="confirmDeleteUsers">
+                                确认
+                            </el-button>
+                        </div>
+                    </template>
+                </el-dialog>
             </div>
         </div>
         <div class="lists">
@@ -422,5 +421,4 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scoped lang="scss" src="@/assets/css/manage.scss">
-</style>
+<style scoped lang="scss" src="@/assets/css/manage.scss"></style>

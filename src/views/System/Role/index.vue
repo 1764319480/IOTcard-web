@@ -20,73 +20,74 @@
                 </el-form>
             </div>
             <div class="filter_right">
-                <el-button type="primary" :icon="Plus" @click="addOrModifyRole('添加角色')">添加</el-button>
+                <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyRole('添加角色')">添加</el-button>
+                    <el-button type="danger" :icon="Delete" :plain=true @click="deleteRoles">删除</el-button>
+                </div>
                 <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
-                        :close-on-click-modal="false" :close-on-press-escape="false">
-                        <div class="form-items">
-                            <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
-                                label-width="auto" class="demo-ruleForm">
-                                <el-form-item label="名称:" prop="roleName">
-                                    <el-input v-model="ruleForm.roleName" style="width: 200px;" autocomplete="off"
-                                        placeholder="请输入名称" />
-                                </el-form-item>
-                                <el-form-item label="类型:" prop="roleType">
-                                    <el-select v-model="ruleForm.roleType" style="width: 200px" collapse-tags collapse-tags-tooltip
-                                        placeholder="请选择角色类型">
-                                        <el-option v-for="item of RoleTypeList" :label="item.label"
-                                            :value="item.value" :key="item.value"
-                                            v-show="(addOrModifyTitle === '添加角色' && getMaxPermission(userStore.userInfo.roles) <= item.value)
-                                                || (addOrModifyTitle === '编辑角色' && getMaxPermission(userStore.userInfo.roles) < item.value)" />
-                                    </el-select>
-                                </el-form-item>
-                                <el-form-item label="描述:" prop="remark">
-                                    <el-input v-model="ruleForm.remark" type="textarea" style="width: 300px;" :rows="4" autocomplete="off" placeholder="描述（可选）"/>
-                                </el-form-item>
-                                <div style="display: flex; justify-content: end;">
-                                    <el-button @click="cancelAddRole" style="width:80px">取消</el-button>
-                                    <el-button type="primary" @click="saveAddRole" :loading="stopClick2"
-                                        style="width: 80px;">保存</el-button>
-                                </div>
-                            </el-form>
-                        </div>
-                    </el-dialog>
-                &nbsp;
-                &nbsp;
-                <el-button type="danger" :icon="Delete" :plain=true @click="deleteRoles">删除</el-button>
+                    :close-on-click-modal="false" :close-on-press-escape="false">
+                    <div class="form-items">
+                        <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
+                            label-width="auto" class="demo-ruleForm">
+                            <el-form-item label="名称:" prop="roleName">
+                                <el-input v-model="ruleForm.roleName" style="width: 200px;" autocomplete="off"
+                                    placeholder="请输入名称" />
+                            </el-form-item>
+                            <el-form-item label="类型:" prop="roleType">
+                                <el-select v-model="ruleForm.roleType" style="width: 200px" collapse-tags
+                                    collapse-tags-tooltip placeholder="请选择角色类型">
+                                    <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value"
+                                        :key="item.value"
+                                        v-show="(addOrModifyTitle === '添加角色' && getMaxPermission(userStore.userInfo.roles) <= item.value)
+                                            || (addOrModifyTitle === '编辑角色' && getMaxPermission(userStore.userInfo.roles) < item.value)" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="描述:" prop="remark">
+                                <el-input v-model="ruleForm.remark" type="textarea" style="width: 300px;" :rows="4"
+                                    autocomplete="off" placeholder="描述（可选）" />
+                            </el-form-item>
+                            <div style="display: flex; justify-content: end;">
+                                <el-button @click="cancelAddRole" style="width:80px">取消</el-button>
+                                <el-button type="primary" @click="saveAddRole" :loading="stopClick2"
+                                    style="width: 80px;">保存</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                </el-dialog>
                 <el-dialog v-model="deleteRolesVisible" width="250" :show-close="false">
-                        <div class="delete_class">
-                            <div class="delete_title">确认删除?</div>
-                            <div class="delete_data">
-                                <el-icon color="red" size="20">
-                                    <WarningFilled />
-                                </el-icon>
-                                &nbsp;
-                                <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
-                            </div>
+                    <div class="delete_class">
+                        <div class="delete_title">确认删除?</div>
+                        <div class="delete_data">
+                            <el-icon color="red" size="20">
+                                <WarningFilled />
+                            </el-icon>
+                            &nbsp;
+                            <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
                         </div>
-                        <template #footer>
-                            <div class="dialog-footer">
-                                <el-button @click="deleteRolesVisible = false">取消</el-button>
-                                <el-button type="danger" @click="confirmDeleteRoles">
-                                    确认
-                                </el-button>
-                            </div>
-                        </template>
-                    </el-dialog>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="deleteRolesVisible = false">取消</el-button>
+                            <el-button type="danger" @click="confirmDeleteRoles">
+                                确认
+                            </el-button>
+                        </div>
+                    </template>
+                </el-dialog>
             </div>
         </div>
         <div class="lists">
-            <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange" 
-            @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 220px)">
-                <el-table-column type="selection" width="40" :selectable="selectable"/>
-                <el-table-column property="id" label="ID" width="70"/>
-                <el-table-column property="roleName" label="名称"  show-overflow-tooltip sortable="custom"/>
-                <el-table-column property="roleType" label="类型"  show-overflow-tooltip sortable="custom">
+            <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange"
+                @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 220px)">
+                <el-table-column type="selection" width="40" :selectable="selectable" />
+                <el-table-column property="id" label="ID" width="70" />
+                <el-table-column property="roleName" label="名称" show-overflow-tooltip sortable="custom" />
+                <el-table-column property="roleType" label="类型" show-overflow-tooltip sortable="custom">
                     <template #default="scope">
                         <p>{{ getRoleTypeFont(scope.row.roleType) }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="remark" label="描述"  show-overflow-tooltip>
+                <el-table-column property="remark" label="描述" show-overflow-tooltip>
                     <template #default="scope">
                         <p>{{ scope.row.remark || '-' }}</p>
                     </template>
@@ -104,7 +105,8 @@
                 <el-table-column label="操作" width="120">
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < scope.row.roleType">
-                            <el-button link type="primary" size="small" @click="addOrModifyRole('编辑角色', scope.row)">编辑</el-button>
+                            <el-button link type="primary" size="small"
+                                @click="addOrModifyRole('编辑角色', scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small" v-if="scope.row.userCount === 0">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteRole(scope.row.id)">
@@ -124,10 +126,11 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <p>共&nbsp;{{total}}&nbsp;条</p>
+                <p>共&nbsp;{{ total }}&nbsp;条</p>
                 &nbsp;
-                <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage" :default-page-size="20"/>
-            </div>    
+                <el-pagination layout="prev, pager, next" background :total="total" v-model:current-page="currentpage"
+                    :default-page-size="20" />
+            </div>
         </div>
     </div>
 </template>
@@ -170,7 +173,7 @@ const resetForm = async () => {
         await getRoleList(1)
     } else {
         currentpage.value = 1;
-    } 
+    }
 }
 // 角色数据结构
 type roleItem = {
@@ -214,7 +217,7 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { required: true, message: '请选择一个类型', trigger: 'blur' },
     ],
     remark: [
-        { max: 256, message: '角色描述最多 256 个字符', trigger: 'blur'}
+        { max: 256, message: '角色描述最多 256 个字符', trigger: 'blur' }
     ]
 })
 // 新增或编辑角色表单的取消按钮
@@ -299,7 +302,7 @@ const confirmDeleteRoles = async () => {
     deleteRolesVisible.value = false;
 }
 // 选中条件：有权限且用户数为0
-const selectable = (row :roleItem) => getMaxPermission(userStore.userInfo.roles) < row.roleType && row.userCount === 0;
+const selectable = (row: roleItem) => getMaxPermission(userStore.userInfo.roles) < row.roleType && row.userCount === 0;
 // 角色列表
 const roleList = ref<roleItem>();
 // 获取角色列表
@@ -328,7 +331,7 @@ interface ISortProps {
 }
 const handleSortChange = async (data: ISortProps) => {
     let { prop, order } = data;
-    if(!order) order = 'descending';
+    if (!order) order = 'descending';
     formInline.orderBy = prop;
     formInline.orderType = order.replace('ending', '');
     await getRoleList(currentpage.value);
@@ -336,7 +339,7 @@ const handleSortChange = async (data: ISortProps) => {
 // 选中时存入选项
 const selectIds = ref();
 const handleSelectionChange = (items: roleItem[]) => {
-    if(items?.length === 0) {
+    if (items?.length === 0) {
         selectIds.value = '';
         return;
     }
@@ -356,5 +359,4 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scoped lang="scss" src="@/assets/css/manage.scss">
-</style>
+<style scoped lang="scss" src="@/assets/css/manage.scss"></style>

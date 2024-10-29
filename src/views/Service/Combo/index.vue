@@ -6,18 +6,19 @@
                     <el-form-item label="套餐名称">
                         <el-input v-model="formInline.comboName" placeholder="搜索套餐名称" clearable />
                     </el-form-item>
-                    <el-form-item label="套餐类型">
+                    <el-form-item label="类型">
                         <el-select v-model="formInline.comboType">
-                            <el-option label="全部" value="9999" />
-                            <el-option label="个人客户" value="1" />
-                            <el-option label="企业客户" value="2" />
+                            <el-option label="全部" value="99" />
+                            <el-option label="流量包" value="1" />
+                            <el-option label="短信包" value="2" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="状态">
                         <el-select v-model="formInline.status">
                             <el-option label="全部" value="99" />
-                            <el-option label="个人客户" value="1" />
-                            <el-option label="企业客户" value="2" />
+                            <el-option label="待定" value="0" />
+                            <el-option label="上架" value="1" />
+                            <el-option label="下架" value="2" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="创建时间" v-show="showMoreItems">
@@ -39,7 +40,7 @@
                             controls-position="right" style="width: 90px;" placeholder="最高" />
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" :icon="Search" @click="getClientList()">搜索</el-button>
+                        <el-button type="primary" :icon="Search" @click="getComboList()">搜索</el-button>
                         <el-button :icon="Refresh" type="primary" :plain=true @click="resetForm">重置</el-button>
                         <el-button :icon="showMoreItems ? ArrowUpBold : ArrowDownBold" type="primary" :plain=true
                             @click="showMoreItems = !showMoreItems">{{ showMoreItems ? '收起' : '更多' }}</el-button>
@@ -48,34 +49,89 @@
             </div>
             <div class="filter_right">
                 <div>
-                    <el-button type="primary" :icon="Plus">添加</el-button>   
-                    <el-button type="danger" :icon="Delete" :plain=true>删除</el-button>
-                    <el-button type="primary" :icon="Top" :plain=true>上架</el-button>  
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyCombo('添加套餐')">添加</el-button>
+                    <!-- &nbsp; -->
+                    <el-button type="danger" :icon="Delete" :plain=true @click="deleteCombos">删除</el-button>
+                    <el-button type="primary" :icon="Top" :plain=true>上架</el-button>
                     <el-button type="primary" :icon="Bottom" :plain=true>下架</el-button>
                 </div>
+                <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle" :show-close="false"
+                    :close-on-click-modal="false" :close-on-press-escape="false">
+                    <div class="form-items">
+                        <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules"
+                            label-position="left" label-width="auto" class="demo-ruleForm">
+                            <el-form-item label="套餐名称:" prop="comboName">
+                                <el-input v-model="ruleForm.comboName" style="width: 180px;" autocomplete="off"
+                                    placeholder="请输入套餐名称" />
+                            </el-form-item>
+                            <el-form-item label="套餐类型:" prop="comboType">
+                                <el-select v-model="ruleForm.comboType" style="width: 180px" collapse-tags
+                                    collapse-tags-tooltip placeholder="请选择套餐类型">
+                                    <el-option label="短信包" value="1" />
+                                    <el-option label="短信包" value="2" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="标准资费:" prop="standardTariff">
+                                <el-input-number v-model="ruleForm.standardTariff" class="mx-4" :min="0" :max="10"
+                                    style="width: 160px;" placeholder="请输入标准资费" />
+                            </el-form-item>
+                            <el-form-item label="销售价格:" prop="salesPrice">
+                                <el-input-number v-model="ruleForm.salesPrice" class="mx-4" :min="0" :max="10"
+                                    style="width: 160px;" placeholder="请输入销售价格" />
+                            </el-form-item>
+                            <el-form-item label="有效期:" prop="comboPeriod">
+                                <el-select v-model="ruleForm.comboPeriod" style="width: 180px" collapse-tags
+                                    collapse-tags-tooltip placeholder="请选择有效期">
+                                    <el-option label="短信包" value="1" />
+                                    <el-option label="短信包" value="2" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="套餐容量:" prop="comboCapacity">
+                                <el-input-number v-model="ruleForm.comboCapacity" class="mx-4" :min="0" :max="10"
+                                    style="width: 160px;" placeholder="请输入套餐容量" />
+                            </el-form-item>
+                            <el-form-item label="套餐说明">
+                                <el-input v-model="ruleForm.remark" type="textarea" :rows="3"
+                                    placeholder="请输入套餐说明"></el-input>
+                            </el-form-item>
+                            <div style="display: flex; justify-content: end;">
+                                <el-button @click="cancelAddCombo" style="width:80px">取消</el-button>
+                                <el-button type="primary" @click="saveAddcombo" :loading="stopClick2"
+                                    style="width: 80px;">保存</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                </el-dialog>
             </div>
         </div>
         <div class="lists">
-            <!-- <el-table :data="clientList" style="width: 100%" @selection-change="handleSelectionChange"
+            <el-table :data="comboList" style="width: 100%" @selection-change="handleSelectionChange"
                 @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 270px)">
                 <el-table-column type="selection" width="40" />
                 <el-table-column property="id" label="ID" width="70" fixed />
-                <el-table-column property="clientNo" label="客户编号" width="150" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="clientName" label="客户名称" width="220" show-overflow-tooltip sortable="custom" />
-                <el-table-column label="客户类型" width="120" sortable="custom">
+                <el-table-column property="comboNo" label="套餐编号" width="150" show-overflow-tooltip sortable="custom" />
+                <el-table-column property="comboName" label="套餐名称" width="220" show-overflow-tooltip
+                    sortable="custom" />
+                <el-table-column label="有效期" width="120" sortable="custom">
                     <template #default="scope">
-                        <p>{{ scope.row.clientType === 1 ? '个人客户' : '企业用户' }}</p>
+                        <p>{{ scope.row.comboPeriod }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="contact" label="联系人" sortable="custom" width="120" show-overflow-tooltip/>
-                <el-table-column property="contactPhone" label="联系号码" sortable="custom" width="120"/>
-                <el-table-column label="联系地址" width="250" show-overflow-tooltip>
+                <el-table-column label="套餐类型" width="120" sortable="custom">
                     <template #default="scope">
-                        <p>{{ scope.row.contactProvinceName + scope.row.contactCityName + scope.row.contactAreaName + 
-                            scope.row.contactStreetName + scope.row.contactAddress || '-' }}</p>
+                        <p>{{ scope.row.comboType === 1 ? '流量包' : '短信包' }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom" show-overflow-tooltip=""/>
+                <el-table-column property="comboCapacity" label="套餐容量" sortable="custom" width="120"
+                    show-overflow-tooltip />
+                <el-table-column property="standardTariff" label="标准资费" sortable="custom" width="120" />
+                <el-table-column property="salesPrice" label="销售资费" sortable="custom" width="120" />
+                <el-table-column property="remark" label="套餐说明" sortable="custom" width="200" show-overflow-tooltip />
+                <el-table-column label="状态" width="120">
+                    <template #default="scope">
+                        <p>{{ scope.row.status }}</p>
+                    </template>
+                </el-table-column>
                 <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
@@ -85,10 +141,12 @@
                     <template #default="scope">
                         <div>
                             <el-button link type="primary" size="small"
-                                @click="addOrModifyClient('编辑客户', scope.row)">编辑</el-button>
+                                @click="addOrModifyCombo('编辑套餐', scope.row)">编辑</el-button>
+                            <el-button link type="success" size="small">上架</el-button>
+                            <el-button link type="danger" size="small">下架</el-button>
                             <el-button link type="danger" size="small">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
-                                    @confirm="deleteClient(scope.row.id)">
+                                    @confirm="deleteCombo(scope.row.id)">
                                     <template #reference>
                                         <p>删除</p>
                                     </template>
@@ -100,6 +158,7 @@
                                     </template>
                                 </el-popconfirm>
                             </el-button>
+                            <el-button link type="primary" size="small">复制</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -109,20 +168,34 @@
                 &nbsp;
                 <el-pagination layout="prev, pager, next" :total="total" v-model:current-page="currentpage" background
                     :default-page-size="20" />
-            </div> -->
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowDownBold, ArrowUpBold, Bottom, Delete, Plus, Refresh, Search, Top } from '@element-plus/icons-vue';
-import { reactive, ref } from 'vue';
+import { ArrowDownBold, ArrowUpBold, Bottom, Delete, Plus, Refresh, Search, Top, WarningFilled } from '@element-plus/icons-vue';
+import { onBeforeMount, reactive, ref, watch } from 'vue';
+// @ts-ignore
+import { useCompoStore } from '@/stores/combo';
+// @ts-ignore
+import { dateParse } from '@/utils/dateHandler';
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 const showMoreItems = ref(false);
-
+// const compoStore = useCompoStore();
+const tableLoading = ref(false);
+const addOrModifyTitle = ref('添加套餐');
+const addOrModifyVisiable = ref(false);
+const deleteCombosVisible = ref(false);
+const ruleFormRef = ref<FormInstance>();
+const ruleFormRef2 = ref<FormInstance>();
+const stopClick2 = ref(false);
+// 后台套餐数据总量
+const total = ref(0);
 // 筛选表单
 const formInline = reactive({
     comboName: '',
-    comboType: '9999',
+    comboType: '99',
     status: '99',
     timeList: [],
     standardTariffRange: [],
@@ -130,27 +203,144 @@ const formInline = reactive({
     orderBy: 'createTime',
     orderType: 'desc'
 })
+// 选中时存入选项
+const selectIds = ref();
+const handleSelectionChange = (items: comboItem[]) => {
+    if (items?.length === 0) {
+        selectIds.value = '';
+        return;
+    }
+    selectIds.value = items.map(item => item.id);
+}
+// 分页功能 切换到某一页
+const currentpage = ref(1);
+watch(currentpage, async (value: number) => {
+    await getComboList(value);
+})
+// 表单排序
+interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}
+const handleSortChange = async (data: ISortProps) => {
+    let { prop, order } = data;
+    if (!order) order = 'descending';
+    formInline.orderBy = prop;
+    formInline.orderType = order.replace('ending', '');
+    await getComboList(currentpage.value);
+}
+// 新增或编辑客户表单的格式验证规则
+const rules = reactive<FormRules<typeof ruleForm>>({
+    comboName: [
+        { required: true, message: '请输入套餐名称', trigger: 'blur' },
+        { min: 1, max: 128, message: '名称长度最多 128 个字符', trigger: 'blur' },
+    ],
+    comboType: [
+        { required: true, message: '请选择套餐类型', trigger: 'change' },
+    ],
+})
+// 套餐数据结构
+type comboItem = {
+    id: number,
+    comboNo: string,
+    comboName: string,
+    comboPeriod: number,
+    comboCapacity: number,
+    comboType: number,
+    status: number,
+    standardTariff: string,
+    salesPrice: string,
+    remark: string,
+    createTime: string
+}
+// 套餐列表
+const comboList = ref<comboItem[]>();
 // 搜索套餐
-const getClientList = async () => {
-
+const getComboList = async (pageNum: number = 1) => {
+    pageNum
 }
 // 重置筛选表单
 const resetForm = () => {
 
 }
+// 新增或编辑套餐的表单
+const ruleForm = reactive({
+    id: '',
+    comboName: '',
+    comboType: '',
+    standardTariff: '',
+    salesPrice: '',
+    comboPeriod: '',
+    comboCapacity: '',
+    remark: ''
+})
+// 打开新增或编辑套餐表单
+const addOrModifyCombo = async (title: string, item?: comboItem) => {
+    addOrModifyTitle.value = title;
+    if (item) {
+        addOrModifyVisiable.value = true;
+    } else {
+        addOrModifyVisiable.value = true;
+        ruleFormRef2.value?.resetFields();
+    }
+}
+// 新增或编辑套餐表单的保存按钮
+const saveAddcombo = async () => {
+}
+// 新增或编辑套餐表单的取消按钮
+const cancelAddCombo = () => {
+
+}
+// 删除套餐
+const deleteCombo = async (comboIds: string[] | number[] | string | number) => {
+    let ids = Array.isArray(comboIds) ? comboIds : [comboIds];
+    ids
+    // let data = await comboStore.deletecomboAsync(ids);
+    // if (data) {
+    //     if (currentpage.value === 1) {
+    //         await getcomboList()
+    //     } else {
+    //         currentpage.value = 1;
+    //     }
+    //     ElMessage({
+    //         message: '删除成功',
+    //         type: 'success'
+    //     })
+    // }
+}
+// 批量删除
+const deleteCombos = () => {
+    if (!selectIds.value) {
+        ElMessage({
+            message: '未选择任何数据',
+            type: 'warning'
+        });
+        return;
+    }
+    deleteCombosVisible.value = true;
+}
+// const confirmDeleteCombos = () => {
+//     deleteCombo(selectIds.value);
+//     deleteCombosVisible.value = false;
+// }
+
+onBeforeMount(async () => {
+
+})
 </script>
 
 
 <style lang="scss" scoped src="@/assets/css/manage.scss"></style>
 <style lang="scss" scoped>
-    .home {
-        .filter {
-            .filter_right {
-                >div {
-                    display: flex;
-                }
-                
+.home {
+    .filter {
+        .filter_right {
+            >div {
+                display: flex;
             }
+
         }
     }
+}
 </style>

@@ -9,8 +9,8 @@
                     <el-form-item label="客户类型">
                         <el-select v-model="formInline.clientType">
                             <el-option label="全部" value="9999" />
-                            <el-option label="个人客户" value="1"/>
-                            <el-option label="企业客户" value="2"/>
+                            <el-option label="个人客户" value="1" />
+                            <el-option label="企业客户" value="2" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="联系人">
@@ -28,93 +28,93 @@
             <div class="filter_right">
                 <div>
                     <el-button type="primary" :icon="Plus" @click="addOrModifyClient('添加客户')">添加</el-button>
-                    <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle" :show-close="false"
-                        :close-on-click-modal="false" :close-on-press-escape="false">
-                        <div class="form-items">
-                            <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules" label-position="left"
-                                label-width="auto" class="demo-ruleForm">
-                                <el-form-item label="客户名称:" prop="clientName">
-                                    <el-input v-model="ruleForm.clientName" style="width: 180px;" autocomplete="off"
-                                        placeholder="请输入客户名称"/>
-                                </el-form-item>
-                                <el-form-item label="客户类型:" prop="clientType">
-                                    <el-select v-model="ruleForm.clientType" style="width: 180px"
-                                        collapse-tags collapse-tags-tooltip placeholder="请选择客户类型">
-                                        <el-option label="个人客户" value="1"/>
-                                        <el-option label="企业客户" value="2"/>
-                                    </el-select>
-                                </el-form-item>
-                                <el-form-item label="联系人:" prop="contact">
-                                    <el-input v-model="ruleForm.contact" style="width: 180px;" autocomplete="off"
-                                        placeholder="请输入联系人"/>
-                                </el-form-item>
-                                <el-form-item label="联系号码:" prop="contactPhone">
-                                    <el-input v-model="ruleForm.contactPhone" style="width: 180px;" autocomplete="off"
-                                        placeholder="请输入联系人手机号"/>
-                                </el-form-item>
-                                <el-form-item label="业务员:" prop="salesman">
-                                    <el-select v-model="ruleForm.salesman" placeholder="请选择客户类型" style="width: 180px;">
-                                        <el-option v-for="item of roleStore.roleInfo" :label="item.roleName" :value="item.id"
-                                        :key="item.id" />
-                                    </el-select>
-                                </el-form-item>
-                                <el-form-item label="联系地址:">
-                                    <el-select v-model="ruleForm.contactProvince" placeholder="请选择省份" style="width: 115px;"
-                                    no-data-text="获取省份失败">
-                                        <el-option v-for="item of provinces" :label="item.name" :value="item.id"
-                                        :key="item.id" />
-                                    </el-select>
-                                    &nbsp;
-                                    <el-select v-model="ruleForm.contactCity" placeholder="请选择城市" style="width: 115px;"
-                                    no-data-text="请先选择省份">
-                                        <el-option v-for="item of cities" :label="item.name" :value="item.id"
-                                        :key="item.id" />
-                                    </el-select>
-                                    &nbsp;
-                                    <el-select v-model="ruleForm.contactArea" placeholder="请选择区域" style="width: 115px;"
-                                    no-data-text="请先选择城市">
-                                        <el-option v-for="item of areas" :label="item.name" :value="item.id"
-                                        :key="item.id" />
-                                    </el-select>
-                                    &nbsp;
-                                    <el-select v-model="ruleForm.contactStreet" placeholder="请选择街道" style="width: 115px;"
-                                    no-data-text="请先选择区域">
-                                        <el-option v-for="item of streets" :label="item.name" :value="item.id"
-                                        :key="item.id" />
-                                    </el-select>
-                                    <el-input v-model="ruleForm.contactAddress" type="textarea" :rows="3" placeholder="请输入详细地址" style="margin-top: 10px;"></el-input>
-                                </el-form-item>
-                                <div style="display: flex; justify-content: end;">
-                                    <el-button @click="cancelAddUser" style="width:80px">取消</el-button>
-                                    <el-button type="primary" @click="saveAddClient" :loading="stopClick2"
-                                        style="width: 80px;">保存</el-button>
-                                </div>
-                            </el-form>
-                        </div>
-                    </el-dialog>
-                    &nbsp;
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteClients">删除</el-button>
-                    <el-dialog v-model="deleteUsersVisible" width="250" :show-close="false">
-                        <div class="delete_class">
-                            <div class="delete_title">确认删除?</div>
-                            <div class="delete_data">
-                                <el-icon color="red" size="20">
-                                    <WarningFilled />
-                                </el-icon>
-                                &nbsp;
-                                <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
-                            </div>
-                        </div>
-                        <template #footer>
-                            <div class="dialog-footer">
-                                <el-button @click="deleteUsersVisible = false">取消</el-button>
-                                <el-button type="danger" @click="confirmDeleteUsers">
-                                    确认
-                                </el-button>
-                            </div>
-                        </template>
-                    </el-dialog>
                 </div>
+                <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle" :show-close="false"
+                    :close-on-click-modal="false" :close-on-press-escape="false">
+                    <div class="form-items">
+                        <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules"
+                            label-position="left" label-width="auto" class="demo-ruleForm">
+                            <el-form-item label="客户名称:" prop="clientName">
+                                <el-input v-model="ruleForm.clientName" style="width: 180px;" autocomplete="off"
+                                    placeholder="请输入客户名称" />
+                            </el-form-item>
+                            <el-form-item label="客户类型:" prop="clientType">
+                                <el-select v-model="ruleForm.clientType" style="width: 180px" collapse-tags
+                                    collapse-tags-tooltip placeholder="请选择客户类型">
+                                    <el-option label="个人客户" value="1" />
+                                    <el-option label="企业客户" value="2" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="联系人:" prop="contact">
+                                <el-input v-model="ruleForm.contact" style="width: 180px;" autocomplete="off"
+                                    placeholder="请输入联系人" />
+                            </el-form-item>
+                            <el-form-item label="联系号码:" prop="contactPhone">
+                                <el-input v-model="ruleForm.contactPhone" style="width: 180px;" autocomplete="off"
+                                    placeholder="请输入联系人手机号" />
+                            </el-form-item>
+                            <el-form-item label="业务员:" prop="salesman">
+                                <el-select v-model="ruleForm.salesman" placeholder="请选择客户类型" style="width: 180px;">
+                                    <el-option v-for="item of roleStore.roleInfo" :label="item.roleName"
+                                        :value="item.id" :key="item.id" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="联系地址:">
+                                <el-select v-model="ruleForm.contactProvince" placeholder="请选择省份" style="width: 115px;"
+                                    no-data-text="获取省份失败">
+                                    <el-option v-for="item of provinces" :label="item.name" :value="item.id"
+                                        :key="item.id" />
+                                </el-select>
+                                &nbsp;
+                                <el-select v-model="ruleForm.contactCity" placeholder="请选择城市" style="width: 115px;"
+                                    no-data-text="请先选择省份">
+                                    <el-option v-for="item of cities" :label="item.name" :value="item.id"
+                                        :key="item.id" />
+                                </el-select>
+                                &nbsp;
+                                <el-select v-model="ruleForm.contactArea" placeholder="请选择区域" style="width: 115px;"
+                                    no-data-text="请先选择城市">
+                                    <el-option v-for="item of areas" :label="item.name" :value="item.id"
+                                        :key="item.id" />
+                                </el-select>
+                                &nbsp;
+                                <el-select v-model="ruleForm.contactStreet" placeholder="请选择街道" style="width: 115px;"
+                                    no-data-text="请先选择区域">
+                                    <el-option v-for="item of streets" :label="item.name" :value="item.id"
+                                        :key="item.id" />
+                                </el-select>
+                                <el-input v-model="ruleForm.contactAddress" type="textarea" :rows="3"
+                                    placeholder="请输入详细地址" style="margin-top: 10px;"></el-input>
+                            </el-form-item>
+                            <div style="display: flex; justify-content: end;">
+                                <el-button @click="cancelAddClient" style="width:80px">取消</el-button>
+                                <el-button type="primary" @click="saveAddClient" :loading="stopClick2"
+                                    style="width: 80px;">保存</el-button>
+                            </div>
+                        </el-form>
+                    </div>
+                </el-dialog>
+                <el-dialog v-model="deleteClientsVisible" width="250" :show-close="false">
+                    <div class="delete_class">
+                        <div class="delete_title">确认删除?</div>
+                        <div class="delete_data">
+                            <el-icon color="red" size="20">
+                                <WarningFilled />
+                            </el-icon>
+                            &nbsp;
+                            <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
+                        </div>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="deleteClientsVisible = false">取消</el-button>
+                            <el-button type="danger" @click="confirmDeleteUsers">
+                                确认
+                            </el-button>
+                        </div>
+                    </template>
+                </el-dialog>
             </div>
         </div>
         <div class="lists">
@@ -123,21 +123,23 @@
                 <el-table-column type="selection" width="40" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="clientNo" label="客户编号" width="150" show-overflow-tooltip sortable="custom" />
-                <el-table-column property="clientName" label="客户名称" width="220" show-overflow-tooltip sortable="custom" />
+                <el-table-column property="clientName" label="客户名称" width="220" show-overflow-tooltip
+                    sortable="custom" />
                 <el-table-column label="客户类型" width="120" sortable="custom">
                     <template #default="scope">
                         <p>{{ scope.row.clientType === 1 ? '个人客户' : '企业用户' }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="contact" label="联系人" sortable="custom" width="120" show-overflow-tooltip/>
-                <el-table-column property="contactPhone" label="联系号码" sortable="custom" width="120"/>
+                <el-table-column property="contact" label="联系人" sortable="custom" width="120" show-overflow-tooltip />
+                <el-table-column property="contactPhone" label="联系号码" sortable="custom" width="120" />
                 <el-table-column label="联系地址" width="250" show-overflow-tooltip>
                     <template #default="scope">
-                        <p>{{ scope.row.contactProvinceName + scope.row.contactCityName + scope.row.contactAreaName + 
+                        <p>{{ scope.row.contactProvinceName + scope.row.contactCityName + scope.row.contactAreaName +
                             scope.row.contactStreetName + scope.row.contactAddress || '-' }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom" show-overflow-tooltip=""/>
+                <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom"
+                    show-overflow-tooltip="" />
                 <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
@@ -194,7 +196,7 @@ const clientStore = useClientStore();
 const commonStore = useCommonStore();
 const tableLoading = ref(false);
 const addOrModifyVisiable = ref(false);
-const deleteUsersVisible = ref(false);
+const deleteClientsVisible = ref(false);
 const addOrModifyTitle = ref('添加客户');
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
@@ -227,7 +229,7 @@ const formInline = reactive({
     clientType: '9999',
     contact: '',
     contactPhone: '',
-    timeList:[],
+    timeList: [],
     orderBy: 'createTime',
     orderType: 'desc'
 })
@@ -260,7 +262,7 @@ const getClientList = async (pageNum: number = 1, pageSize: number = 20) => {
     if (data) {
         total.value = data.total;
         clientList.value = data.list;
-    } 
+    }
     tableLoading.value = false;
 }
 // 重置筛选的表单内容
@@ -330,7 +332,7 @@ const ruleForm = reactive({
     salesman: '' as string | number
 })
 // 地址选择
-const specialCity = [{id: 1, name: '北京市'}, {id: 2, name: '上海市'}, {id: 3, name: '天津市'}, {id: 4, name: '重庆市'}];
+const specialCity = [{ id: 1, name: '北京市' }, { id: 2, name: '上海市' }, { id: 3, name: '天津市' }, { id: 4, name: '重庆市' }];
 const provinces = ref();
 const cities = ref();
 const areas = ref();
@@ -367,7 +369,7 @@ watch(contactArea, async (value: string | number) => {
     streets.value = await commonStore.getStreetsAsync(Number(value));
 })
 // 新增或编辑客户表单的取消按钮
-const cancelAddUser = () => {
+const cancelAddClient = () => {
     ruleFormRef2.value?.resetFields();
     cities.value = [];
     areas.value = [];
@@ -441,7 +443,7 @@ const saveAddClient = async () => {
                     contactStreet: ruleForm.contactStreet || undefined,
                     contactAddress: ruleForm.contactAddress || undefined,
                     salesman: ruleForm.salesman
-                }     
+                }
                 );
             }
             if (data) {
@@ -459,7 +461,7 @@ const saveAddClient = async () => {
                     type: 'success'
                 })
                 stopClick2.value = false;
-                cancelAddUser();
+                cancelAddClient();
             } else {
                 stopClick2.value = false;
             }
@@ -493,11 +495,11 @@ const deleteClients = () => {
         });
         return;
     }
-    deleteUsersVisible.value = true;
+    deleteClientsVisible.value = true;
 }
 const confirmDeleteUsers = () => {
     deleteClient(selectIds.value);
-    deleteUsersVisible.value = false;
+    deleteClientsVisible.value = false;
 }
 
 // 进入页面前获取一次数据
@@ -508,5 +510,4 @@ onBeforeMount(async () => {
 
 </script>
 
-<style scoped lang="scss" src="@/assets/css/manage.scss">
-</style>
+<style scoped lang="scss" src="@/assets/css/manage.scss"></style>
