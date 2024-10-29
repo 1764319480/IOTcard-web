@@ -23,21 +23,21 @@
                     </el-form-item>
                     <el-form-item label="创建时间" v-show="showMoreItems">
                         <el-date-picker v-model="formInline.timeList" type="daterange" start-placeholder="开始时间"
-                            end-placeholder="结束时间" style="width: 220px;" value-format="YYYY-MM-DD HH:mm:ss" />
+                        :default-time="defaultTime" end-placeholder="结束时间" style="width: 220px;" value-format="YYYY-MM-DD HH:mm:ss" />
                     </el-form-item>
                     <el-form-item label="标准资费" v-show="showMoreItems">
-                        <el-input-number v-model="formInline.standardTariffRange[0]" class="mx-4" :min="0" :max="10"
-                            controls-position="right" style="width: 90px;" placeholder="最低" />
+                        <el-input-number v-model="formInline.standardTariffMin" class="mx-4" :min="0" :max="formInline.standardTariffMax"
+                            controls-position="right" style="width: 110px;" placeholder="最低" :precision="2"/>
                         &nbsp;-&nbsp;
-                        <el-input-number v-model="formInline.standardTariffRange[1]" class="mx-4" :min="0" :max="10"
-                            controls-position="right" style="width: 90px;" placeholder="最高" />
+                        <el-input-number v-model="formInline.standardTariffMax" class="mx-4" :min="formInline.standardTariffMin"
+                            controls-position="right" style="width: 110px;" placeholder="最高" :precision="2"/>
                     </el-form-item>
                     <el-form-item label="销售价格" v-show="showMoreItems">
-                        <el-input-number v-model="formInline.salesPriceRange[0]" class="mx-4" :min="0" :max="10"
-                            controls-position="right" style="width: 90px;" placeholder="最低" />
+                        <el-input-number v-model="formInline.salesPriceMin" class="mx-4" :min="0" :max="formInline.salesPriceMax"
+                            controls-position="right" style="width: 110px;" placeholder="最低" :precision="2"/>
                         &nbsp;-&nbsp;
-                        <el-input-number v-model="formInline.salesPriceRange[1]" class="mx-4" :min="0" :max="10"
-                            controls-position="right" style="width: 90px;" placeholder="最高" />
+                        <el-input-number v-model="formInline.salesPriceMax" class="mx-4" :min="formInline.salesPriceMin"
+                            controls-position="right" style="width: 110px;" placeholder="最高" :precision="2"/>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" :icon="Search" @click="getComboList()">搜索</el-button>
@@ -135,7 +135,7 @@
                 <el-table-column label="套餐容量" sortable="custom" width="140"
                     show-overflow-tooltip>
                     <template #default="scope">
-                        <p>{{ scope.row.comboCapacity >= 1024 ? (scope.row.comboCapacity / 1024).toFixed(2) + 'G' : scope.row.comboCapacity + 'M' }}</p>
+                        <p>{{ scope.row.comboType === 1 ? capacityParse(scope.row.comboCapacity) : scope.row.comboCapacity + '条' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column label="标准资费" sortable="custom" width="120">
@@ -220,6 +220,10 @@ const deleteCombosVisible = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
+const defaultTime = ref<[Date, Date]>([
+    new Date(2000, 1, 1, 0, 0, 0),
+    new Date(2000, 2, 1, 23, 59, 59),
+])
 // 后台套餐数据总量
 const total = ref(0);
 // 筛选表单
@@ -228,8 +232,10 @@ const formInline = reactive({
     comboType: '99',
     status: '99',
     timeList: [],
-    standardTariffRange: [],
-    salesPriceRange: [],
+    standardTariffMin: undefined as undefined | number,
+    standardTariffMax: undefined as undefined | number,
+    salesPriceMin: undefined as undefined | number,
+    salesPriceMax: undefined as undefined | number,
     orderBy: 'createTime',
     orderType: 'desc'
 })
@@ -271,6 +277,12 @@ const periodParse = (period: number) => {
         default: return '未知'
     }
 }
+// 套餐容量-流量格式转化
+const capacityParse = (capacity: number) => {
+    if (capacity < 1024) return capacity + 'M';
+    if (capacity < 1024 * 1024) return (capacity / 1024).toFixed(2) + 'G';
+    return (capacity / 1024 / 1024).toFixed(2) + 'T';
+}
 // 新增或编辑客户表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({
     comboName: [
@@ -301,11 +313,13 @@ const comboList = ref<comboItem[]>();
 const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
     const data = await comboStore.getComboListAsync({
-        comboName: formInline.comboName,
-        comboType: formInline.comboType,
-        status: formInline.status,
-        salesPriceRange: formInline.salesPriceRange,
-        standardTariffRange: formInline.standardTariffRange,
+        comboName: formInline.comboName || undefined,
+        comboType: formInline.comboType === '99' ? undefined : formInline.comboType,
+        status: formInline.status === '99' ? undefined : formInline.status,
+        salesPriceRange: [formInline.salesPriceMin || 0, formInline.salesPriceMax || 999999],
+        standardTariffRange: [formInline.standardTariffMin || 0, formInline.standardTariffMax || 999999],
+        startTime: formInline.timeList[0],
+        endTime: formInline.timeList[1],
         pageNum,
         pageSize,
         orderBy: formInline.orderBy,
@@ -318,8 +332,20 @@ const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = false;
 }
 // 重置筛选表单
-const resetForm = () => {
-
+const resetForm = async () => {
+    formInline.comboName = '';
+    formInline.comboType = '99';
+    formInline.status = '99';
+    formInline.timeList = [];
+    formInline.standardTariffMin = undefined;
+    formInline.standardTariffMax = undefined;
+    formInline.salesPriceMin = undefined;
+    formInline.salesPriceMax = undefined;
+    if (currentpage.value === 1) {
+        await getComboList()
+    } else {
+        currentpage.value = 1;
+    }
 }
 // 新增或编辑套餐的表单
 const ruleForm = reactive({
