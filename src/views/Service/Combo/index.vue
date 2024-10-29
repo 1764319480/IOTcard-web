@@ -383,7 +383,7 @@ const deleteCombos = () => {
 // }
 
 onBeforeMount(async () => {
-
+    await getComboList();
 })
 </script>
 
