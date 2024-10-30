@@ -125,7 +125,7 @@
                 <el-table-column property="clientNo" label="客户编号" width="150" show-overflow-tooltip sortable="custom" />
                 <el-table-column property="clientName" label="客户名称" width="220" show-overflow-tooltip
                     sortable="custom" />
-                <el-table-column label="客户类型" width="120" sortable="custom">
+                <el-table-column property="clientType" label="客户类型" width="120" sortable="custom">
                     <template #default="scope">
                         <p>{{ scope.row.clientType === 1 ? '个人客户' : '企业用户' }}</p>
                     </template>
