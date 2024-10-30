@@ -120,7 +120,7 @@
         </div>
         <div class="lists">
             <el-table :data="comboList" style="width: 100%" @selection-change="handleSelectionChange"
-                @sort-change="handleSortChange" v-loading="tableLoading" max-height="calc(100vh - 270px)">
+                @sort-change="handleSortChange" v-loading="tableLoading" :max-height="showMoreItems ? 'calc(100vh - 320px)' : 'calc(100vh - 270px)'">
                 <el-table-column type="selection" width="40" />
                 <el-table-column property="id" label="ID" width="70" fixed />
                 <el-table-column property="comboNo" label="套餐编号" width="150" show-overflow-tooltip sortable="custom" />
@@ -173,12 +173,36 @@
                         <div>
                             <el-button link type="primary" size="small" v-if="scope.row.status === 0"
                                 @click="addOrModifyCombo('编辑套餐', scope.row)">编辑</el-button>
-                            <el-button link type="success" size="small" v-if="scope.row.status !== 1"
-                            >上架</el-button>
-                            <el-button link type="danger" size="small" v-if="scope.row.status === 1"
-                            >下架</el-button>
+                            <el-button link type="success" size="small" v-if="scope.row.status !== 1">
+                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="blue" title="确定上架该套餐吗?"
+                                    @confirm="changeComboStatus(scope.row.id, 1)">
+                                    <template #reference>
+                                        <p>上架</p>
+                                    </template>
+                                    <template #actions="{ confirm, cancel }">
+                                        <div style="margin-top: 15px;">
+                                            <el-button size="small" @click="cancel">取消</el-button>
+                                            <el-button type="primary" size="small" @click="confirm">确定</el-button>
+                                        </div>
+                                    </template>
+                                </el-popconfirm>
+                            </el-button>
+                            <el-button link type="danger" size="small" v-if="scope.row.status === 1">
+                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定下架该套餐吗?"
+                                    @confirm="changeComboStatus(scope.row.id, 2)">
+                                    <template #reference>
+                                        <p>下架</p>
+                                    </template>
+                                    <template #actions="{ confirm, cancel }">
+                                        <div style="margin-top: 15px;">
+                                            <el-button size="small" @click="cancel">取消</el-button>
+                                            <el-button type="danger" size="small" @click="confirm">确定</el-button>
+                                        </div>
+                                    </template>
+                                </el-popconfirm>
+                            </el-button>
                             <el-button link type="danger" size="small" v-if="scope.row.status !== 1">
-                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
+                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该套餐吗?"
                                     @confirm="deleteCombo(scope.row.id)">
                                     <template #reference>
                                         <p>删除</p>
@@ -191,7 +215,20 @@
                                     </template>
                                 </el-popconfirm>
                             </el-button>
-                            <el-button link type="primary" size="small">复制</el-button>
+                            <el-button link type="primary" size="small">
+                                <el-popconfirm width="220" :icon="WarningFilled" icon-color="blue" title="确定复制该套餐吗?"
+                                    @confirm="copyCombo(scope.row.id)">
+                                    <template #reference>
+                                        <p>复制</p>
+                                    </template>
+                                    <template #actions="{ confirm, cancel }">
+                                        <div style="margin-top: 15px;">
+                                            <el-button size="small" @click="cancel">取消</el-button>
+                                            <el-button type="primary" size="small" @click="confirm">确定</el-button>
+                                        </div>
+                                    </template>
+                                </el-popconfirm>
+                            </el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -464,25 +501,46 @@ const cancelAddCombo = () => {
 // 删除套餐
 const deleteCombo = async (comboIds: string[] | number[] | string | number) => {
     let ids = Array.isArray(comboIds) ? comboIds : [comboIds];
-    ids
-    // let data = await comboStore.deletecomboAsync(ids);
-    // if (data) {
-    //     if (currentpage.value === 1) {
-    //         await getcomboList()
-    //     } else {
-    //         currentpage.value = 1;
-    //     }
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success'
-    //     })
-    // }
+    const data = await comboStore.deleteComboAsync(ids);
+    if (data) {
+        if (currentpage.value === 1) {
+            await getComboList()
+        } else {
+            currentpage.value = 1;
+        }
+        ElMessage({
+            message: '删除成功',
+            type: 'success'
+        })
+    }
+}
+// 上下架套餐
+const changeComboStatus = async (id: number, status: number) => {
+    const data = await comboStore.updateComboStatusAsync(id, status);
+    if (data) {
+        await getComboList(currentpage.value);
+        ElMessage({
+            message: status === 1 ? '上架成功' : '下架成功',
+            type: 'success'
+        })
+    }
+}
+// 复制套餐
+const copyCombo = async (id: number) => {
+    const data = await comboStore.copyComboAsync(id);
+    if (data) {
+        await getComboList();
+        ElMessage({
+            message: '复制成功',
+            type: 'success'
+        })
+    }
 }
 // 批量删除
 const deleteCombos = () => {
     if (!selectIds.value) {
         ElMessage({
-            message: '未选择任何数据',
+            message: '请选择需要操作的套餐',
             type: 'warning'
         });
         return;
