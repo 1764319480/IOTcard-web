@@ -40,7 +40,7 @@
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
-                            label-width="auto" class="demo-ruleForm">
+                            label-position="left" label-width="auto" class="demo-ruleForm">
                             <el-form-item label="账号:" prop="account">
                                 <el-input v-model="ruleForm.account" style="width: 200px;" autocomplete="off"
                                     placeholder="请输入账号" :disabled="addOrModifyTitle === '编辑用户'" />
