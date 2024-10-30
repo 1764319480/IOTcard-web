@@ -287,6 +287,16 @@ const capacityParse = (capacity: number) => {
     return (capacity / 1024 / 1024).toFixed(2) + 'T';
 }
 // 新增或编辑客户表单的格式验证规则
+const validateCapacity = (rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input the password again'))
+  } else if (value > 999999 && ruleForm.comboType === '2') {
+    callback(new Error("短信条数至多999999条"))
+  } else {
+    callback()
+    rule;
+  }
+}
 const rules = reactive<FormRules<typeof ruleForm>>({
     comboName: [
         { required: true, message: '请输入套餐名称', trigger: 'blur' },
@@ -306,6 +316,7 @@ const rules = reactive<FormRules<typeof ruleForm>>({
     ],
     comboCapacity: [
         { required: true, message: '请输入套餐容量', trigger: 'blur' },
+        { validator: validateCapacity, trigger: 'blur' }
     ],
 })
 // 套餐数据结构
