@@ -13,7 +13,7 @@
                 <el-table-column property="logInfo" :label="activeName === '3' ? '错误信息': '日志内容' " show-overflow-tooltip/>
                 <el-table-column property="logSource" label="错误来源" width="220" v-if="activeName === '3'" show-overflow-tooltip/>
                 <el-table-column property="userName" :label="activeName === '3' ? '用户' : '操作人' " width="150" show-overflow-tooltip/>
-                <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
+                <el-table-column property="createTime" label="创建时间" width="200">
                     <template #default="scope">
                         <p>{{ dateParse(scope.row.createTime) }}</p>
                     </template>
