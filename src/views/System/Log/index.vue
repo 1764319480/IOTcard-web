@@ -8,7 +8,7 @@
             </el-tabs>
         </div>
         <div class="lists">
-            <el-table :data="logList" style="width: 100%"  v-loading="tableLoading" max-height="calc(100vh - 205px)">
+            <el-table :data="logList" style="width: 100%"  v-loading="tableLoading" max-height="calc(100vh - 215px)">
                 <el-table-column property="id" label="ID" width="60"/>
                 <el-table-column property="logInfo" :label="activeName === '3' ? '错误信息': '日志内容' " show-overflow-tooltip/>
                 <el-table-column property="logSource" label="错误来源" width="220" v-if="activeName === '3'" show-overflow-tooltip/>
