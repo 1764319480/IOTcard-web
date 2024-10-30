@@ -66,21 +66,21 @@
                             <el-form-item label="套餐类型:" prop="comboType">
                                 <el-select v-model="ruleForm.comboType" style="width: 210px" collapse-tags
                                     collapse-tags-tooltip placeholder="请选择套餐类型">
-                                    <el-option label="短信包" value="1" />
-                                    <el-option label="流量包" value="2" />
+                                    <el-option label="流量包" value="1" />
+                                    <el-option label="短信包" value="2" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="标准资费:" prop="standardTariff">
-                                <el-input-number v-model="ruleForm.standardTariff" class="mx-4" :min="0" :max="10"
-                                    style="width: 210px;" placeholder="请输入标准资费">
+                                <el-input-number v-model="ruleForm.standardTariff" class="mx-4" :min="0" :max="999999"
+                                    style="width: 210px;" placeholder="请输入标准资费" :precision="2">
                                     <template #prefix>
                                         <span>￥</span>
                                     </template>
                                 </el-input-number>
                             </el-form-item>
                             <el-form-item label="销售价格:" prop="salesPrice">
-                                <el-input-number v-model="ruleForm.salesPrice" class="mx-4" :min="0" :max="10"
-                                    style="width: 210px;" placeholder="请输入销售价格">
+                                <el-input-number v-model="ruleForm.salesPrice" class="mx-4" :min="0" :max="999999"
+                                    style="width: 210px;" placeholder="请输入销售价格" :precision="2">
                                     <template #prefix>
                                         <span>￥</span>
                                     </template>
@@ -89,15 +89,18 @@
                             <el-form-item label="有效期:" prop="comboPeriod">
                                 <el-select v-model="ruleForm.comboPeriod" style="width: 210px" collapse-tags
                                     collapse-tags-tooltip placeholder="请选择有效期">
-                                    <el-option label="短信包" value="1" />
-                                    <el-option label="短信包" value="2" />
+                                    <el-option label="7天" value="7" />
+                                    <el-option label="1个月" value="30" />
+                                    <el-option label="3个月" value="90" />
+                                    <el-option label="6个月" value="180" />
+                                    <el-option label="1年" value="360" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="套餐容量:" prop="comboCapacity">
-                                <el-input-number v-model="ruleForm.comboCapacity" class="mx-4" :min="0" :max="10"
+                                <el-input-number v-model="ruleForm.comboCapacity" class="mx-4" :min="0" :max="ruleForm.comboType === '1' ? undefined : 999999 "
                                     style="width: 210px;" placeholder="请输入套餐容量">
                                     <template #suffix>
-                                        <span>M</span>
+                                        <span>{{ ruleForm.comboType === '1' ? 'M' : '条' }}</span>
                                     </template>
                                 </el-input-number>
                             </el-form-item>
@@ -292,6 +295,18 @@ const rules = reactive<FormRules<typeof ruleForm>>({
     comboType: [
         { required: true, message: '请选择套餐类型', trigger: 'change' },
     ],
+    standardTariff: [
+        { required: true, message: '请输入标准资费', trigger: 'blur' },
+    ],
+    salesPrice: [
+        { required: true, message: '请输入销售价格', trigger: 'blur' },
+    ],
+    comboPeriod: [
+        { required: true, message: '请选择有效期', trigger: 'change' },
+    ],
+    comboCapacity: [
+        { required: true, message: '请输入套餐容量', trigger: 'blur' },
+    ],
 })
 // 套餐数据结构
 type comboItem = {
@@ -349,30 +364,90 @@ const resetForm = async () => {
 }
 // 新增或编辑套餐的表单
 const ruleForm = reactive({
-    id: '',
+    id: '' as string | number,
     comboName: '',
     comboType: '',
-    standardTariff: undefined,
-    salesPrice: undefined,
+    standardTariff: undefined as undefined | number | string,
+    salesPrice: undefined as undefined | number | string,
     comboPeriod: '',
-    comboCapacity: undefined,
+    comboCapacity: undefined as undefined | number,
     remark: ''
 })
 // 打开新增或编辑套餐表单
 const addOrModifyCombo = async (title: string, item?: comboItem) => {
     addOrModifyTitle.value = title;
     if (item) {
+        ruleForm.id = item.id;
+        ruleForm.comboName = item.comboName;
+        ruleForm.comboPeriod = item.comboPeriod.toString();
+        ruleForm.comboCapacity = item.comboCapacity;
+        ruleForm.comboType = item.comboType.toString();
+        ruleForm.standardTariff = item.standardTariff;
+        ruleForm.salesPrice = item.salesPrice;
+        ruleForm.remark = item.remark;
         addOrModifyVisiable.value = true;
     } else {
+        ruleForm.remark = '';
         addOrModifyVisiable.value = true;
         ruleFormRef2.value?.resetFields();
     }
 }
 // 新增或编辑套餐表单的保存按钮
 const saveAddcombo = async () => {
+    if (!ruleFormRef2.value) return
+    await ruleFormRef2.value.validate(async (valid) => {
+        if (valid) {
+            stopClick2.value = true;
+            let data: any;
+            if (addOrModifyTitle.value === '编辑套餐') {
+                data = await comboStore.updateComboAsync({
+                    id: ruleForm.id,
+                    comboName: ruleForm.comboName,
+                    comboPeriod: ruleForm.comboPeriod,
+                    comboCapacity: ruleForm.comboCapacity,
+                    comboType: ruleForm.comboType,
+                    standardTariff: ruleForm.standardTariff,
+                    salesPrice: ruleForm.salesPrice,
+                    remark: ruleForm.remark || undefined
+                })
+            } else {
+                data = await comboStore.addComboAsync({
+                    comboName: ruleForm.comboName,
+                    comboPeriod: ruleForm.comboPeriod,
+                    comboCapacity: ruleForm.comboCapacity,
+                    comboType: ruleForm.comboType,
+                    standardTariff: ruleForm.standardTariff,
+                    salesPrice: ruleForm.salesPrice,
+                    remark: ruleForm.remark || undefined
+                });
+            }
+            if (data) {
+                if (addOrModifyTitle.value === '编辑套餐') {
+                    await getComboList(currentpage.value);
+                } else {
+                    if (currentpage.value === 1) {
+                        await getComboList()
+                    } else {
+                        currentpage.value = 1;
+                    }
+                }
+                ElMessage({
+                    message: addOrModifyTitle.value === '编辑套餐' ? '编辑成功' : '添加成功',
+                    type: 'success'
+                })
+                stopClick2.value = false;
+                addOrModifyVisiable.value = false;
+            } else {
+                stopClick2.value = false;
+            }
+        } else {
+            console.log('error submit!')
+        }
+    })
 }
 // 新增或编辑套餐表单的取消按钮
 const cancelAddCombo = () => {
+    ruleFormRef2.value?.resetFields();
     addOrModifyVisiable.value = false;
 }
 // 删除套餐
