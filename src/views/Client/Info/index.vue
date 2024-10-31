@@ -134,8 +134,8 @@
                 <el-table-column property="contactPhone" label="联系号码" sortable="custom" width="120" />
                 <el-table-column label="联系地址" width="250" show-overflow-tooltip>
                     <template #default="scope">
-                        <p>{{ scope.row.contactProvinceName + scope.row.contactCityName + scope.row.contactAreaName +
-                            scope.row.contactStreetName + scope.row.contactAddress || '-' }}</p>
+                        <p>{{ (scope.row.contactProvinceName || '') + (scope.row.contactCityName || '')+ (scope.row.contactAreaName || '') +
+                            (scope.row.contactStreetName || '') + (scope.row.contactAddress || '') || '-' }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom"
