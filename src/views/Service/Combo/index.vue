@@ -178,9 +178,7 @@
                 </el-table-column>
                 <el-table-column property="status" label="状态" width="80" sortable="custom">
                     <template #default="scope">
-                        <el-tag v-if="scope.row.status === 0" type="info">待定</el-tag>
-                        <el-tag  v-else-if="scope.row.status === 1" type="success">上架</el-tag>
-                        <el-tag v-else type="danger">下架</el-tag>
+                        <el-tag :type="statusList[scope.row.status].type">{{ statusList[scope.row.status].label }}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
@@ -284,6 +282,11 @@ const optionTitle = ref('');
 const defaultTime = ref<[Date, Date]>([
     new Date(2000, 1, 1, 0, 0, 0),
     new Date(2000, 2, 1, 23, 59, 59),
+])
+const statusList = ref([
+    {type: 'info', label: '待定'},
+    {type: 'success', label: '上架'},
+    {type: 'danger', label: '下架'}
 ])
 // 后台套餐数据总量
 const total = ref(0);
