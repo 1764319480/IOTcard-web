@@ -504,8 +504,8 @@ const confirmDeleteUsers = () => {
 
 // 进入页面前获取一次数据
 onBeforeMount(async () => {
-    await roleStore.getAllRoleAsync();
     await getClientList();
+    await roleStore.getAllRoleAsync();
     provinces.value = await commonStore.getProvincesAsync();
 })
 
