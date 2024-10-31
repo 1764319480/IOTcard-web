@@ -138,7 +138,7 @@
                             (scope.row.contactStreetName || '') + (scope.row.contactAddress || '') || '-' }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column property="salesmanName" label="业务员" width="150" sortable="custom"
+                <el-table-column property="salesmanName" label="业务员" width="150"
                     show-overflow-tooltip="" />
                 <el-table-column property="createTime" label="创建时间" width="200" sortable="custom">
                     <template #default="scope">
