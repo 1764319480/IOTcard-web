@@ -332,41 +332,37 @@ const ruleForm = reactive({
     salesman: '' as string | number
 })
 // 地址选择
-const specialCity = [{ id: 1, name: '北京市' }, { id: 2, name: '上海市' }, { id: 3, name: '天津市' }, { id: 4, name: '重庆市' }];
 const provinces = ref();
 const cities = ref();
 const areas = ref();
 const streets = ref();
 const { contactProvince, contactCity, contactArea } = toRefs(ruleForm);
 watch(contactProvince, async (value: string | number) => {
-    cities.value = [];
-    ruleForm.contactCity = '';
     if (!value) return;
-    if (Number(value) <= 4) {
-        cities.value = [specialCity[Number(value) - 1]];
-        return;
-    }
     cities.value = await commonStore.getCitiesAsync(Number(value));
+    if (!cities.value.find((item: any) => item.id === ruleForm.contactCity)) {
+        ruleForm.contactCity = '';
+        ruleForm.contactArea = '';
+        areas.value = [];
+        ruleForm.contactStreet = '';
+        streets.value = [];
+    }
 });
 watch(contactCity, async (value: string | number) => {
-    areas.value = [];
-    ruleForm.contactArea = '';
     if (!value) return;
-    if (Number(value) <= 4) {
-        areas.value = await commonStore.getCitiesAsync(Number(value));
-        return;
-    }
     areas.value = await commonStore.getAreasAsync(Number(value));
+    if (!areas.value.find((item: any) => item.id === ruleForm.contactArea)) {
+        ruleForm.contactArea = '';
+        ruleForm.contactStreet = '';
+        streets.value = [];
+    }
 })
 watch(contactArea, async (value: string | number) => {
-    streets.value = [];
-    ruleForm.contactStreet = '';
     if (!value) return;
-    if (cities.value.length === 1) {
-        streets.value = await commonStore.getAreasAsync(Number(value));
-        return;
-    }
     streets.value = await commonStore.getStreetsAsync(Number(value));
+    if (!streets.value.find((item: any) => item.id === ruleForm.contactStreet)) {
+        ruleForm.contactStreet = '';
+    }
 })
 // 新增或编辑客户表单的取消按钮
 const cancelAddClient = () => {
@@ -387,7 +383,7 @@ const cancelAddClient = () => {
     ruleForm.contactAddress = '';
 }
 // 打开新增或编辑客户表单
-const addOrModifyClient = async (title: string, item?: clientItem) => {
+const addOrModifyClient = (title: string, item?: clientItem) => {
     addOrModifyTitle.value = title;
     if (item) {
         ruleForm.id = item.id.toString();
@@ -397,17 +393,24 @@ const addOrModifyClient = async (title: string, item?: clientItem) => {
         ruleForm.contactPhone = item.contactPhone;
         ruleForm.salesman = item.salesman;
         ruleForm.contactProvince = item.contactProvince;
-        cities.value = await commonStore.getCitiesAsync(item.contactProvince);
         ruleForm.contactCity = item.contactCity;
-        areas.value = await commonStore.getAreasAsync(item.contactCity);
         ruleForm.contactArea = item.contactArea;
-        streets.value = await commonStore.getStreetsAsync(item.contactArea);
         ruleForm.contactStreet = item.contactStreet;
         ruleForm.contactAddress = item.contactAddress;
         addOrModifyVisiable.value = true;
     } else {
-        addOrModifyVisiable.value = true;
         ruleFormRef2.value?.resetFields();
+        ruleForm.clientName = '';
+        ruleForm.clientType = '';
+        ruleForm.contact = '';
+        ruleForm.contactPhone = '';
+        ruleForm.salesman = '';
+        ruleForm.contactProvince = '';
+        ruleForm.contactCity = '';
+        ruleForm.contactArea = '';
+        ruleForm.contactStreet = '';
+        ruleForm.contactAddress = '';
+        addOrModifyVisiable.value = true;
     }
 }
 // 新增或编辑客户表单的保存按钮
