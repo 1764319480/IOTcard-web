@@ -109,7 +109,7 @@
                                     style="width: 550px"></el-input>
                             </el-form-item>
                             <div style="display: flex; justify-content: end;">
-                                <el-button @click="cancelAddCombo" style="width:80px">取消</el-button>
+                                <el-button @click="addOrModifyVisiable = false;" style="width:80px">取消</el-button>
                                 <el-button type="primary" @click="saveAddcombo" :loading="stopClick2"
                                     style="width: 80px;">保存</el-button>
                             </div>
@@ -286,7 +286,7 @@ const selectIdAndStatus = ref();
 const currentpage = ref(1);
 const optionTitles = ['删除', '上架', '下架'];
 const total = ref(0);// 后台套餐数据总量
-const comboList = ref<comboItem[]>();// 套餐列表
+const comboList = ref<ComboItemType[]>();// 套餐列表
 const defaultTime = ref<[Date, Date]>([
     new Date(2000, 1, 1, 0, 0, 0),
     new Date(2000, 2, 1, 23, 59, 59),
@@ -301,6 +301,20 @@ interface ISortProps {// 表单排序
     prop: string,
     order: string | null
 }
+// 套餐数据结构
+type ComboItemType = {
+    id: number,
+    comboNo: string,
+    comboName: string,
+    comboPeriod: number,
+    comboCapacity: number,
+    comboType: number,
+    status: number,
+    standardTariff: string,
+    salesPrice: string,
+    remark: string,
+    createTime: string
+}
 // 筛选表单
 const formInline = reactive({
     comboName: '',
@@ -314,8 +328,19 @@ const formInline = reactive({
     orderBy: 'createTime',
     orderType: 'desc'
 })
+// 新增或编辑套餐的表单
+const ruleForm = reactive({
+    id: '' as string | number,
+    comboName: '',
+    comboType: '',
+    standardTariff: undefined as undefined | number | string,
+    salesPrice: undefined as undefined | number | string,
+    comboPeriod: '',
+    comboCapacity: undefined as undefined | number,
+    remark: ''
+})
 // 选中时存入选项
-const handleSelectionChange = (items: comboItem[]) => {
+const handleSelectionChange = (items: ComboItemType[]) => {
     if (items?.length === 0) {
         selectIdAndStatus.value = '';
         return;
@@ -368,20 +393,6 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { validator: validateCapacity, trigger: 'blur' }
     ],
 })
-// 套餐数据结构
-type comboItem = {
-    id: number,
-    comboNo: string,
-    comboName: string,
-    comboPeriod: number,
-    comboCapacity: number,
-    comboType: number,
-    status: number,
-    standardTariff: string,
-    salesPrice: string,
-    remark: string,
-    createTime: string
-}
 // 搜索套餐
 const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
@@ -420,19 +431,20 @@ const resetForm = async () => {
         currentpage.value = 1;
     }
 }
-// 新增或编辑套餐的表单
-const ruleForm = reactive({
-    id: '' as string | number,
-    comboName: '',
-    comboType: '',
-    standardTariff: undefined as undefined | number | string,
-    salesPrice: undefined as undefined | number | string,
-    comboPeriod: '',
-    comboCapacity: undefined as undefined | number,
-    remark: ''
-})
+// 重置新增或编辑套餐表单
+const resetForm1 = () => {
+    ruleFormRef2.value?.resetFields();
+    ruleForm.id = '';
+    ruleForm.comboName = '';
+    ruleForm.comboPeriod = '';
+    ruleForm.comboCapacity = undefined;
+    ruleForm.comboType = '';
+    ruleForm.standardTariff = undefined;
+    ruleForm.salesPrice = undefined;
+    ruleForm.remark = '';
+}
 // 打开新增或编辑套餐表单
-const addOrModifyCombo = async (title: number, item?: comboItem) => {
+const addOrModifyCombo = async (title: number, item?: ComboItemType) => {
     addOrModifyTitle.value = title;
     if (item) {
         ruleForm.id = item.id;
@@ -444,8 +456,7 @@ const addOrModifyCombo = async (title: number, item?: comboItem) => {
         ruleForm.salesPrice = item.salesPrice;
         ruleForm.remark = item.remark;
     } else {
-        ruleForm.remark = '';
-        ruleFormRef2.value?.resetFields();
+        resetForm1();
     }
     addOrModifyVisiable.value = true;
 }
@@ -492,11 +503,6 @@ const saveAddcombo = async () => {
             console.log('error submit!')
         }
     })
-}
-// 新增或编辑套餐表单的取消按钮
-const cancelAddCombo = () => {
-    ruleFormRef2.value?.resetFields();
-    addOrModifyVisiable.value = false;
 }
 // 删除套餐
 const deleteCombo = async (comboIds: string[] | number[] | string | number) => {
