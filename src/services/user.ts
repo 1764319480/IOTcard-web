@@ -23,7 +23,16 @@ export function refreshToken(params: any = {}) {
     return request<any, IAxiosResponse>({
         url: "/user/refresh_token",
         method: "get",
-        data: params
+        params
+    });
+}
+
+/** 获取所有用户 */
+export function getAllUser(params: any = {}) {
+    return request<any, IAxiosResponse>({
+        url: "/user/list_all",
+        method: "get",
+        params
     });
 }
 

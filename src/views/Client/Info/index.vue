@@ -55,8 +55,9 @@
                                     placeholder="请输入联系人手机号" />
                             </el-form-item>
                             <el-form-item label="业务员:" prop="salesman">
-                                <el-select v-model="ruleForm.salesman" placeholder="请选择客户类型" style="width: 180px;">
-                                    <el-option v-for="item of roleStore.roleInfo" :label="item.roleName"
+                                <el-select v-model="ruleForm.salesman" filterable :filter-method="getUsers"
+                                 placeholder="请选择客户类型" style="width: 180px;">
+                                    <el-option v-for="item of userStore.users" :label="item.userName + '(' + item.account + ')'"
                                         :value="item.id" :key="item.id" />
                                 </el-select>
                             </el-form-item>
@@ -182,7 +183,7 @@
 // @ts-ignore
 import { useClientStore } from '@/stores/client';
 // @ts-ignore
-import { useRoleStore } from '@/stores/role';
+import { useUserStore } from '@/stores/user';
 // @ts-ignore
 import { useCommonStore } from '@/stores/common';
 // @ts-ignore
@@ -191,9 +192,9 @@ import { Delete, Plus, Refresh, Search, WarningFilled } from '@element-plus/icon
 import { ref, reactive, onBeforeMount, watch, toRefs } from 'vue';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 
-const roleStore = useRoleStore();
 const clientStore = useClientStore();
 const commonStore = useCommonStore();
+const userStore = useUserStore();
 const tableLoading = ref(false);
 const addOrModifyVisiable = ref(false);
 const deleteClientsVisible = ref(false);
@@ -209,6 +210,7 @@ const provinces = ref();
 const cities = ref();
 const areas = ref();
 const streets = ref();
+let timer:any = null;
 const ruleForm = reactive({// 新增或编辑客户的表单
     id: '',
     clientName: '',
@@ -297,6 +299,13 @@ const resetForm = async () => {
     } else {
         currentpage.value = 1;
     }
+}
+// 获取业务员列表
+const getUsers = (value:string) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+        userStore.getAllUserAsync(value);
+    }, 500) 
 }
 // 表单排序
 const handleSortChange = async (data: ISortProps) => {
@@ -470,7 +479,7 @@ watch(contactArea, async (value: any) => {
 // 进入页面前获取一次数据
 onBeforeMount(async () => {
     await getClientList();
-    await roleStore.getAllRoleAsync();
+    await userStore.getAllUserAsync();
     provinces.value = await commonStore.getProvincesAsync();
 })
 

@@ -2,15 +2,15 @@ import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
-import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser, deleteUser } from '@/services/user';
+import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser, deleteUser, getAllUser } from '@/services/user';
 import router from '@/router';
-interface IRoleProps {
+interface IRoleProps { // 角色结构
     id: number,
     roleType: number,
     roleName: string
 }
 
-interface IUserInfoProps {
+interface IUserInfoProps { //个人信息结构
     id: string;
     status: number;
     account: string;
@@ -18,8 +18,14 @@ interface IUserInfoProps {
     roles: IRoleProps[];
 }
 
+interface IUserProps { // 用户信息结构
+    id: number,
+    account: string,
+    userName: string
+}
 export const useUserStore = defineStore('user', () => {
     const timer = ref();
+    const users = ref<IUserProps[]>();
     // 当前登录用户信息
     const userInfo = reactive<IUserInfoProps>({
         id: '',
@@ -28,6 +34,15 @@ export const useUserStore = defineStore('user', () => {
         userName: '',
         roles: []
     })
+    // 获取所有用户
+    const getAllUserAsync = async (keyword: string = '') => {
+        const res = await getAllUser({keyword});
+        if (res.data.code === 200) {
+            users.value = res.data.value;
+            return true;
+        }
+        return false;
+    }
 
     // 退出登录
     const logoutAsync = async () => {
@@ -114,7 +129,9 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         timer,
+        users,
         userInfo,
+        getAllUserAsync,
         logoutAsync,
         getUserInfoAsync,
         refreshTokenAsync,
