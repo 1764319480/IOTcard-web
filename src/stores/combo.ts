@@ -26,9 +26,9 @@ export const useComboStore = defineStore('combo', () => {
         return res.data.code === 200;
     }
     // 上下架套餐
-    const updateComboStatusAsync = async (id: number, status: number) => {
+    const updateComboStatusAsync = async (ids: (number | string)[], status: number) => {
         const res = await updateComboStatus({
-            id,
+            ids,
             status
         })
         return res.data.code === 200;

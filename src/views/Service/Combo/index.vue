@@ -539,8 +539,9 @@ const deleteCombo = async (comboIds: string[] | number[] | string | number) => {
     }
 }
 // 上下架套餐
-const changeComboStatus = async (id: number, status: number) => {
-    const data = await comboStore.updateComboStatusAsync(id, status);
+const changeComboStatus = async (id: (number | string)[] | string | number, status: number) => {
+    const ids = Array.isArray(id) ? id : [id];
+    const data = await comboStore.updateComboStatusAsync(ids, status);
     if (data) {
         await getComboList(currentpage.value);
         ElMessage({
@@ -594,6 +595,7 @@ const operateItems = (title: string) => {
     operateItemsVisible.value = true;
 }
 const confirmOperate = async () => {
+    operateItemsVisible.value = false;
     switch(optionTitle.value) {
         case '删除': {
             await deleteCombo(selectIdAndStatus.value[0]);
@@ -607,8 +609,7 @@ const confirmOperate = async () => {
             await changeComboStatus(selectIdAndStatus.value[0], 2);
             break;
         }
-    }
-    operateItemsVisible.value = false;
+    } 
 }
 
 onBeforeMount(async () => {
