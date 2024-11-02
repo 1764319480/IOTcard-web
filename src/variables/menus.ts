@@ -11,7 +11,23 @@ interface MenuItemProps {
 const menus: MenuItemProps[] = [
   { path: '/home', label: '首页', icon: HomeFilled },
   {
-    path: '/',
+    path: '/client',
+    label: '客户管理',
+    icon: User,
+    children: [
+      { path: '/client/info', label: '客户信息' },
+    ],
+  },
+  {
+    path: '/combo',
+    label: '增值服务',
+    icon: User,
+    children: [
+      { path: '/service/combo', label: '增值套餐' },
+    ],
+  },
+  {
+    path: '/system',
     label: '系统管理',
     icon: Setting,
     children: [
@@ -20,23 +36,6 @@ const menus: MenuItemProps[] = [
       { path: '/system/log', label: '系统日志' },
     ],
   },
-  {
-    path: '/',
-    label: '客户管理',
-    icon: User,
-    children: [
-      { path: '/client/info', label: '客户信息' },
-    ],
-  },
-  {
-    path: '/',
-    label: '增值服务',
-    icon: User,
-    children: [
-      { path: '/service/combo', label: '增值套餐' },
-    ],
-  },
-  
 ];
 
 export default menus;

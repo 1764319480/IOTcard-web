@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { clearCookie, setCookie } from '@/utils/cookieHandler';
 import crypto from 'crypto-js';
 import { refreshToken, getUserInfo, updateUserInfo, updatePassword, logout, getUserList, addUser, deleteUser } from '@/services/user';
@@ -19,6 +19,7 @@ interface IUserInfoProps {
 }
 
 export const useUserStore = defineStore('user', () => {
+    const timer = ref();
     // 当前登录用户信息
     const userInfo = reactive<IUserInfoProps>({
         id: '',
@@ -30,6 +31,7 @@ export const useUserStore = defineStore('user', () => {
 
     // 退出登录
     const logoutAsync = async () => {
+        clearTimeout(timer.value)
         await logout();
         clearCookie();
         sessionStorage.clear();
@@ -56,7 +58,7 @@ export const useUserStore = defineStore('user', () => {
                 setCookie('access_token', res.data.value);
             };
 
-            setTimeout(func, delay);
+            timer.value = setTimeout(func, delay);
         }
 
         func();
@@ -111,6 +113,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     return {
+        timer,
         userInfo,
         logoutAsync,
         getUserInfoAsync,
