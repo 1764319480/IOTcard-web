@@ -64,7 +64,7 @@
                                     disabled />
                             </el-form-item>
                             <div style="display: flex; justify-content: end;">
-                                <el-button @click="cancelAddUser" style="width:80px">取消</el-button>
+                                <el-button @click="addOrModifyVisiable = false;" style="width:80px">取消</el-button>
                                 <el-button type="primary" @click="saveAddUser" :loading="stopClick2"
                                     style="width: 80px;">保存</el-button>
                             </div>
@@ -299,11 +299,6 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { required: true, message: '请至少选择一个角色', trigger: 'blur' },
     ]
 })
-// 新增或编辑用户表单的取消按钮
-const cancelAddUser = () => {
-    ruleFormRef2.value?.resetFields();
-    addOrModifyVisiable.value = false;
-}
 // 新增或编辑用户表单的保存按钮
 const saveAddUser = async () => {
     if (!ruleFormRef2.value) return

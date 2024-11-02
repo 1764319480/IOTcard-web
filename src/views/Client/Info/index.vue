@@ -89,7 +89,7 @@
                                     placeholder="请输入详细地址" style="margin-top: 10px;"></el-input>
                             </el-form-item>
                             <div style="display: flex; justify-content: end;">
-                                <el-button @click="cancelAddClient" style="width:80px">取消</el-button>
+                                <el-button @click="addOrModifyVisiable = false;" style="width:80px">取消</el-button>
                                 <el-button type="primary" @click="saveAddClient" :loading="stopClick2"
                                     style="width: 80px;">保存</el-button>
                             </div>
@@ -350,14 +350,9 @@ const resetForm1 = () => {
     ruleForm.contactArea = undefined;
     ruleForm.contactStreet = undefined;
     ruleForm.contactAddress = undefined;
-}
-// 新增或编辑客户表单的取消按钮
-const cancelAddClient = () => {
-    addOrModifyVisiable.value = false;
     cities.value = [];
     areas.value = [];
     streets.value = [];
-    resetForm1(); 
 }
 // 打开新增或编辑客户表单
 const addOrModifyClient = (title: number, item?: ClientItemType) => {
@@ -416,7 +411,6 @@ const saveAddClient = async () => {
                     message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
-                cancelAddClient();
             }
             stopClick2.value = false;
         } else {

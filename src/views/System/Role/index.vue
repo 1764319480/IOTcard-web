@@ -47,7 +47,7 @@
                                     autocomplete="off" placeholder="描述（可选）" />
                             </el-form-item>
                             <div style="display: flex; justify-content: end;">
-                                <el-button @click="cancelAddRole" style="width:80px">取消</el-button>
+                                <el-button @click="addOrModifyVisiable = false;" style="width:80px">取消</el-button>
                                 <el-button type="primary" @click="saveAddRole" :loading="stopClick2"
                                     style="width: 80px;">保存</el-button>
                             </div>
@@ -230,11 +230,6 @@ const rules = reactive<FormRules<typeof ruleForm>>({
         { max: 256, message: '角色描述最多 256 个字符', trigger: 'blur' }
     ]
 })
-// 新增或编辑角色表单的取消按钮
-const cancelAddRole = () => {
-    ruleFormRef2.value?.resetFields();
-    addOrModifyVisiable.value = false;
-}
 // 新增或编辑角色表单的保存按钮
 const saveAddRole = async () => {
     if (!ruleFormRef2.value) return
