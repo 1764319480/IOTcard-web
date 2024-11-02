@@ -389,7 +389,18 @@ const saveAddClient = async () => {
             if (addOrModifyTitle.value === '编辑客户') {
                 data = await clientStore.updateClientAsync(ruleForm)
             } else {
-                data = await clientStore.addClientAsync(ruleForm);
+                data = await clientStore.addClientAsync({
+                    clientName: ruleForm.clientName,
+                    clientType: ruleForm.clientType,
+                    contact: ruleForm.contact,
+                    contactPhone: ruleForm.contactPhone,
+                    contactProvince: ruleForm.contactProvince || undefined,
+                    contactCity: ruleForm.contactCity || undefined,
+                    contactArea: ruleForm.contactArea || undefined,
+                    contactStreet: ruleForm.contactStreet || undefined,
+                    contactAddress: ruleForm.contactAddress || undefined,
+                    salesman: ruleForm.salesman
+                });
             }
             if (data) {
                 if (addOrModifyTitle.value === '编辑客户') {
