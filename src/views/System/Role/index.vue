@@ -21,10 +21,10 @@
             </div>
             <div class="filter_right">
                 <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
-                    <el-button type="primary" :icon="Plus" @click="addOrModifyRole('添加角色')">添加</el-button>
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyRole(1)">添加</el-button>
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteRoles">删除</el-button>
                 </div>
-                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
+                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle === 1 ? '添加角色' : '编辑角色' " :show-close="false"
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
@@ -38,8 +38,8 @@
                                     collapse-tags-tooltip placeholder="请选择角色类型">
                                     <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value"
                                         :key="item.value"
-                                        v-show="(addOrModifyTitle === '添加角色' && getMaxPermission(userStore.userInfo.roles) <= item.value)
-                                            || (addOrModifyTitle === '编辑角色' && getMaxPermission(userStore.userInfo.roles) < item.value)" />
+                                        v-show="(addOrModifyTitle === 1 && getMaxPermission(userStore.userInfo.roles) <= item.value)
+                                            || (addOrModifyTitle === 2 && getMaxPermission(userStore.userInfo.roles) < item.value)" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="描述:" prop="remark">
@@ -106,7 +106,7 @@
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < scope.row.roleType">
                             <el-button link type="primary" size="small"
-                                @click="addOrModifyRole('编辑角色', scope.row)">编辑</el-button>
+                                @click="addOrModifyRole(2, scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small" v-if="scope.row.userCount === 0">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteRole(scope.row.id)">
@@ -150,7 +150,7 @@ import { useUserStore } from '@/stores/user';
 import { useRoleStore } from '@/stores/role';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 const addOrModifyVisiable = ref(false);
-const addOrModifyTitle = ref('添加角色');
+const addOrModifyTitle = ref(1);
 const userStore = useUserStore();
 const roleStore = useRoleStore();
 const tableLoading = ref(false);
@@ -158,6 +158,10 @@ const deleteRolesVisible = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
+const roleList = ref<RoleItemType>();// 角色列表
+const selectIds = ref();
+const total = ref(0);// 后台角色数据总量
+const currentpage = ref(1);
 // 筛选角色的表单选项
 const formInline = reactive({
     keyword: '',
@@ -175,15 +179,6 @@ const resetForm = async () => {
         currentpage.value = 1;
     }
 }
-// 角色数据结构
-type roleItem = {
-    id: number,
-    roleType: number,
-    roleName: string,
-    remark: string,
-    userCount: number,
-    createTime: string
-}
 // 新增或编辑角色的表单
 const ruleForm = reactive({
     roleId: 0,
@@ -191,8 +186,23 @@ const ruleForm = reactive({
     roleType: '' as string | number,
     remark: ''
 })
+// 角色数据结构
+type RoleItemType = {
+    id: number,
+    roleType: number,
+    roleName: string,
+    remark: string,
+    userCount: number,
+    createTime: string
+}
+// 排序字段结构
+interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}
 // 打开新增或编辑角色表单
-const addOrModifyRole = (title: string, item?: roleItem) => {
+const addOrModifyRole = (title: number, item?: RoleItemType) => {
     addOrModifyVisiable.value = true;
     addOrModifyTitle.value = title;
     if (item) {
@@ -232,7 +242,7 @@ const saveAddRole = async () => {
         if (valid) {
             stopClick2.value = true;
             let data: any;
-            if (addOrModifyTitle.value === '编辑角色') {
+            if (addOrModifyTitle.value === 2) {
                 data = await roleStore.updateRoleAsync(
                     ruleForm.roleId,
                     Number(ruleForm.roleType),
@@ -247,7 +257,7 @@ const saveAddRole = async () => {
                 );
             }
             if (data) {
-                if (addOrModifyTitle.value === '编辑角色') {
+                if (addOrModifyTitle.value === 2) {
                     await getRoleList(currentpage.value);
                 } else {
                     if (currentpage.value === 1) {
@@ -257,14 +267,12 @@ const saveAddRole = async () => {
                     }
                 }
                 ElMessage({
-                    message: addOrModifyTitle.value === '编辑角色' ? '编辑成功' : '添加成功',
+                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
-                stopClick2.value = false;
                 addOrModifyVisiable.value = false;
-            } else {
-                stopClick2.value = false;
             }
+            stopClick2.value = false;
         } else {
             console.log('error submit!')
         }
@@ -302,9 +310,7 @@ const confirmDeleteRoles = async () => {
     deleteRolesVisible.value = false;
 }
 // 选中条件：有权限且用户数为0
-const selectable = (row: roleItem) => getMaxPermission(userStore.userInfo.roles) < row.roleType && row.userCount === 0;
-// 角色列表
-const roleList = ref<roleItem>();
+const selectable = (row: RoleItemType) => getMaxPermission(userStore.userInfo.roles) < row.roleType && row.userCount === 0;
 // 获取角色列表
 const getRoleList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
@@ -324,11 +330,6 @@ const getRoleList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = false;
 }
 // 表单排序
-interface ISortProps {
-    column: object,
-    prop: string,
-    order: string | null
-}
 const handleSortChange = async (data: ISortProps) => {
     let { prop, order } = data;
     if (!order) order = 'descending';
@@ -337,22 +338,17 @@ const handleSortChange = async (data: ISortProps) => {
     await getRoleList(currentpage.value);
 }
 // 选中时存入选项
-const selectIds = ref();
-const handleSelectionChange = (items: roleItem[]) => {
+const handleSelectionChange = (items: RoleItemType[]) => {
     if (items?.length === 0) {
         selectIds.value = '';
         return;
     }
     selectIds.value = items.map(item => item.id);
 }
-// 后台角色数据总量
-const total = ref(0);
 // 分页功能 切换到某一页
-const currentpage = ref(1);
 watch(currentpage, async () => {
     await getRoleList(currentpage.value);
 })
-
 // 页面刷新前获取数据
 onBeforeMount(() => {
     getRoleList();

@@ -33,17 +33,17 @@
             </div>
             <div class="filter_right">
                 <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
-                    <el-button type="primary" :icon="Plus" @click="addOrModifyUser('添加用户')">添加</el-button>
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyUser(1)">添加</el-button>
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteUsers">删除</el-button>
                 </div>
-                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle" :show-close="false"
+                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle === 1 ? '添加用户' : '编辑用户'" :show-close="false"
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
                             label-position="left" label-width="auto" class="demo-ruleForm">
                             <el-form-item label="账号:" prop="account">
                                 <el-input v-model="ruleForm.account" style="width: 200px;" autocomplete="off"
-                                    placeholder="请输入账号" :disabled="addOrModifyTitle === '编辑用户'" />
+                                    placeholder="请输入账号" :disabled="addOrModifyTitle === 2" />
                             </el-form-item>
                             <el-form-item label="用户名:" prop="userName">
                                 <el-input v-model="ruleForm.userName" style="width: 200px;" autocomplete="off"
@@ -51,15 +51,15 @@
                             </el-form-item>
                             <el-form-item label="角色:" prop="roleId">
                                 <el-select v-model="ruleForm.roleId" style="width: 200px"
-                                    :multiple="addOrModifyTitle === '编辑用户'" collapse-tags collapse-tags-tooltip
+                                    :multiple="addOrModifyTitle === 2" collapse-tags collapse-tags-tooltip
                                     placeholder="请选择角色">
                                     <el-option v-for="item of roleStore.roleInfo" :label="item.roleName"
                                         :value="item.id" :key="item.id"
-                                        v-show="(addOrModifyTitle === '添加用户' && getMaxPermission(userStore.userInfo.roles) <= item.roleType)
-                                            || (addOrModifyTitle === '编辑用户' && getMaxPermission(userStore.userInfo.roles) < item.roleType)" />
+                                        v-show="(addOrModifyTitle === 1 && getMaxPermission(userStore.userInfo.roles) <= item.roleType)
+                                            || (addOrModifyTitle === 2 && getMaxPermission(userStore.userInfo.roles) < item.roleType)" />
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === '添加用户'">
+                            <el-form-item label="密码:" prop="password" required v-show="addOrModifyTitle === 1">
                                 <el-input v-model="ruleForm.password" style="width: 200px;" autocomplete="off"
                                     disabled />
                             </el-form-item>
@@ -121,7 +121,7 @@
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < getMaxPermission(scope.row.roles)">
                             <el-button link type="primary" size="small"
-                                @click="addOrModifyUser('编辑用户', scope.row)">编辑</el-button>
+                                @click="addOrModifyUser(2, scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteUser(scope.row.id)">
@@ -164,10 +164,6 @@ import { useUserStore } from '@/stores/user';
 import { UserStatusList } from '@/variables/common';
 // @ts-ignore
 import { useRoleStore } from '@/stores/role';
-const defaultTime = ref<[Date, Date]>([
-    new Date(2000, 1, 1, 0, 0, 0),
-    new Date(2000, 2, 1, 23, 59, 59),
-])
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();
@@ -176,7 +172,15 @@ const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
 const tableLoading = ref(false);
-const addOrModifyTitle = ref('添加用户');
+const addOrModifyTitle = ref(1);
+const userList = ref<UserItemType[]>();// 用户列表
+const total = ref(0);// 后台用户数据总量
+const currentpage = ref(1);
+const selectIds = ref();
+const defaultTime = ref<[Date, Date]>([
+    new Date(2000, 1, 1, 0, 0, 0),
+    new Date(2000, 2, 1, 23, 59, 59),
+])
 // 筛选的表单选项
 const formInline = reactive({
     keyword: '',
@@ -186,13 +190,21 @@ const formInline = reactive({
     orderBy: 'createTime',
     orderType: 'desc'
 })
+// 新增或编辑用户的表单
+const ruleForm = reactive({
+    account: '',
+    userName: '',
+    roleId: [] as number[] | number,
+    password: '12345678'
+})
+// 角色数据结构
 interface IRoleProps {
     id: number,
     roleType: number,
     roleName: string
 }
 // 用户数据结构
-type userItem = {
+type UserItemType = {
     id: string | number,
     userName: string,
     account: string,
@@ -200,16 +212,18 @@ type userItem = {
     status: number | string,
     createTime: string
 }
+// 排序字段结构
+interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}
 // 从数组中取出角色名称
 const getRoleName = (roleArray: IRoleProps[]) => {
     return roleArray.map((e: any) => e.roleName).join(',')
 }
 // 选中条件：有权限
-const selectable = (row: userItem) => getMaxPermission(userStore.userInfo.roles) < getMaxPermission(row.roles);
-// 用户列表
-const userList = ref<userItem[]>();
-// 后台用户数据总量
-const total = ref(0);
+const selectable = (row: UserItemType) => getMaxPermission(userStore.userInfo.roles) < getMaxPermission(row.roles);
 // 获取用户列表
 const getUserList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
@@ -226,13 +240,12 @@ const getUserList = async (pageNum: number = 1, pageSize: number = 20) => {
     });
     if (data) {
         total.value = data.total;
-        userList.value = data.list.map((item: userItem) => {
+        userList.value = data.list.map((item: UserItemType) => {
             item.status = item.status.toString();
             return item;
         });
     };
     tableLoading.value = false;
-
 }
 // 重置筛选的表单内容
 const resetForm = async () => {
@@ -246,17 +259,7 @@ const resetForm = async () => {
         currentpage.value = 1;
     }
 }
-// 分页功能 切换到某一页
-const currentpage = ref(1);
-watch(currentpage, async (value: number) => {
-    await getUserList(value);
-})
 // 表单排序
-interface ISortProps {
-    column: object,
-    prop: string,
-    order: string | null
-}
 const handleSortChange = async (data: ISortProps) => {
     let { prop, order } = data;
     if (!order) order = 'descending';
@@ -264,15 +267,8 @@ const handleSortChange = async (data: ISortProps) => {
     formInline.orderType = order.replace('ending', '');
     await getUserList(currentpage.value);
 }
-// 新增或编辑用户的表单
-const ruleForm = reactive({
-    account: '',
-    userName: '',
-    roleId: [] as number[] | number,
-    password: '12345678'
-})
 // 打开新增或编辑用户表单
-const addOrModifyUser = (title: string, item?: userItem) => {
+const addOrModifyUser = (title: number, item?: UserItemType) => {
     addOrModifyVisiable.value = true;
     addOrModifyTitle.value = title;
     if (item) {
@@ -315,7 +311,7 @@ const saveAddUser = async () => {
         if (valid) {
             stopClick2.value = true;
             let data: any;
-            if (addOrModifyTitle.value === '编辑用户') {
+            if (addOrModifyTitle.value === 2) {
                 data = await userStore.updateUserInfoAsync(
                     ruleForm.password,
                     ruleForm.userName,
@@ -330,7 +326,7 @@ const saveAddUser = async () => {
                 );
             }
             if (data) {
-                if (addOrModifyTitle.value === '编辑用户') {
+                if (addOrModifyTitle.value === 2) {
                     await getUserList(currentpage.value);
                 } else {
                     if (currentpage.value === 1) {
@@ -340,14 +336,12 @@ const saveAddUser = async () => {
                     }
                 }
                 ElMessage({
-                    message: addOrModifyTitle.value === '编辑用户' ? '编辑成功' : '添加成功',
+                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
-                stopClick2.value = false;
                 addOrModifyVisiable.value = false;
-            } else {
-                stopClick2.value = false;
             }
+            stopClick2.value = false;
         } else {
             console.log('error submit!')
         }
@@ -370,8 +364,7 @@ const deleteUser = async (userId: string[] | number[] | string | number) => {
     }
 }
 // 选中时存入选项
-const selectIds = ref();
-const handleSelectionChange = (items: userItem[]) => {
+const handleSelectionChange = (items: UserItemType[]) => {
     if (items?.length === 0) {
         selectIds.value = '';
         return;
@@ -414,6 +407,10 @@ const changeStatus = async (userId: string, status: number) => {
         })
     }
 }
+// 分页功能 切换到某一页
+watch(currentpage, async (value: number) => {
+    await getUserList(value);
+})
 // 页面刷新前获取数据
 onBeforeMount(() => {
     roleStore.getAllRoleAsync();

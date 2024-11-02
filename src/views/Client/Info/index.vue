@@ -27,10 +27,10 @@
             </div>
             <div class="filter_right">
                 <div>
-                    <el-button type="primary" :icon="Plus" @click="addOrModifyClient('添加客户')">添加</el-button>
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyClient(1)">添加</el-button>
                     <el-button type="danger" :icon="Delete" :plain=true @click="deleteClients">删除</el-button>
                 </div>
-                <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle" :show-close="false"
+                <el-dialog v-model="addOrModifyVisiable" width="630" :title="addOrModifyTitle === 1 ? '添加客户' : '编辑客户'" :show-close="false"
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules"
@@ -150,7 +150,7 @@
                     <template #default="scope">
                         <div>
                             <el-button link type="primary" size="small"
-                                @click="addOrModifyClient('编辑客户', scope.row)">编辑</el-button>
+                                @click="addOrModifyClient(2, scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteClient(scope.row.id)">
@@ -198,7 +198,7 @@ const userStore = useUserStore();
 const tableLoading = ref(false);
 const addOrModifyVisiable = ref(false);
 const deleteClientsVisible = ref(false);
-const addOrModifyTitle = ref('添加客户');
+const addOrModifyTitle = ref(1);
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
@@ -360,7 +360,7 @@ const cancelAddClient = () => {
     resetForm1(); 
 }
 // 打开新增或编辑客户表单
-const addOrModifyClient = (title: string, item?: ClientItemType) => {
+const addOrModifyClient = (title: number, item?: ClientItemType) => {
     addOrModifyTitle.value = title;
     if (item) {
         ruleForm.id = item.id.toString();
@@ -386,7 +386,7 @@ const saveAddClient = async () => {
         if (valid) {
             stopClick2.value = true;
             let data: any;
-            if (addOrModifyTitle.value === '编辑客户') {
+            if (addOrModifyTitle.value === 2) {
                 data = await clientStore.updateClientAsync(ruleForm)
             } else {
                 data = await clientStore.addClientAsync({
@@ -403,7 +403,7 @@ const saveAddClient = async () => {
                 });
             }
             if (data) {
-                if (addOrModifyTitle.value === '编辑客户') {
+                if (addOrModifyTitle.value === 2) {
                     await getClientList(currentpage.value);
                 } else {
                     if (currentpage.value === 1) {
@@ -413,7 +413,7 @@ const saveAddClient = async () => {
                     }
                 }
                 ElMessage({
-                    message: addOrModifyTitle.value === '编辑客户' ? '编辑成功' : '添加成功',
+                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
                 cancelAddClient();

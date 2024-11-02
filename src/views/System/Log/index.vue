@@ -39,8 +39,9 @@ const tableLoading = ref(false);
 const logStore = useLogStore();
 const total = ref(0);
 const currentpage = ref(1);
+const logList = ref<LogItemType>();
 // 日志数据结构
-type logItem = {
+type LogItemType = {
     id: number,
     logType: number,
     logInfo: string,
@@ -49,17 +50,14 @@ type logItem = {
     createTime: string,
     userName: string,
 }
-const logList = ref<logItem>();
 const getLogList = async (pageNum: number = 1) => {
     tableLoading.value = true;
     const data = await logStore.getLogListAsync(Number(activeName.value), pageNum);
     if (data) {
         total.value = data.total;
         logList.value = data.list;
-        tableLoading.value = false;
-    } else {
-        tableLoading.value = false;
     } 
+    tableLoading.value = false;
 }
 watch(currentpage, async () => {
     await getLogList(currentpage.value);
@@ -71,7 +69,6 @@ watch(activeName, async () => { // 切换选项时页码回到1
         currentpage.value = 1;
     } 
 })
-
 // 刷新页面时获取一次数据
 onBeforeMount(async () => {
     await getLogList(currentpage.value);

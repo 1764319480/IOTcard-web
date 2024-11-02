@@ -49,12 +49,12 @@
             </div>
             <div class="filter_right">
                 <div>
-                    <el-button type="primary" :icon="Plus" @click="addOrModifyCombo('添加套餐')">添加</el-button>
-                    <el-button type="danger" :icon="Delete" :plain=true @click="operateItems('删除')">删除</el-button>
-                    <el-button type="primary" :icon="Top" :plain=true @click="operateItems('上架')">上架</el-button>
-                    <el-button type="primary" :icon="Bottom" :plain=true @click="operateItems('下架')">下架</el-button>
+                    <el-button type="primary" :icon="Plus" @click="addOrModifyCombo(1)">添加</el-button>
+                    <el-button type="danger" :icon="Delete" :plain=true @click="operateItems(0)">删除</el-button>
+                    <el-button type="primary" :icon="Top" :plain=true @click="operateItems(1)">上架</el-button>
+                    <el-button type="primary" :icon="Bottom" :plain=true @click="operateItems(2)">下架</el-button>
                 </div>
-                <el-dialog v-model="addOrModifyVisiable" width="680" :title="addOrModifyTitle" :show-close="false"
+                <el-dialog v-model="addOrModifyVisiable" width="680" :title="addOrModifyTitle === 1 ? '添加套餐' : '编辑套餐' " :show-close="false"
                     :close-on-click-modal="false" :close-on-press-escape="false">
                     <div class="form-items">
                         <el-form :inline="true" ref="ruleFormRef2" :model="ruleForm" :rules="rules"
@@ -118,19 +118,19 @@
                 </el-dialog>
                 <el-dialog v-model="operateItemsVisible" width="250" :show-close="false">
                     <div class="delete_class">
-                        <div class="delete_title">{{'确认' + optionTitle + '?'}}</div>
+                        <div class="delete_title">{{'确认' + optionTitles[optionTitle] + '?'}}</div>
                         <div class="delete_data">
-                            <el-icon :color="optionTitle === '上架' ? 'blue' : 'red' " size="20">
+                            <el-icon :color="optionTitle === 1 ? 'blue' : 'red' " size="20">
                                 <WarningFilled />
                             </el-icon>
                             &nbsp;
-                            <p>{{'将' + optionTitle + selectIdAndStatus[0]?.length + '条套餐，' + (optionTitle === '下架' ? '下架后相关套餐将不可用！' : '请谨慎操作！') }}</p>
+                            <p>{{'将' + optionTitles[optionTitle] + selectIdAndStatus[0]?.length + '条套餐，' + (optionTitle === 2 ? '下架后相关套餐将不可用！' : '请谨慎操作！') }}</p>
                         </div>
                     </div>
                     <template #footer>
                         <div class="dialog-footer">
                             <el-button @click="operateItemsVisible = false">取消</el-button>
-                            <el-button :type="optionTitle === '上架' ? 'primary' : 'danger' " @click="confirmOperate">
+                            <el-button :type="optionTitle === 1 ? 'primary' : 'danger' " @click="confirmOperate">
                                 确认
                             </el-button>
                         </div>
@@ -147,7 +147,7 @@
                 <el-table-column property="comboName" label="套餐名称" width="150" show-overflow-tooltip sortable="custom" />
                 <el-table-column property="comboPeriod" label="有效期" width="100" sortable="custom">
                     <template #default="scope">
-                        <p>{{ periodParse(scope.row.comboPeriod) }}</p>
+                        <p>{{ PeriodMap.get(scope.row.comboPeriod) }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column property="comboType" label="套餐类型" width="120" sortable="custom">
@@ -190,7 +190,7 @@
                     <template #default="scope">
                         <div>
                             <el-button link type="primary" size="small" v-if="scope.row.status === 0"
-                                @click="addOrModifyCombo('编辑套餐', scope.row)">编辑</el-button>
+                                @click="addOrModifyCombo(2, scope.row)">编辑</el-button>
                             <el-button link type="success" size="small" v-if="scope.row.status !== 1">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="blue" title="确定上架该套餐吗?"
                                     @confirm="changeComboStatus(scope.row.id, 1)">
@@ -268,17 +268,25 @@ import { onBeforeMount, reactive, ref, watch } from 'vue';
 import { useComboStore } from '@/stores/combo';
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler';
+// @ts-ignore
+import { PeriodMap } from '@/variables/common';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+
 const showMoreItems = ref(false);
 const comboStore = useComboStore();
 const tableLoading = ref(false);
-const addOrModifyTitle = ref('添加套餐');
+const addOrModifyTitle = ref(1);
 const addOrModifyVisiable = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
 const operateItemsVisible = ref(false);
-const optionTitle = ref('');
+const optionTitle = ref();
+const selectIdAndStatus = ref();
+const currentpage = ref(1);
+const optionTitles = ['删除', '上架', '下架'];
+const total = ref(0);// 后台套餐数据总量
+const comboList = ref<comboItem[]>();// 套餐列表
 const defaultTime = ref<[Date, Date]>([
     new Date(2000, 1, 1, 0, 0, 0),
     new Date(2000, 2, 1, 23, 59, 59),
@@ -288,8 +296,11 @@ const statusList = ref([
     {type: 'success', label: '上架'},
     {type: 'danger', label: '下架'}
 ])
-// 后台套餐数据总量
-const total = ref(0);
+interface ISortProps {// 表单排序
+    column: object,
+    prop: string,
+    order: string | null
+}
 // 筛选表单
 const formInline = reactive({
     comboName: '',
@@ -304,7 +315,6 @@ const formInline = reactive({
     orderType: 'desc'
 })
 // 选中时存入选项
-const selectIdAndStatus = ref();
 const handleSelectionChange = (items: comboItem[]) => {
     if (items?.length === 0) {
         selectIdAndStatus.value = '';
@@ -312,34 +322,12 @@ const handleSelectionChange = (items: comboItem[]) => {
     }
     selectIdAndStatus.value = [items.map(item => item.id), items.map(item => item.status)];
 }
-// 分页功能 切换到某一页
-const currentpage = ref(1);
-watch(currentpage, async (value: number) => {
-    await getComboList(value);
-})
-// 表单排序
-interface ISortProps {
-    column: object,
-    prop: string,
-    order: string | null
-}
 const handleSortChange = async (data: ISortProps) => {
     let { prop, order } = data;
     if (!order) order = 'descending';
     formInline.orderBy = prop;
     formInline.orderType = order.replace('ending', '');
     await getComboList(currentpage.value);
-}
-// 有效期格式转化
-const periodParse = (period: number) => {
-    switch (period) {
-        case 7: return '7天';
-        case 30: return '1个月';
-        case 90: return '3个月';
-        case 180: return '6个月';
-        case 360: return '1年';
-        default: return '未知'
-    }
 }
 // 套餐容量-流量格式转化
 const capacityParse = (capacity: number) => {
@@ -394,8 +382,6 @@ type comboItem = {
     remark: string,
     createTime: string
 }
-// 套餐列表
-const comboList = ref<comboItem[]>();
 // 搜索套餐
 const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
     tableLoading.value = true;
@@ -446,7 +432,7 @@ const ruleForm = reactive({
     remark: ''
 })
 // 打开新增或编辑套餐表单
-const addOrModifyCombo = async (title: string, item?: comboItem) => {
+const addOrModifyCombo = async (title: number, item?: comboItem) => {
     addOrModifyTitle.value = title;
     if (item) {
         ruleForm.id = item.id;
@@ -457,12 +443,11 @@ const addOrModifyCombo = async (title: string, item?: comboItem) => {
         ruleForm.standardTariff = item.standardTariff;
         ruleForm.salesPrice = item.salesPrice;
         ruleForm.remark = item.remark;
-        addOrModifyVisiable.value = true;
     } else {
         ruleForm.remark = '';
-        addOrModifyVisiable.value = true;
         ruleFormRef2.value?.resetFields();
     }
+    addOrModifyVisiable.value = true;
 }
 // 新增或编辑套餐表单的保存按钮
 const saveAddcombo = async () => {
@@ -470,31 +455,24 @@ const saveAddcombo = async () => {
     await ruleFormRef2.value.validate(async (valid) => {
         if (valid) {
             stopClick2.value = true;
+            const conditions = {
+                id: ruleForm.id,
+                comboName: ruleForm.comboName,
+                comboPeriod: ruleForm.comboPeriod,
+                comboCapacity: ruleForm.comboCapacity,
+                comboType: ruleForm.comboType,
+                standardTariff: ruleForm.standardTariff,
+                salesPrice: ruleForm.salesPrice,
+                remark: ruleForm.remark || undefined
+            }
             let data: any;
-            if (addOrModifyTitle.value === '编辑套餐') {
-                data = await comboStore.updateComboAsync({
-                    id: ruleForm.id,
-                    comboName: ruleForm.comboName,
-                    comboPeriod: ruleForm.comboPeriod,
-                    comboCapacity: ruleForm.comboCapacity,
-                    comboType: ruleForm.comboType,
-                    standardTariff: ruleForm.standardTariff,
-                    salesPrice: ruleForm.salesPrice,
-                    remark: ruleForm.remark || undefined
-                })
+            if (addOrModifyTitle.value === 2) {
+                data = await comboStore.updateComboAsync(conditions);
             } else {
-                data = await comboStore.addComboAsync({
-                    comboName: ruleForm.comboName,
-                    comboPeriod: ruleForm.comboPeriod,
-                    comboCapacity: ruleForm.comboCapacity,
-                    comboType: ruleForm.comboType,
-                    standardTariff: ruleForm.standardTariff,
-                    salesPrice: ruleForm.salesPrice,
-                    remark: ruleForm.remark || undefined
-                });
+                data = await comboStore.addComboAsync(conditions);
             }
             if (data) {
-                if (addOrModifyTitle.value === '编辑套餐') {
+                if (addOrModifyTitle.value === 2) {
                     await getComboList(currentpage.value);
                 } else {
                     if (currentpage.value === 1) {
@@ -504,14 +482,12 @@ const saveAddcombo = async () => {
                     }
                 }
                 ElMessage({
-                    message: addOrModifyTitle.value === '编辑套餐' ? '编辑成功' : '添加成功',
+                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
                     type: 'success'
                 })
-                stopClick2.value = false;
                 addOrModifyVisiable.value = false;
-            } else {
-                stopClick2.value = false;
             }
+            stopClick2.value = false;
         } else {
             console.log('error submit!')
         }
@@ -562,7 +538,7 @@ const copyCombo = async (id: number) => {
     }
 }
 // 批量操作
-const operateItems = (title: string) => {
+const operateItems = (title: number) => {
     if (!selectIdAndStatus.value) {
         ElMessage({
             message: '请选择需要操作的套餐',
@@ -570,21 +546,21 @@ const operateItems = (title: string) => {
         });
         return;
     }  
-    if (title === '删除' && selectIdAndStatus.value[1].includes(1)) {
+    if (title === 0 && selectIdAndStatus.value[1].includes(1)) {
         ElMessage({
             message: '无法删除已上架的套餐',
             type: 'warning'
         });
         return;
     }
-    if (title === '上架' && selectIdAndStatus.value[1].includes(1)) {
+    if (title === 1 && selectIdAndStatus.value[1].includes(1)) {
         ElMessage({
             message: '已上架的套餐无法再次操作上架',
             type: 'warning'
         });
         return;
     };
-    if (title === '下架' && (selectIdAndStatus.value[1].includes(0) || selectIdAndStatus.value[1].includes(2))) {
+    if (title === 2 && (selectIdAndStatus.value[1].includes(0) || selectIdAndStatus.value[1].includes(2))) {
         ElMessage({
             message: '未上架的套餐无法下架',
             type: 'warning'
@@ -597,21 +573,24 @@ const operateItems = (title: string) => {
 const confirmOperate = async () => {
     operateItemsVisible.value = false;
     switch(optionTitle.value) {
-        case '删除': {
+        case 0: {
             await deleteCombo(selectIdAndStatus.value[0]);
             break;
         }
-        case '上架': {
+        case 1: {
             await changeComboStatus(selectIdAndStatus.value[0], 1);
             break;
         }
-        case '下架': {
+        case 2: {
             await changeComboStatus(selectIdAndStatus.value[0], 2);
             break;
         }
     } 
 }
-
+// 分页功能 切换到某一页
+watch(currentpage, async (value: number) => {
+    await getComboList(value);
+})
 onBeforeMount(async () => {
     await getComboList();
 })
