@@ -1,52 +1,7 @@
 <template>
     <div class="home">
         <div class="filter">
-            <div class="form">
-                <el-form :inline="true" :model="formInline" ref="ruleFormRef" class="demo-form-inline">
-                    <el-form-item label="套餐名称">
-                        <el-input v-model="formInline.comboName" placeholder="搜索套餐名称" clearable />
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        <el-select v-model="formInline.comboType">
-                            <el-option label="全部" value="99" />
-                            <el-option label="流量包" value="1" />
-                            <el-option label="短信包" value="2" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="状态">
-                        <el-select v-model="formInline.status">
-                            <el-option label="全部" value="99" />
-                            <el-option label="待定" value="0" />
-                            <el-option label="上架" value="1" />
-                            <el-option label="下架" value="2" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="创建时间" v-show="showMoreItems">
-                        <el-date-picker v-model="formInline.timeList" type="daterange" start-placeholder="开始时间"
-                        :default-time="defaultTime" end-placeholder="结束时间" style="width: 220px;" value-format="YYYY-MM-DD HH:mm:ss" />
-                    </el-form-item>
-                    <el-form-item label="标准资费" v-show="showMoreItems">
-                        <el-input-number v-model="formInline.standardTariffMin" class="mx-4" :min="0" :max="formInline.standardTariffMax"
-                            controls-position="right" style="width: 110px;" placeholder="最低" :precision="2"/>
-                        &nbsp;-&nbsp;
-                        <el-input-number v-model="formInline.standardTariffMax" class="mx-4" :min="formInline.standardTariffMin"
-                            controls-position="right" style="width: 110px;" placeholder="最高" :precision="2"/>
-                    </el-form-item>
-                    <el-form-item label="销售价格" v-show="showMoreItems">
-                        <el-input-number v-model="formInline.salesPriceMin" class="mx-4" :min="0" :max="formInline.salesPriceMax"
-                            controls-position="right" style="width: 110px;" placeholder="最低" :precision="2"/>
-                        &nbsp;-&nbsp;
-                        <el-input-number v-model="formInline.salesPriceMax" class="mx-4" :min="formInline.salesPriceMin"
-                            controls-position="right" style="width: 110px;" placeholder="最高" :precision="2"/>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" :icon="Search" @click="getComboList()">搜索</el-button>
-                        <el-button :icon="Refresh" type="primary" :plain=true @click="resetForm">重置</el-button>
-                        <el-button :icon="showMoreItems ? ArrowUpBold : ArrowDownBold" type="primary" :plain=true
-                            @click="showMoreItems = !showMoreItems">{{ showMoreItems ? '收起' : '更多' }}</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
+            <FilterForm :form-inline="formInline" @get-combo-list="getComboList" @reset-form="resetForm" @change-show-more="changeShowMore"></FilterForm>
             <div class="filter_right">
                 <div>
                     <el-button type="primary" :icon="Plus" @click="addOrModifyCombo(1)">添加</el-button>
@@ -262,8 +217,9 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowDownBold, ArrowUpBold, Bottom, Delete, Plus, Refresh, Search, Top, WarningFilled } from '@element-plus/icons-vue';
+import { Bottom, Delete, Plus, Top, WarningFilled } from '@element-plus/icons-vue';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
+import FilterForm from './FilterForm.vue';
 // @ts-ignore
 import { useComboStore } from '@/stores/combo';
 // @ts-ignore
@@ -277,7 +233,6 @@ const comboStore = useComboStore();
 const tableLoading = ref(false);
 const addOrModifyTitle = ref(1);
 const addOrModifyVisiable = ref(false);
-const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
 const operateItemsVisible = ref(false);
@@ -287,10 +242,6 @@ const currentpage = ref(1);
 const optionTitles = ['删除', '上架', '下架'];
 const total = ref(0);// 后台套餐数据总量
 const comboList = ref<ComboItemType[]>();// 套餐列表
-const defaultTime = ref<[Date, Date]>([
-    new Date(2000, 1, 1, 0, 0, 0),
-    new Date(2000, 2, 1, 23, 59, 59),
-])
 const statusList = ref([
     {type: 'info', label: '待定'},
     {type: 'success', label: '上架'},
@@ -339,6 +290,10 @@ const ruleForm = reactive({
     comboCapacity: undefined as undefined | number,
     remark: ''
 })
+// 显示更多筛选项
+const changeShowMore = (value: boolean) => {
+    showMoreItems.value = value;
+}
 // 选中时存入选项
 const handleSelectionChange = (items: ComboItemType[]) => {
     if (items?.length === 0) {
@@ -603,8 +558,8 @@ onBeforeMount(async () => {
 </script>
 
 
-<style lang="scss" scoped src="@/assets/css/manage.scss"></style>
-<style lang="scss" scoped>
+<style lang="scss" src="@/assets/css/manage.scss"></style>
+<style lang="scss">
 .home {
     .filter {
         .filter_right {
