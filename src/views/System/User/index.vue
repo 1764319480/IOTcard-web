@@ -269,8 +269,8 @@ const handleSortChange = async (data: ISortProps) => {
 }
 // 打开新增或编辑用户表单
 const addOrModifyUser = (title: number, item?: UserItemType) => {
-    addOrModifyVisiable.value = true;
     addOrModifyTitle.value = title;
+    ruleFormRef2.value?.resetFields();
     if (item) {
         ruleForm.account = item.account;
         ruleForm.userName = item.userName;
@@ -282,7 +282,7 @@ const addOrModifyUser = (title: number, item?: UserItemType) => {
         ruleForm.roleId = [];
         ruleForm.password = '12345678';
     }
-
+    addOrModifyVisiable.value = true;
 }
 // 新增或编辑用户表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({

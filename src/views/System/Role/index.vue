@@ -203,8 +203,8 @@ interface ISortProps {
 }
 // 打开新增或编辑角色表单
 const addOrModifyRole = (title: number, item?: RoleItemType) => {
-    addOrModifyVisiable.value = true;
     addOrModifyTitle.value = title;
+    ruleFormRef2.value?.resetFields();
     if (item) {
         ruleForm.roleId = item.id;
         ruleForm.roleName = item.roleName;
@@ -215,7 +215,7 @@ const addOrModifyRole = (title: number, item?: RoleItemType) => {
         ruleForm.roleType = '';
         ruleForm.remark = '';
     }
-
+    addOrModifyVisiable.value = true;
 }
 // 新增或编辑角色表单的格式验证规则
 const rules = reactive<FormRules<typeof ruleForm>>({

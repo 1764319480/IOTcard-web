@@ -388,7 +388,6 @@ const resetForm = async () => {
 }
 // 重置新增或编辑套餐表单
 const resetForm1 = () => {
-    ruleFormRef2.value?.resetFields();
     ruleForm.id = '';
     ruleForm.comboName = '';
     ruleForm.comboPeriod = '';
@@ -401,6 +400,7 @@ const resetForm1 = () => {
 // 打开新增或编辑套餐表单
 const addOrModifyCombo = async (title: number, item?: ComboItemType) => {
     addOrModifyTitle.value = title;
+    ruleFormRef2.value?.resetFields();
     if (item) {
         ruleForm.id = item.id;
         ruleForm.comboName = item.comboName;

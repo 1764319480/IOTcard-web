@@ -177,7 +177,6 @@ const rules = reactive<FormRules<typeof ruleForm>>({
 })
 // 清空新增或编辑客户表单
 const resetForm1 = () => {
-    ruleFormRef2.value?.resetFields();
     ruleForm.clientName = '';
     ruleForm.clientType = '';
     ruleForm.contact = '';
@@ -195,6 +194,7 @@ const resetForm1 = () => {
 // 打开新增或编辑客户表单
 const addOrModifyClient = (title: number, item?: ClientItemType) => {
     addOrModifyTitle.value = title;
+    ruleFormRef2.value?.resetFields();
     if (item) {
         ruleForm.id = item.id.toString();
         ruleForm.clientName = item.clientName;
