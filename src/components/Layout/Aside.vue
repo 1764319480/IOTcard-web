@@ -25,3 +25,8 @@
 import menus from '@/variables/menus'
 defineProps<{ active: string }>();
 </script>
+<script lang="ts">
+export default {
+    name: 'asides'
+}
+</script>

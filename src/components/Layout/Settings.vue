@@ -189,7 +189,11 @@ const handleSave = (formEl: FormInstance | undefined) => {
 }
 
 </script>
-
+<script lang="ts">
+export default {
+    name: 'settings'
+}
+</script>
 <style lang="scss">
 .settings-dialog {
     padding: 0;

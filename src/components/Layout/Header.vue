@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
 import Settings from './Settings.vue';
 import { ElMessageBox } from 'element-plus'
 import { UserFilled, Setting, CircleClose } from '@element-plus/icons-vue';
@@ -61,7 +60,11 @@ const handleLogout = () => {
     })
 };
 </script>
-
+<script lang="ts">
+export default {
+    name: 'headers'
+}
+</script>
 <style lang="scss" scoped>
 .header {
     display: flex;

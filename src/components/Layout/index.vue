@@ -1,11 +1,11 @@
 <template>
     <el-container class="common-layout">
         <el-header height="50px">
-            <Header />
+            <Headers />
         </el-header>
         <el-container>
             <el-aside width="220px">
-                <Aside :active="state.active" />
+                <Asides :active="state.active" />
             </el-aside>
             <el-container direction="vertical">
                 <div class="breadcrumb">
@@ -25,10 +25,8 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
-import Header from './Header.vue';
-// @ts-ignore
-import Aside from './Aside.vue';
+import Headers from './Header.vue';
+import Asides from './Aside.vue';
 // @ts-ignore
 import menus from '@/variables/menus';
 // @ts-ignore
