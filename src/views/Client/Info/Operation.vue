@@ -119,20 +119,33 @@ const stopClick2 = ref(false);
 let timer:any = null;
 const { selectIds, currentpage } = defineProps(['selectIds', 'currentpage']);
 const emits = defineEmits(['getClientList', 'changePage']);
-const ruleForm = reactive({// 新增或编辑客户的表单
+const ruleForm = reactive<RuleFormType>({// 新增或编辑客户的表单
     id: '',
     clientName: '',
     clientType: '',
     contact: '',
     contactPhone: '',
-    contactProvince: undefined as string | number | undefined,
-    contactCity: undefined as string | number | undefined,
-    contactArea: undefined as string | number | undefined,
-    contactStreet: undefined as string | number | undefined,
-    contactAddress: undefined as string | number | undefined,
+    contactProvince: undefined,
+    contactCity: undefined,
+    contactArea: undefined,
+    contactStreet: undefined,
+    contactAddress: undefined,
     salesman: '' as string | number
 })
 const { contactProvince, contactCity, contactArea } = toRefs(ruleForm);
+type RuleFormType = {// 新增或编辑客户的表单
+    id: string,
+    clientName: string,
+    clientType: string,
+    contact: string,
+    contactPhone: string,
+    contactProvince: number | undefined,
+    contactCity: number | undefined,
+    contactArea: number | undefined,
+    contactStreet: number | undefined,
+    contactAddress: string | undefined,
+    salesman: string | number
+}
 // 获取业务员列表
 const getUsers = (value:string) => {
     if (timer) clearTimeout(timer);
@@ -280,10 +293,10 @@ watch(contactProvince, async (value: any) => {
     if (!value) return;
     cities.value = await commonStore.getCitiesAsync(Number(value));
     if (!cities.value.find((item: any) => item.id === ruleForm.contactCity)) {
-        ruleForm.contactCity = '';
-        ruleForm.contactArea = '';
+        ruleForm.contactCity = undefined;
+        ruleForm.contactArea = undefined;
         areas.value = [];
-        ruleForm.contactStreet = '';
+        ruleForm.contactStreet = undefined;
         streets.value = [];
     }
 });
@@ -291,8 +304,8 @@ watch(contactCity, async (value: any) => {
     if (!value) return;
     areas.value = await commonStore.getAreasAsync(Number(value));
     if (!areas.value.find((item: any) => item.id === ruleForm.contactArea)) {
-        ruleForm.contactArea = '';
-        ruleForm.contactStreet = '';
+        ruleForm.contactArea = undefined;
+        ruleForm.contactStreet = undefined;
         streets.value = [];
     }
 })
@@ -300,7 +313,7 @@ watch(contactArea, async (value: any) => {
     if (!value) return;
     streets.value = await commonStore.getStreetsAsync(Number(value));
     if (!streets.value.find((item: any) => item.id === ruleForm.contactStreet)) {
-        ruleForm.contactStreet = '';
+        ruleForm.contactStreet = undefined;
     }
 })
 onBeforeMount(async () => {
