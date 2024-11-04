@@ -93,17 +93,17 @@
             </div>
 </template>
 <script setup lang="ts">
-import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue';
-import { ref, reactive, watch, toRefs, onBeforeMount } from 'vue';
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue'
+import { ref, reactive, watch, toRefs, onBeforeMount } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // @ts-ignore
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
 // @ts-ignore
-import { useCommonStore } from '@/stores/common';
+import { useCommonStore } from '@/stores/common'
 // @ts-ignore
-import { useClientStore } from '@/stores/client';
+import { useClientStore } from '@/stores/client'
 // @ts-ignore
-import { ClientItemType } from '@/variables/common';
+import { ClientItemType } from '@/variables/common'
 const ruleFormRef2 = ref<FormInstance>();
 const userStore = useUserStore();
 const commonStore = useCommonStore();

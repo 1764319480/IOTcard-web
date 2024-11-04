@@ -151,19 +151,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount, watch } from 'vue';
-import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icons-vue';
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { ref, reactive, onBeforeMount, watch } from 'vue'
+import { Plus, Delete, Search, Refresh, WarningFilled } from '@element-plus/icons-vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { getMaxPermission } from '@/utils/otherHandler';
+import { getMaxPermission } from '@/utils/otherHandler'
 // @ts-ignore
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
 // @ts-ignore
-import { UserStatusList } from '@/variables/common';
+import { UserStatusList } from '@/variables/common'
 // @ts-ignore
-import { useRoleStore } from '@/stores/role';
+import { useRoleStore } from '@/stores/role'
 const addOrModifyVisiable = ref(false);
 const deleteUsersVisible = ref(false);
 const userStore = useUserStore();

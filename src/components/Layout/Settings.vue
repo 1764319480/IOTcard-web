@@ -50,11 +50,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue';
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { ref, watch, reactive } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // @ts-ignore
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
 const ruleFormRef = ref<FormInstance>()
+const props = defineProps<{ open: boolean }>();
+const emit = defineEmits(['update:open', 'openchange']); // 使用 emit 定义事件
+const isVisible = ref(props.open);
+const tab = ref(1);
+const userStore = useUserStore();
+const stopClick = ref(false);
+const ruleForm = reactive({
+    userName: userStore.userInfo.userName,
+    oldPassword: '',
+    newPassword: '',
+    checkPassword: ''
+})
 const tabList = [{
     label: '修改资料',
     value: 1
@@ -62,18 +74,6 @@ const tabList = [{
     label: '修改密码',
     value: 2
 }];
-const props = defineProps<{ open: boolean }>();
-const emit = defineEmits(['update:open', 'openchange']); // 使用 emit 定义事件
-const isVisible = ref(props.open);
-const tab = ref(1);
-const userStore = useUserStore();
-const ruleForm = reactive({
-    userName: userStore.userInfo.userName,
-    oldPassword: '',
-    newPassword: '',
-    checkPassword: ''
-})
-const stopClick = ref(false);
 // 表单验证规则
 const validatePass = (rule: any, value: any, callback: any) => {
   if (value === '') {
@@ -181,10 +181,8 @@ const handleClose = () => {
 const handleSave = (formEl: FormInstance | undefined) => {
     if (tab.value === 1) {
         updateUserName(formEl);
-        // 处理保存修改资料逻辑
     } else if (tab.value === 2) {
         updatePassword(formEl)
-        // 处理保存修改密码逻辑
     }
 }
 

@@ -35,12 +35,12 @@
 </template>
 
 <script setup lang="ts">
-import Settings from './Settings.vue';
+import Settings from './Settings.vue'
 import { ElMessageBox } from 'element-plus'
-import { UserFilled, Setting, CircleClose } from '@element-plus/icons-vue';
+import { UserFilled, Setting, CircleClose } from '@element-plus/icons-vue'
 // @ts-ignore
-import { useUserStore } from '@/stores/user';
-import { ref } from 'vue';
+import { useUserStore } from '@/stores/user'
+import { ref } from 'vue'
 
 const openSettings = ref(false);
 const userStore = useUserStore();

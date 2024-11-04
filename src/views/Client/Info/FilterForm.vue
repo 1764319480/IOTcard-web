@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { Refresh, Search } from '@element-plus/icons-vue';
+import { Refresh, Search } from '@element-plus/icons-vue'
 const { formInline } = defineProps(['formInline']);
 const emit = defineEmits(['getClientList', 'resetForm']);
 </script>

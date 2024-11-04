@@ -45,8 +45,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
 // @ts-ignore
 import { useLoginStore } from '@/stores/login'

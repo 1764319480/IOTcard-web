@@ -67,17 +67,17 @@
 </template>
 
 <script setup lang="ts">
-import FilterForm from './FilterForm.vue';
-import Operation from './Operation.vue';
+import FilterForm from './FilterForm.vue'
+import Operation from './Operation.vue'
 // @ts-ignore
-import { useClientStore } from '@/stores/client';
+import { useClientStore } from '@/stores/client'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { ClientItemType } from '@/variables/common';
-import { WarningFilled } from '@element-plus/icons-vue';
-import { ref, reactive, onBeforeMount, watch } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ClientItemType } from '@/variables/common'
+import { WarningFilled } from '@element-plus/icons-vue'
+import { ref, reactive, onBeforeMount, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 
 const operation = ref();
 const clientStore = useClientStore();

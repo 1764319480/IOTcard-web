@@ -94,17 +94,17 @@
 </template>
 
 <script setup lang="ts">
-import { Bottom, Delete, Plus, Top, WarningFilled } from '@element-plus/icons-vue';
-import { reactive, ref } from 'vue';
+import { Bottom, Delete, Plus, Top, WarningFilled } from '@element-plus/icons-vue'
+import { reactive, ref } from 'vue'
 // @ts-ignore
-import { useComboStore } from '@/stores/combo';
+import { useComboStore } from '@/stores/combo'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { PeriodMap } from '@/variables/common';
+import { PeriodMap } from '@/variables/common'
 // @ts-ignore
-import { ComboItemType } from '@/variables/common';
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { ComboItemType } from '@/variables/common'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
 const comboStore = useComboStore();
 const addOrModifyTitle = ref(1);

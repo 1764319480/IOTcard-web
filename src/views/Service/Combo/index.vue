@@ -130,17 +130,17 @@
 </template>
 
 <script setup lang="ts">
-import { WarningFilled } from '@element-plus/icons-vue';
-import { onBeforeMount, reactive, ref, watch } from 'vue';
-import FilterForm from './FilterForm.vue';
-import Operation from './Operation.vue';
+import { WarningFilled } from '@element-plus/icons-vue'
+import { onBeforeMount, reactive, ref, watch } from 'vue'
+import FilterForm from './FilterForm.vue'
+import Operation from './Operation.vue'
 // @ts-ignore
-import { useComboStore } from '@/stores/combo';
+import { useComboStore } from '@/stores/combo'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { PeriodMap, ComboItemType } from '@/variables/common';
-import { ElMessage } from 'element-plus';
+import { PeriodMap, ComboItemType } from '@/variables/common'
+import { ElMessage } from 'element-plus'
 const operation = ref();
 const showMoreItems = ref(false);
 const comboStore = useComboStore();

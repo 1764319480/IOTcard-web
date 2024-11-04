@@ -51,8 +51,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ArrowDownBold, ArrowUpBold, Refresh, Search } from '@element-plus/icons-vue';
+import { ref } from 'vue'
+import { ArrowDownBold, ArrowUpBold, Refresh, Search } from '@element-plus/icons-vue'
 
 const { formInline } = defineProps(['formInline']);
 const emits = defineEmits(['getComboList', 'resetForm', 'changeShowMore']);

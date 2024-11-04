@@ -29,11 +29,11 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue'
 // @ts-ignore
-import { useLogStore } from '@/stores/log';
+import { useLogStore } from '@/stores/log'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 const activeName = ref('1');
 const tableLoading = ref(false);
 const logStore = useLogStore();
