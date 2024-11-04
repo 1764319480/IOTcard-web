@@ -17,7 +17,8 @@ export const PeriodMap = new Map<number, string> ([
     [360, '1年'],
 ])
 
-export type ClientItemType = {// 客户数据结构
+// 客户数据结构
+export type ClientItemType = {
     id: number,
     clientNo: string,
     clientName: string,
@@ -50,5 +51,15 @@ export type ComboItemType = {
     standardTariff: string,
     salesPrice: string,
     remark: string,
+    createTime: string
+}
+
+// 角色数据结构
+export type RoleItemType = {
+    id: number,
+    roleType: number,
+    roleName: string,
+    remark: string,
+    userCount: number,
     createTime: string
 }

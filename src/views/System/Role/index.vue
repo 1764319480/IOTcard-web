@@ -2,62 +2,8 @@
     <div class="home">
         <div class="filter">
             <FilterForm :form-inline="formInline" @get-role-list="getRoleList" @reset-form="resetForm"></FilterForm>
-            <div class="filter_right">
-                <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
-                    <el-button type="primary" :icon="Plus" @click="addOrModifyRole(1)">添加</el-button>
-                    <el-button type="danger" :icon="Delete" :plain=true @click="deleteRoles">删除</el-button>
-                </div>
-                <el-dialog v-model="addOrModifyVisiable" width="400" :title="addOrModifyTitle === 1 ? '添加角色' : '编辑角色' " :show-close="false"
-                    :close-on-click-modal="false" :close-on-press-escape="false">
-                    <div class="form-items">
-                        <el-form ref="ruleFormRef2" style="max-width: 600px" :model="ruleForm" :rules="rules"
-                            label-width="auto" class="demo-ruleForm">
-                            <el-form-item label="名称:" prop="roleName">
-                                <el-input v-model="ruleForm.roleName" style="width: 200px;" autocomplete="off"
-                                    placeholder="请输入名称" />
-                            </el-form-item>
-                            <el-form-item label="类型:" prop="roleType">
-                                <el-select v-model="ruleForm.roleType" style="width: 200px" collapse-tags
-                                    collapse-tags-tooltip placeholder="请选择角色类型">
-                                    <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value"
-                                        :key="item.value"
-                                        v-show="(addOrModifyTitle === 1 && getMaxPermission(userStore.userInfo.roles) <= item.value)
-                                            || (addOrModifyTitle === 2 && getMaxPermission(userStore.userInfo.roles) < item.value)" />
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="描述:" prop="remark">
-                                <el-input v-model="ruleForm.remark" type="textarea" style="width: 300px;" :rows="4"
-                                    autocomplete="off" placeholder="描述（可选）" />
-                            </el-form-item>
-                            <div style="display: flex; justify-content: end;">
-                                <el-button @click="addOrModifyVisiable = false;" style="width:80px">取消</el-button>
-                                <el-button type="primary" @click="saveAddRole" :loading="stopClick2"
-                                    style="width: 80px;">保存</el-button>
-                            </div>
-                        </el-form>
-                    </div>
-                </el-dialog>
-                <el-dialog v-model="deleteRolesVisible" width="250" :show-close="false">
-                    <div class="delete_class">
-                        <div class="delete_title">确认删除?</div>
-                        <div class="delete_data">
-                            <el-icon color="red" size="20">
-                                <WarningFilled />
-                            </el-icon>
-                            &nbsp;
-                            <p>将删除{{ selectIds.length }}条记录，请谨慎操作！</p>
-                        </div>
-                    </div>
-                    <template #footer>
-                        <div class="dialog-footer">
-                            <el-button @click="deleteRolesVisible = false">取消</el-button>
-                            <el-button type="danger" @click="confirmDeleteRoles">
-                                确认
-                            </el-button>
-                        </div>
-                    </template>
-                </el-dialog>
-            </div>
+            <Operation ref="operation" :currentpage="currentpage" :select-ids="selectIds" @change-page="changePage"
+            @delete-role="deleteRole" @get-role-list="getRoleList"></Operation>
         </div>
         <div class="lists">
             <el-table :data="roleList" style="width: 100%" @selection-change="handleSelectionChange"
@@ -89,7 +35,7 @@
                     <template #default="scope">
                         <div v-if="getMaxPermission(userStore.userInfo.roles) < scope.row.roleType">
                             <el-button link type="primary" size="small"
-                                @click="addOrModifyRole(2, scope.row)">编辑</el-button>
+                                @click="operation.addOrModifyRole(2, scope.row)">编辑</el-button>
                             <el-button link type="danger" size="small" v-if="scope.row.userCount === 0">
                                 <el-popconfirm width="220" :icon="WarningFilled" icon-color="red" title="确定删除该条记录吗?"
                                     @confirm="deleteRole(scope.row.id)">
@@ -120,31 +66,34 @@
 
 <script setup lang="ts">
 import FilterForm from './FilterForm.vue'
-import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue'
+import Operation from './Operation.vue'
+import { WarningFilled } from '@element-plus/icons-vue'
 import { onBeforeMount, reactive, ref, watch } from 'vue'
 // @ts-ignore
 import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { RoleTypeList } from '@/variables/common'
+import { RoleItemType } from '@/variables/common'
 // @ts-ignore
 import { useUserStore } from '@/stores/user'
 // @ts-ignore
 import { useRoleStore } from '@/stores/role'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-const addOrModifyVisiable = ref(false);
-const addOrModifyTitle = ref(1);
+import { ElMessage } from 'element-plus'
+const operation = ref();
 const userStore = useUserStore();
 const roleStore = useRoleStore();
 const tableLoading = ref(false);
-const deleteRolesVisible = ref(false);
-const ruleFormRef2 = ref<FormInstance>();
-const stopClick2 = ref(false);
 const roleList = ref<RoleItemType>();// 角色列表
 const selectIds = ref();
 const total = ref(0);// 后台角色数据总量
 const currentpage = ref(1);
+// 排序字段结构
+interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}
 // 筛选角色的表单选项
 const formInline = reactive({
     keyword: '',
@@ -162,130 +111,21 @@ const resetForm = async () => {
         currentpage.value = 1;
     }
 }
-// 新增或编辑角色的表单
-const ruleForm = reactive({
-    roleId: 0,
-    roleName: '',
-    roleType: '' as string | number,
-    remark: ''
-})
-// 角色数据结构
-type RoleItemType = {
-    id: number,
-    roleType: number,
-    roleName: string,
-    remark: string,
-    userCount: number,
-    createTime: string
-}
-// 排序字段结构
-interface ISortProps {
-    column: object,
-    prop: string,
-    order: string | null
-}
-// 打开新增或编辑角色表单
-const addOrModifyRole = (title: number, item?: RoleItemType) => {
-    addOrModifyTitle.value = title;
-    ruleFormRef2.value?.resetFields();
-    if (item) {
-        ruleForm.roleId = item.id;
-        ruleForm.roleName = item.roleName;
-        ruleForm.roleType = item.roleType;
-        ruleForm.remark = item.remark;
-    } else {
-        ruleForm.roleName = '';
-        ruleForm.roleType = '';
-        ruleForm.remark = '';
-    }
-    addOrModifyVisiable.value = true;
-}
-// 新增或编辑角色表单的格式验证规则
-const rules = reactive<FormRules<typeof ruleForm>>({
-    roleName: [
-        { required: true, message: '请输入角色名', trigger: 'blur' },
-        { min: 1, max: 16, message: '角色名长度最多 16 个字符', trigger: 'blur' }
-    ],
-    roleType: [
-        { required: true, message: '请选择一个类型', trigger: 'blur' },
-    ],
-    remark: [
-        { max: 256, message: '角色描述最多 256 个字符', trigger: 'blur' }
-    ]
-})
-// 新增或编辑角色表单的保存按钮
-const saveAddRole = async () => {
-    if (!ruleFormRef2.value) return
-    await ruleFormRef2.value.validate(async (valid) => {
-        if (valid) {
-            stopClick2.value = true;
-            let data: any;
-            if (addOrModifyTitle.value === 2) {
-                data = await roleStore.updateRoleAsync(
-                    ruleForm.roleId,
-                    Number(ruleForm.roleType),
-                    ruleForm.roleName,
-                    ruleForm.remark
-                )
-            } else {
-                data = await roleStore.addRoleAsync(
-                    Number(ruleForm.roleType),
-                    ruleForm.roleName,
-                    ruleForm.remark
-                );
-            }
-            if (data) {
-                if (addOrModifyTitle.value === 2) {
-                    await getRoleList(currentpage.value);
-                } else {
-                    if (currentpage.value === 1) {
-                        await getRoleList(1)
-                    } else {
-                        currentpage.value = 1;
-                    }
-                }
-                ElMessage({
-                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
-                    type: 'success'
-                })
-                addOrModifyVisiable.value = false;
-            }
-            stopClick2.value = false;
-        } else {
-            console.log('error submit!')
-        }
-    })
-}
 // 删除角色
 const deleteRole = async (roleIds: number | number[]) => {
     if (!Array.isArray(roleIds)) roleIds = [roleIds];
     const data = await roleStore.deleteRoleAsync(roleIds);
     if (data) {
+        ElMessage({
+            message: '删除成功',
+            type: 'success'
+        })
         if (currentpage.value === 1) {
             await getRoleList(1)
         } else {
             currentpage.value = 1;
         }
-        ElMessage({
-            message: '删除成功',
-            type: 'success'
-        })
     }
-}
-// 批量删除
-const deleteRoles = () => {
-    if (!selectIds.value) {
-        ElMessage({
-            message: '未选择任何数据',
-            type: 'warning'
-        });
-        return;
-    }
-    deleteRolesVisible.value = true;
-}
-const confirmDeleteRoles = async () => {
-    await deleteRole(selectIds.value);
-    deleteRolesVisible.value = false;
 }
 // 选中条件：有权限且用户数为0
 const selectable = (row: RoleItemType) => getMaxPermission(userStore.userInfo.roles) < row.roleType && row.userCount === 0;
@@ -324,6 +164,9 @@ const handleSelectionChange = (items: RoleItemType[]) => {
     selectIds.value = items.map(item => item.id);
 }
 // 分页功能 切换到某一页
+const changePage = (value: number) => {
+    currentpage.value = value;
+}
 watch(currentpage, async () => {
     await getRoleList(currentpage.value);
 })
