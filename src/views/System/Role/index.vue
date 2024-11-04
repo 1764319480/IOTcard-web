@@ -1,24 +1,7 @@
 <template>
     <div class="home">
         <div class="filter">
-            <div class="form">
-                <el-form :inline="true" :model="formInline" ref="ruleFormRef" class="demo-form-inline">
-                    <el-form-item label="关键字">
-                        <el-input v-model="formInline.keyword" placeholder="搜索名称/描述" clearable />
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        <el-select v-model="formInline.roleType">
-                            <el-option label="全部" value='9999' />
-                            <el-option v-for="item of RoleTypeList" :label="item.label" :value="item.value"
-                                :key="item.value" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" :icon="Search" @click="getRoleList()">搜索</el-button>
-                        <el-button :icon="Refresh" type="primary" :plain=true @click="resetForm">重置</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
+            <FilterForm :form-inline="formInline" @get-role-list="getRoleList" @reset-form="resetForm"></FilterForm>
             <div class="filter_right">
                 <div v-if="getMaxPermission(userStore.userInfo.roles) !== 3">
                     <el-button type="primary" :icon="Plus" @click="addOrModifyRole(1)">添加</el-button>
@@ -136,26 +119,26 @@
 </template>
 
 <script setup lang="ts">
-import { Delete, Plus, Refresh, Search, WarningFilled } from '@element-plus/icons-vue';
-import { onBeforeMount, reactive, ref, watch } from 'vue';
+import FilterForm from './FilterForm.vue'
+import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue'
+import { onBeforeMount, reactive, ref, watch } from 'vue'
 // @ts-ignore
-import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler';
+import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
 // @ts-ignore
-import { dateParse } from '@/utils/dateHandler';
+import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
 import { RoleTypeList } from '@/variables/common'
 // @ts-ignore
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
 // @ts-ignore
-import { useRoleStore } from '@/stores/role';
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { useRoleStore } from '@/stores/role'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 const addOrModifyVisiable = ref(false);
 const addOrModifyTitle = ref(1);
 const userStore = useUserStore();
 const roleStore = useRoleStore();
 const tableLoading = ref(false);
 const deleteRolesVisible = ref(false);
-const ruleFormRef = ref<FormInstance>();
 const ruleFormRef2 = ref<FormInstance>();
 const stopClick2 = ref(false);
 const roleList = ref<RoleItemType>();// 角色列表
@@ -350,4 +333,4 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scoped lang="scss" src="@/assets/css/manage.scss"></style>
+<style lang="scss" src="@/assets/css/manage.scss"></style>
