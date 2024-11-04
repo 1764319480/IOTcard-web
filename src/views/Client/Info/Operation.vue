@@ -119,7 +119,7 @@ const stopClick2 = ref(false);
 let timer:any = null;
 const { selectIds, currentpage } = defineProps(['selectIds', 'currentpage']);
 const emits = defineEmits(['getClientList', 'changePage']);
-const ruleForm = reactive<RuleFormType>({// 新增或编辑客户的表单
+const ruleForm = reactive<ClientFormType>({// 新增或编辑客户的表单
     id: '',
     clientName: '',
     clientType: '',
@@ -133,7 +133,7 @@ const ruleForm = reactive<RuleFormType>({// 新增或编辑客户的表单
     salesman: '' as string | number
 })
 const { contactProvince, contactCity, contactArea } = toRefs(ruleForm);
-type RuleFormType = {// 新增或编辑客户的表单
+type ClientFormType = {// 新增或编辑客户的表单
     id: string,
     clientName: string,
     clientType: string,
