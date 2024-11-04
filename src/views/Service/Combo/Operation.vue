@@ -103,7 +103,7 @@ import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
 import { PeriodMap } from '@/variables/common'
 // @ts-ignore
-import { ComboItemType } from '@/variables/common'
+import { ComboItemType } from '@/variables/type'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
 const comboStore = useComboStore();

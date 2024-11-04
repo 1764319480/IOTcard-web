@@ -62,7 +62,9 @@ import { reactive, ref } from 'vue'
 import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 // @ts-ignore
-import { RoleTypeList, RoleItemType } from '@/variables/common'
+import { RoleTypeList } from '@/variables/common'
+// @ts-ignore
+import { RoleItemType } from '@/variables/type'
 // @ts-ignore
 import { getMaxPermission } from '@/utils/otherHandler'
 // @ts-ignore

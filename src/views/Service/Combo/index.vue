@@ -139,7 +139,9 @@ import { useComboStore } from '@/stores/combo'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { PeriodMap, ComboItemType, ISortProps } from '@/variables/common'
+import { PeriodMap } from '@/variables/common'
+// @ts-ignore
+import {ComboItemType, ISortProps} from '@/variables/type'
 import { ElMessage } from 'element-plus'
 const operation = ref();
 const showMoreItems = ref(false);

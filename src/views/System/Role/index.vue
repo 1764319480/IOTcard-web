@@ -74,7 +74,7 @@ import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { RoleItemType, ISortProps } from '@/variables/common'
+import { RoleItemType, ISortProps } from '@/variables/type'
 // @ts-ignore
 import { useUserStore } from '@/stores/user'
 // @ts-ignore

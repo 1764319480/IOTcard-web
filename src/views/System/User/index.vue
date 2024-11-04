@@ -75,7 +75,9 @@ import { getMaxPermission } from '@/utils/otherHandler'
 // @ts-ignore
 import { useUserStore } from '@/stores/user'
 // @ts-ignore
-import { UserStatusList, IRoleProps, UserItemType, ISortProps } from '@/variables/common'
+import { UserStatusList } from '@/variables/common'
+// @ts-ignore
+import { IRoleProps, UserItemType, ISortProps } from '@/variables/type'
 
 const operation = ref();
 const userStore = useUserStore();

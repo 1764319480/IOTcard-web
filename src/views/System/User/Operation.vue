@@ -71,7 +71,7 @@ import { useUserStore } from '@/stores/user'
 // @ts-ignore
 import { useRoleStore } from '@/stores/role'
 // @ts-ignore
-import { UserItemType } from '@/variables/common'
+import { UserItemType } from '@/variables/type'
 const roleStore = useRoleStore();
 const userStore = useUserStore();
 const addOrModifyVisiable = ref(false);

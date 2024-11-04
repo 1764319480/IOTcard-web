@@ -74,7 +74,7 @@ import { useClientStore } from '@/stores/client'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { ClientItemType, ISortProps } from '@/variables/common'
+import { ClientItemType, ISortProps } from '@/variables/type'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { ElMessage } from 'element-plus'

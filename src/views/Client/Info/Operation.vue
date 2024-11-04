@@ -103,7 +103,7 @@ import { useCommonStore } from '@/stores/common'
 // @ts-ignore
 import { useClientStore } from '@/stores/client'
 // @ts-ignore
-import { ClientItemType } from '@/variables/common'
+import { ClientItemType } from '@/variables/type'
 const ruleFormRef2 = ref<FormInstance>();
 const userStore = useUserStore();
 const commonStore = useCommonStore();
