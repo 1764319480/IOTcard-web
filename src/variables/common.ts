@@ -37,3 +37,18 @@ export type ClientItemType = {// 客户数据结构
     selesmanName: string,
     createTime: string
 }
+
+// 套餐数据结构
+export type ComboItemType = {
+    id: number,
+    comboNo: string,
+    comboName: string,
+    comboPeriod: number,
+    comboCapacity: number,
+    comboType: number,
+    status: number,
+    standardTariff: string,
+    salesPrice: string,
+    remark: string,
+    createTime: string
+}
