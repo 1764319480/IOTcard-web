@@ -174,10 +174,10 @@ type FilterFormType = {
     comboType: string,
     status: string,
     timeList: Array<string>,
-    standardTariffMin: undefined | string,
-    standardTariffMax: undefined | string,
-    salesPriceMin: undefined | string,
-    salesPriceMax: undefined | string,
+    standardTariffMin: undefined | number,
+    standardTariffMax: undefined | number,
+    salesPriceMin: undefined | number,
+    salesPriceMax: undefined | number,
     orderBy: string,
     orderType: string
 }

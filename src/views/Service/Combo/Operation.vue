@@ -131,8 +131,8 @@ type ComboFormType = {
     id: string | number,
     comboName: string,
     comboType: string,
-    standardTariff: undefined | string,
-    salesPrice: undefined | string,
+    standardTariff: undefined | number,
+    salesPrice: undefined | number,
     comboPeriod: string,
     comboCapacity: undefined | number,
     remark: string
@@ -191,8 +191,8 @@ const addOrModifyCombo = async (title: number, item?: ComboItemType) => {
         ruleForm.comboPeriod = item.comboPeriod.toString();
         ruleForm.comboCapacity = item.comboCapacity;
         ruleForm.comboType = item.comboType.toString();
-        ruleForm.standardTariff = item.standardTariff;
-        ruleForm.salesPrice = item.salesPrice;
+        ruleForm.standardTariff = parseFloat(item.standardTariff.toString());
+        ruleForm.salesPrice = parseFloat(item.salesPrice.toString());
         ruleForm.remark = item.remark;
     } else {
         resetForm1();
