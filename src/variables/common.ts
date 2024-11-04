@@ -63,3 +63,27 @@ export type RoleItemType = {
     userCount: number,
     createTime: string
 }
+
+// 简单角色数据结构
+export interface IRoleProps {
+    id: number,
+    roleType: number,
+    roleName: string
+}
+
+// 用户数据结构
+export type UserItemType = {
+    id: string | number,
+    userName: string,
+    account: string,
+    roles: IRoleProps[],
+    status: number | string,
+    createTime: string
+}
+
+// 排序字段结构
+export interface ISortProps {
+    column: object,
+    prop: string,
+    order: string | null
+}

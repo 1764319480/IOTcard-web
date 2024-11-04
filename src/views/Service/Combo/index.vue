@@ -139,7 +139,7 @@ import { useComboStore } from '@/stores/combo'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { PeriodMap, ComboItemType } from '@/variables/common'
+import { PeriodMap, ComboItemType, ISortProps } from '@/variables/common'
 import { ElMessage } from 'element-plus'
 const operation = ref();
 const showMoreItems = ref(false);
@@ -178,11 +178,6 @@ type FilterFormType = {
     salesPriceMax: undefined | string,
     orderBy: string,
     orderType: string
-}
-interface ISortProps {// 表单排序
-    column: object,
-    prop: string,
-    order: string | null
 }
 // 显示更多筛选项
 const changeShowMore = (value: boolean) => {

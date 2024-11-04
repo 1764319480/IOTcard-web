@@ -74,7 +74,7 @@ import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { RoleItemType } from '@/variables/common'
+import { RoleItemType, ISortProps } from '@/variables/common'
 // @ts-ignore
 import { useUserStore } from '@/stores/user'
 // @ts-ignore
@@ -88,12 +88,6 @@ const roleList = ref<RoleItemType>();// 角色列表
 const selectIds = ref();
 const total = ref(0);// 后台角色数据总量
 const currentpage = ref(1);
-// 排序字段结构
-interface ISortProps {
-    column: object,
-    prop: string,
-    order: string | null
-}
 // 筛选角色的表单选项
 const formInline = reactive({
     keyword: '',

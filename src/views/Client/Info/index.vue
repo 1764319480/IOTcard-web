@@ -74,7 +74,7 @@ import { useClientStore } from '@/stores/client'
 // @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
-import { ClientItemType } from '@/variables/common'
+import { ClientItemType, ISortProps } from '@/variables/common'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -95,11 +95,6 @@ const formInline = reactive({// 筛选的选项
     orderBy: 'createTime',
     orderType: 'desc'
 })
-interface ISortProps {// 排序选项结构
-    column: object,
-    prop: string,
-    order: string | null
-}
 // 选中条件：有权限
 // const selectable = ref(true);
 // 选中时存入选项
