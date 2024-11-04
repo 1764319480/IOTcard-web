@@ -3,7 +3,7 @@
         <div class="filter">
             <FilterForm :form-inline="formInline" @get-client-list="getClientList" @reset-form="resetForm"></FilterForm>
             <Operation ref="operation" :currentpage="currentpage" :select-ids="selectIds" @change-page="changePage" 
-            @get-client-list="getClientList"></Operation>
+            @get-client-list="getClientList" @delete-client="deleteClient"></Operation>
         </div>
         <div class="lists">
             <el-table :data="clientList" style="width: 100%" @selection-change="handleSelectionChange"
@@ -155,15 +155,15 @@ const deleteClient = async (clientIds: string[] | number[] | string | number) =>
     let ids = Array.isArray(clientIds) ? clientIds : [clientIds];
     let data = await clientStore.deleteClientAsync(ids);
     if (data) {
-        if (currentpage.value === 1) {
-            await getClientList()
-        } else {
-            currentpage.value = 1;
-        }
         ElMessage({
             message: '删除成功',
             type: 'success'
         })
+        if (currentpage.value === 1) {
+            await getClientList()
+        } else {
+            currentpage.value = 1;
+        }  
     }
 }
 // 分页功能 切换到某一页

@@ -118,7 +118,7 @@ const streets = ref();
 const stopClick2 = ref(false);
 let timer:any = null;
 const { selectIds, currentpage } = defineProps(['selectIds', 'currentpage']);
-const emits = defineEmits(['getClientList', 'changePage']);
+const emits = defineEmits(['getClientList', 'changePage', 'deleteClient']);
 const ruleForm = reactive<ClientFormType>({// 新增或编辑客户的表单
     id: '',
     clientName: '',
@@ -236,6 +236,11 @@ const saveAddClient = async () => {
                 });
             }
             if (data) {
+                addOrModifyVisiable.value = false;
+                ElMessage({
+                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
+                    type: 'success'
+                })
                 if (addOrModifyTitle.value === 2) {
                     emits('getClientList', currentpage);
                 } else {
@@ -245,33 +250,12 @@ const saveAddClient = async () => {
                         emits('changePage', 1);
                     }
                 }
-                addOrModifyVisiable.value = false;
-                ElMessage({
-                    message: addOrModifyTitle.value === 2 ? '编辑成功' : '添加成功',
-                    type: 'success'
-                })
             }
             stopClick2.value = false;
         } else {
             console.log('error submit!')
         }
     })
-}
-// 删除客户
-const deleteClient = async (clientIds: string[] | number[] | string | number) => {
-    let ids = Array.isArray(clientIds) ? clientIds : [clientIds];
-    let data = await clientStore.deleteClientAsync(ids);
-    if (data) {
-        if (currentpage === 1) {
-            emits('getClientList');
-        } else {
-            emits('changePage', 1);
-        }
-        ElMessage({
-            message: '删除成功',
-            type: 'success'
-        })
-    }
 }
 // 批量删除
 const deleteClients = () => {
@@ -285,7 +269,7 @@ const deleteClients = () => {
     deleteClientsVisible.value = true;
 }
 const confirmDeleteUsers = () => {
-    deleteClient(selectIds);
+    emits('deleteClient', selectIds);
     deleteClientsVisible.value = false;
 }
 // 地址选择
