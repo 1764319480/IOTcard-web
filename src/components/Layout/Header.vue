@@ -38,7 +38,6 @@
 import Settings from './Settings.vue'
 import { ElMessageBox } from 'element-plus'
 import { UserFilled, Setting, CircleClose } from '@element-plus/icons-vue'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
 import { ref } from 'vue'
 

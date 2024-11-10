@@ -61,15 +61,10 @@
 import { reactive, ref } from 'vue'
 import { Delete, Plus, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-// @ts-ignore
 import { RoleTypeList } from '@/variables/common'
-// @ts-ignore
 import { RoleItemType } from '@/variables/type'
-// @ts-ignore
 import { getMaxPermission } from '@/utils/otherHandler'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
-// @ts-ignore
 import { useRoleStore } from '@/stores/role'
 const userStore = useUserStore();
 const roleStore = useRoleStore();

@@ -134,13 +134,9 @@ import { WarningFilled } from '@element-plus/icons-vue'
 import { onBeforeMount, reactive, ref, watch } from 'vue'
 import FilterForm from './FilterForm.vue'
 import Operation from './Operation.vue'
-// @ts-ignore
 import { useComboStore } from '@/stores/combo'
-// @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
-// @ts-ignore
 import { PeriodMap } from '@/variables/common'
-// @ts-ignore
 import {ComboItemType, ISortProps} from '@/variables/type'
 import { ElMessage } from 'element-plus'
 const operation = ref();

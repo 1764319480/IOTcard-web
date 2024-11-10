@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import { ref, watch, reactive } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
 const ruleFormRef = ref<FormInstance>()
 const props = defineProps<{ open: boolean }>();

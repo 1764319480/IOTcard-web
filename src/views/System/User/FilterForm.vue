@@ -34,9 +34,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Search, Refresh } from '@element-plus/icons-vue'
-// @ts-ignore
 import { useRoleStore } from '@/stores/role'
-// @ts-ignore
 import { UserStatusList } from '@/variables/common'
 const roleStore = useRoleStore();
 const { formInline } = defineProps(['formInline']);

@@ -69,15 +69,10 @@ import FilterForm from './FilterForm.vue'
 import Operation from './Operation.vue'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { onBeforeMount, reactive, ref, watch } from 'vue'
-// @ts-ignore
 import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
-// @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
-// @ts-ignore
 import { RoleItemType, ISortProps } from '@/variables/type'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
-// @ts-ignore
 import { useRoleStore } from '@/stores/role'
 import { ElMessage } from 'element-plus'
 const operation = ref();

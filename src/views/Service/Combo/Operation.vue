@@ -96,13 +96,9 @@
 <script setup lang="ts">
 import { Bottom, Delete, Plus, Top, WarningFilled } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
-// @ts-ignore
 import { useComboStore } from '@/stores/combo'
-// @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
-// @ts-ignore
 import { PeriodMap } from '@/variables/common'
-// @ts-ignore
 import { ComboItemType } from '@/variables/type'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 

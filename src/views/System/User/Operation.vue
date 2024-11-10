@@ -64,13 +64,9 @@
 import { onBeforeMount, reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { Delete, Plus } from '@element-plus/icons-vue';
-// @ts-ignore
 import { getMaxPermission } from '@/utils/otherHandler'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
-// @ts-ignore
 import { useRoleStore } from '@/stores/role'
-// @ts-ignore
 import { UserItemType } from '@/variables/type'
 const roleStore = useRoleStore();
 const userStore = useUserStore();

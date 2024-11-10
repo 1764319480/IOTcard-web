@@ -27,13 +27,10 @@
 <script setup lang="ts">
 import Headers from './Header.vue'
 import Asides from './Aside.vue'
-// @ts-ignore
 import menus from '@/variables/menus'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
 import { useRoute } from 'vue-router'
 import { reactive, watch, onBeforeMount } from 'vue'
-// @ts-ignore
 import { useRoleStore } from '@/stores/role'
 
 const route = useRoute();

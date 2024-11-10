@@ -68,7 +68,6 @@ import Operation from './Operation.vue'
 import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-// @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 // @ts-ignore
 import { getMaxPermission } from '@/utils/otherHandler'

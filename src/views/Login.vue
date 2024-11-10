@@ -48,7 +48,6 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
-// @ts-ignore
 import { useLoginStore } from '@/stores/login'
 
 interface FormValueProps {

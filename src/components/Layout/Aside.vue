@@ -21,7 +21,6 @@
 </template>
 
 <script lang="ts" setup>
-// @ts-ignore
 import menus from '@/variables/menus'
 defineProps<{ active: string }>();
 </script>

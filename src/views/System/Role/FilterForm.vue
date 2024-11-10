@@ -20,7 +20,6 @@
 
 <script setup lang="ts">
 import { Refresh, Search } from '@element-plus/icons-vue'
-// @ts-ignore
 import { RoleTypeList } from '@/variables/common'
 const { formInline } = defineProps(['formInline']);
 const emits = defineEmits(['getRoleList', 'resetForm']);

@@ -30,9 +30,7 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from 'vue'
-// @ts-ignore
 import { useLogStore } from '@/stores/log'
-// @ts-ignore
 import { dateParse } from '@/utils/dateHandler'
 const activeName = ref('1');
 const tableLoading = ref(false);
