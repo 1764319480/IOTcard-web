@@ -1,5 +1,5 @@
 
-import { Setting, HomeFilled, User } from '@element-plus/icons-vue';
+import { Setting, HomeFilled, User, Coin } from '@element-plus/icons-vue';
 
 interface MenuItemProps {
   path: string;
@@ -21,7 +21,7 @@ const menus: MenuItemProps[] = [
   {
     path: '/service/combo',
     label: '增值服务',
-    icon: User,
+    icon: Coin,
     children: [
       { path: '/service/combo', label: '增值套餐' },
     ],
