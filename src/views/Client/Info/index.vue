@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="filter">
-            <FilterForm :form-inline="formInline" @get-client-list="getClientList" @reset-form="resetForm"></FilterForm>
+            <FilterForm :form-inline="formInline" :form-item-list="formItemList" @search="getClientList" @reset-form="resetForm"></FilterForm>
             <Operation ref="operation" :currentpage="currentpage" :select-ids="selectIds" @change-page="changePage" 
             @get-client-list="getClientList" @delete-client="deleteClient"></Operation>
         </div>
@@ -67,11 +67,11 @@
 </template>
 
 <script setup lang="ts">
-import FilterForm from './FilterForm.vue'
+import FilterForm from '@/components/FilterForm.vue'
 import Operation from './Operation.vue'
 import { useClientStore } from '@/stores/client'
 import { dateParse } from '@/utils/dateHandler'
-import { ClientItemType, ISortProps } from '@/variables/type'
+import { ClientItemType, ISortProps, FormItemType } from '@/variables/type'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -83,6 +83,12 @@ const clientList = ref<ClientItemType[]>();
 const total = ref(0);// 客户列表数据总数
 const selectIds = ref();// 多选时选中的id集合
 const currentpage = ref(1);
+const formItemList = <FormItemType[]>[
+    {name: 'clientName', label: '客户名称', type: 'input', placeholder: '搜索客户名称', option: []},
+    {name: 'clientType', label: '客户类型', type: 'select', placeholder: '', option: [{label: '全部', value: '9999'}, {label: '个人客户', value: '1'}, {label: '企业客户', value: '2'}]},
+    {name: 'contact', label: '联系人', type: 'input', placeholder: '联系人', option: []},
+    {name: 'contactPhone', label: '联系号码', type: 'input', placeholder: '联系号码', option: []}
+]
 const formInline = reactive({// 筛选的选项
     clientName: '',
     clientType: '9999',

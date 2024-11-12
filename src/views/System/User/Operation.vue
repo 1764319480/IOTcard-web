@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { Delete, Plus } from '@element-plus/icons-vue';
 import { getMaxPermission } from '@/utils/otherHandler'
@@ -174,10 +174,6 @@ const confirmDeleteUsers = () => {
     emits('deleteUser', selectIds);
     deleteUsersVisible.value = false;
 }
-// 页面刷新前获取数据
-onBeforeMount(() => {
-    roleStore.getAllRoleAsync();
-})
 defineExpose({
     addOrModifyUser
 })

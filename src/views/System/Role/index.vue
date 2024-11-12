@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="filter">
-            <FilterForm :form-inline="formInline" @get-role-list="getRoleList" @reset-form="resetForm"></FilterForm>
+            <FilterForm :form-inline="formInline" :form-item-list="formItemList" @search="getRoleList" @reset-form="resetForm"></FilterForm>
             <Operation ref="operation" :currentpage="currentpage" :select-ids="selectIds" @change-page="changePage"
             @delete-role="deleteRole" @get-role-list="getRoleList"></Operation>
         </div>
@@ -65,16 +65,17 @@
 </template>
 
 <script setup lang="ts">
-import FilterForm from './FilterForm.vue'
+import FilterForm from '@/components/FilterForm.vue'
 import Operation from './Operation.vue'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { onBeforeMount, reactive, ref, watch } from 'vue'
 import { getMaxPermission, getRoleTypeFont } from '@/utils/otherHandler'
 import { dateParse } from '@/utils/dateHandler'
-import { RoleItemType, ISortProps } from '@/variables/type'
+import { RoleItemType, ISortProps, FormItemType } from '@/variables/type'
 import { useUserStore } from '@/stores/user'
 import { useRoleStore } from '@/stores/role'
 import { ElMessage } from 'element-plus'
+import { RoleTypeList } from '@/variables/common'
 const operation = ref();
 const userStore = useUserStore();
 const roleStore = useRoleStore();
@@ -83,6 +84,10 @@ const roleList = ref<RoleItemType>();// 角色列表
 const selectIds = ref();
 const total = ref(0);// 后台角色数据总量
 const currentpage = ref(1);
+const formItemList = <FormItemType[]>[
+    {name: 'keyword', label: '关键字', type: 'input', placeholder: '搜索名称/描述', option: []},
+    {name: 'roleType', label: '类型', type: 'select', placeholder: '', option: [{label: '全部', value: '9999'}, ...RoleTypeList]},
+]
 // 筛选角色的表单选项
 const formInline = reactive({
     keyword: '',

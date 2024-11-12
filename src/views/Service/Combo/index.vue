@@ -1,7 +1,10 @@
 <template>
     <div class="home">
         <div class="filter">
-            <FilterForm :form-inline="formInline" @get-combo-list="getComboList" @reset-form="resetForm" @change-show-more="changeShowMore"></FilterForm>
+            <FilterForm :form-inline="formInline" :form-item-list="formItemList" @reset-form="resetForm" @search="getComboList">
+                <el-button :icon="showMoreItems ? ArrowUpBold : ArrowDownBold" type="primary" :plain=true
+                    @click="showMoreItems = !showMoreItems">{{ showMoreItems ? '收起' : '更多' }}</el-button>
+            </FilterForm>
             <Operation ref="operation" :currentpage="currentpage" :select-id-and-status="selectIdAndStatus"
             @change-page="changePage" @get-combo-list="getComboList" @delete-combo="deleteCombo"
             @change-combo-status="({id, status}) => changeComboStatus(id, status)"></Operation>
@@ -130,14 +133,14 @@
 </template>
 
 <script setup lang="ts">
-import { WarningFilled } from '@element-plus/icons-vue'
-import { onBeforeMount, reactive, ref, watch } from 'vue'
-import FilterForm from './FilterForm.vue'
+import { WarningFilled, ArrowDownBold, ArrowUpBold } from '@element-plus/icons-vue'
+import { onBeforeMount, reactive, ref, watch, computed } from 'vue'
+import FilterForm from '@/components/FilterForm.vue'
 import Operation from './Operation.vue'
 import { useComboStore } from '@/stores/combo'
 import { dateParse } from '@/utils/dateHandler'
 import { PeriodMap } from '@/variables/common'
-import {ComboItemType, ISortProps} from '@/variables/type'
+import {ComboItemType, ISortProps, FormItemType} from '@/variables/type'
 import { ElMessage } from 'element-plus'
 const operation = ref();
 const showMoreItems = ref(false);
@@ -152,35 +155,25 @@ const statusList = ref([
     {type: 'success', label: '上架'},
     {type: 'danger', label: '下架'}
 ])
-// 筛选表单
-const formInline = reactive<FilterFormType>({
+const formItemListAll = <FormItemType[]>[
+    {name: 'comboName', label: '套餐名称', type: 'input', placeholder: '搜索套餐名称', option: []},
+    {name: 'comboType', label: '类型', type: 'select', placeholder: '', option: [{label: '全部', value: '99'}, {label: '流量包', value: '1'}, {label: '短信包', value: '2'}]},
+    {name: 'status', label: '状态', type: 'select', placeholder: '', option: [{label: '全部', value: '99'}, {label: '待定', value: '0'}, {label: '上架', value: '1'}, {label: '下架', value: '2'}]},
+    {name: 'timeList', label: '创建时间', type: 'date', placeholder: '', option: []},
+    {name: 'standardTariff', label: '标准资费', type: 'number', placeholder: '', option: []},
+    {name: 'salesPrice', label: '销售价格', type: 'number', placeholder: '', option: []}
+]
+const formItemList = computed(() => showMoreItems.value ? formItemListAll : formItemListAll.slice(0, -3));
+const formInline = reactive({
     comboName: '',
     comboType: '99',
     status: '99',
     timeList: [],
-    standardTariffMin: undefined,
-    standardTariffMax: undefined,
-    salesPriceMin: undefined,
-    salesPriceMax: undefined,
+    standardTariff: [],
+    salesPrice: [],
     orderBy: 'createTime',
     orderType: 'desc'
 })
-type FilterFormType = {
-    comboName: string,
-    comboType: string,
-    status: string,
-    timeList: Array<string>,
-    standardTariffMin: undefined | number,
-    standardTariffMax: undefined | number,
-    salesPriceMin: undefined | number,
-    salesPriceMax: undefined | number,
-    orderBy: string,
-    orderType: string
-}
-// 显示更多筛选项
-const changeShowMore = (value: boolean) => {
-    showMoreItems.value = value;
-}
 // 选中时存入选项
 const handleSelectionChange = (items: ComboItemType[]) => {
     if (items?.length === 0) {
@@ -209,8 +202,8 @@ const getComboList = async (pageNum: number = 1, pageSize: number = 20) => {
         comboName: formInline.comboName || undefined,
         comboType: formInline.comboType === '99' ? undefined : formInline.comboType,
         status: formInline.status === '99' ? undefined : formInline.status,
-        salesPriceRange: [formInline.salesPriceMin || 0, formInline.salesPriceMax || 999999],
-        standardTariffRange: [formInline.standardTariffMin || 0, formInline.standardTariffMax || 999999],
+        salesPriceRange: [formInline.salesPrice[0] || 0, formInline.salesPrice[1] || 999999],
+        standardTariffRange: [formInline.standardTariff[0] || 0, formInline.standardTariff[1] || 999999],
         startTime: formInline.timeList[0],
         endTime: formInline.timeList[1],
         pageNum,
@@ -230,10 +223,8 @@ const resetForm = async () => {
     formInline.comboType = '99';
     formInline.status = '99';
     formInline.timeList = [];
-    formInline.standardTariffMin = undefined;
-    formInline.standardTariffMax = undefined;
-    formInline.salesPriceMin = undefined;
-    formInline.salesPriceMax = undefined;
+    formInline.standardTariff = [];
+    formInline.salesPrice = [];
     if (currentpage.value === 1) {
         await getComboList()
     } else {

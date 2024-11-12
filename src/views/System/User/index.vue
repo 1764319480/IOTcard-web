@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="filter">
-            <FilterForm :form-inline="formInline" @get-user-list="getUserList" @reset-form="resetForm"></FilterForm>
+            <FilterForm :form-inline="formInline" :form-item-list="formItemList" @search="getUserList" @reset-form="resetForm"></FilterForm>
             <Operation ref="operation" :currentpage="currentpage" :select-ids="selectIds" 
             @get-user-list="getUserList" @delete-user="deleteUser" @change-page="changePage"></Operation>
         </div>
@@ -63,28 +63,32 @@
 </template>
 
 <script setup lang="ts">
-import FilterForm from './FilterForm.vue'
+import FilterForm from '@/components/FilterForm.vue'
 import Operation from './Operation.vue'
 import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { dateParse } from '@/utils/dateHandler'
-// @ts-ignore
 import { getMaxPermission } from '@/utils/otherHandler'
-// @ts-ignore
 import { useUserStore } from '@/stores/user'
-// @ts-ignore
+import { IRoleProps, UserItemType, ISortProps, FormItemType } from '@/variables/type'
+import { useRoleStore } from '@/stores/role'
 import { UserStatusList } from '@/variables/common'
-// @ts-ignore
-import { IRoleProps, UserItemType, ISortProps } from '@/variables/type'
-
 const operation = ref();
 const userStore = useUserStore();
+const roleStore = useRoleStore();
 const tableLoading = ref(false);
 const userList = ref<UserItemType[]>();// 用户列表
 const total = ref(0);// 后台用户数据总量
 const currentpage = ref(1);
 const selectIds = ref();
+const roleOption = ref([]);
+const formItemList = ref<FormItemType[]>([
+    {name: 'keyword', label: '关键字', type: 'input', placeholder: '搜索用户名/账号', option: []},
+    {name: 'roleId', label: '角色', type: 'select', placeholder: '', option: [{label: '全部', value: '9999'}]},
+    {name: 'status', label: '状态', type: 'select', placeholder: '', option: [{label: '全部', value: '99'}, ...UserStatusList]},
+    {name: 'timeList', label: '创建时间', type: 'date', placeholder: '', option: []}
+]);
 // 筛选的表单选项
 const formInline = reactive({
     keyword: '',
@@ -196,9 +200,13 @@ watch(currentpage, async (value: number) => {
     await getUserList(value);
 })
 // 页面刷新前获取数据
-onBeforeMount(() => {
+onBeforeMount(async () => {
     getUserList();
+    await roleStore.getAllRoleAsync();
+    roleOption.value = roleStore.roleInfo.map(item => ({label: item.roleName, value: item.id}));
+    formItemList.value[1].option.push(...roleOption.value);
 })
+
 </script>
 
 <style lang="scss" src="@/assets/css/manage.scss"></style>

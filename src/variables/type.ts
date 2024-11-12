@@ -68,3 +68,12 @@ export interface ISortProps {
     prop: string,
     order: string | null
 }
+
+// 渲染表单结构
+export type FormItemType = {
+    name: string,
+    label: string,
+    type: string,
+    placeholder: string,
+    option: object[]
+}
