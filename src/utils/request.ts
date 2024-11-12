@@ -47,7 +47,6 @@ axiosInstance.interceptors.request.use((config) => {
 
 // 响应拦截器
 axiosInstance.interceptors.response.use((response: IAxiosResponse) => {
-    // 对响应数据做点什么
     if (response.status === 200) {
         if ([401, 403].includes(response.data.code)) {
             // 使用防抖，防止短时间内多次弹出错误提示
