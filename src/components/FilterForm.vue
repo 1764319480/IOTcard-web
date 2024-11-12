@@ -10,13 +10,13 @@
                 <el-date-picker v-if="item.type === 'date'" v-model="formInline[item.name]" type="daterange"
                     start-placeholder="开始时间" :default-time="defaultTime" end-placeholder="结束时间" style="width: 220px;"
                     value-format="YYYY-MM-DD HH:mm:ss" />
-                    <el-input-number v-if="item.type === 'number'" v-model="formInline[item.name][0]" class="mx-4" :min="0"
-                        :max="formInline[item.name][1]" controls-position="right" style="width: 110px;"
-                        placeholder="最低" :precision="2" />
-                    <p v-if="item.type === 'number'">&nbsp;-&nbsp;</p>
-                    <el-input-number v-if="item.type === 'number'" v-model="formInline[item.name][1]" class="mx-4"
-                        :min="formInline[item.name][0]" controls-position="right" style="width: 110px;"
-                        placeholder="最高" :precision="2" />
+                <el-input-number v-if="item.type === 'number'" v-model="formInline[item.name][0]" class="mx-4" :min="0"
+                    :max="formInline[item.name][1]" controls-position="right" style="width: 110px;" placeholder="最低"
+                    :precision="2" />
+                <p v-if="item.type === 'number'">&nbsp;-&nbsp;</p>
+                <el-input-number v-if="item.type === 'number'" v-model="formInline[item.name][1]" class="mx-4"
+                    :min="formInline[item.name][0]" controls-position="right" style="width: 110px;" placeholder="最高"
+                    :precision="2" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" :icon="Search" @click="emits('search')">搜索</el-button>
